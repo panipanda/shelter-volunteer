@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "visitId": 2,
+    "name": "Example Volunteer",
+    "contact": null,
+    "status": "ATTENDED",
+    "internalNotes": null,
+    "createdAt": "2026-05-10T18:00:00+02:00",
+    "updatedAt": "2026-05-10T18:00:00+02:00"
+  }
+]
