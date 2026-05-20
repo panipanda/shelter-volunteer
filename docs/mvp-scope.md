@@ -27,6 +27,13 @@
 - Signup instruction
 - Last updated timestamp
 
+### Visit archive
+
+- Store past visits
+- Show public archive of completed visits
+- Keep participant data out of public pages in MVP
+- Optionally store internal participant records separately
+
 ### Technical
 
 - Kotlin backend
