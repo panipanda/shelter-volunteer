@@ -15,6 +15,23 @@ Planned features:
 - English-first UI
 - Russian localization later
 
+## MVP architecture
+
+The MVP uses file-based storage:
+
+- `data/cats.json` for cat catalogue data
+- `data/visits.json` for public volunteer visit data
+- `data/visit-participants.json` for internal participant history, not rendered publicly in MVP
+- `content/volunteer-guide.md` for volunteer instructions
+
+The application code should access data through repository interfaces, not directly from routes.
+
+Planned data access flow:
+routes -> services -> repositories -> JSON/Markdown files
+
+Future data access flow:
+routes -> services -> repositories -> SQLite/PostgreSQL
+
 ## Visit calendar approach
 
 The MVP does not manage volunteer registrations directly.

@@ -27,13 +27,6 @@
 - Signup instruction
 - Last updated timestamp
 
-### Visit archive
-
-- Store past visits
-- Show public archive of completed visits
-- Keep participant data out of public pages in MVP
-- Optionally store internal participant records separately
-
 ### Technical
 
 - Kotlin backend
@@ -44,13 +37,38 @@
 - README
 - Production deploy
 
+### Data files
+
+- Store cat catalogue data in `data/cats.json`
+- Store public visit data in `data/visits.json`
+- Store volunteer guide content in `content/volunteer-guide.md`
+- Keep data structures close to future database tables
+
+### Visit archive
+
+- Store upcoming and past visits in the same public visit data file
+- Show upcoming visits on `/visits`
+- Optionally show completed visit summaries on `/visits/archive`
+- Keep participant data out of public pages in MVP
+
+### Architecture
+
+- Use repository interfaces for data access
+- Keep routes independent from JSON parsing
+- Prepare for future SQLite migration
+
 ## Out of scope for MVP
 
 - Dog volunteering UI
-- Online registration
-- Cancellation flow
-- Admin panel
 - Telegram integration
 - User accounts
 - Roles and permissions
 - Payment/donation integration
+- Admin panel
+- Online registration
+- Cancellation flow
+- Google Calendar integration
+- Google Calendar booking
+- Public participant lists
+- Authentication
+- Database-backed storage
