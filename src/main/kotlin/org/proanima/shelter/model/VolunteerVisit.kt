@@ -1,3 +1,5 @@
+package org.proanima.shelter.model
+
 data class VolunteerVisit(
     val id: Int,
     val direction: VolunteerDirection,

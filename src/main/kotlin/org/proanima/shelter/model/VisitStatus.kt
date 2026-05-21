@@ -1,3 +1,5 @@
+package org.proanima.shelter.model
+
 enum class VisitStatus {
     OPEN,
     FULL,
