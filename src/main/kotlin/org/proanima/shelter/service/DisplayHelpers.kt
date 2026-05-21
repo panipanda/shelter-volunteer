@@ -1,3 +1,7 @@
+package org.proanima.shelter.service
+
+import org.proanima.shelter.model.VisitStatus
+
 fun displayCatName(name: String?): String {
     return name ?: "Unnamed"
 }
