@@ -29,3 +29,17 @@ replay_pid*
 # Ignore temporary learning/demo file
 learn.kt
 
+# Gradle
+.gradle/
+build/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
