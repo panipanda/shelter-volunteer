@@ -1,5 +1,8 @@
 package org.proanima.shelter.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class VolunteerVisit(
     val id: Int,
     val direction: VolunteerDirection,
