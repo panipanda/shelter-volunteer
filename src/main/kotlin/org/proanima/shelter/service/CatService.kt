@@ -1,11 +1,19 @@
 package org.proanima.shelter.service
 
 import org.proanima.shelter.model.Cat
+import org.proanima.shelter.repository.CatRepository
 
-fun getAvailableCats(cats: List<Cat>): List<Cat> {
-    return cats.filter { it.isAvailable }
-}
+class CatService(private val repository: CatRepository) {
 
-fun findCatById(cats: List<Cat>, id: Int): Cat? {
-    return cats.firstOrNull { it.id == id }
+    fun getAllCats(): List<Cat> {
+        return repository.findAll()
+    }
+
+    fun getAvailableCats(): List<Cat> {
+        return repository.findAll().filter { it.isAvailable }
+    }
+
+    fun getCatById(id: Int): Cat? {
+        return repository.findById(id)
+    }
 }
