@@ -15,8 +15,8 @@ class VisitService(private val repository: VisitRepository) {
         return repository.findAll().filter { it.status == VisitStatus.COMPLETED }
     }
 
-    fun getCatVisits(catId: Int): List<VolunteerVisit> {
-        return repository.findAll().filter { it.direction == VolunteerDirection.CATS }
+    fun getCatVisits(): List<VolunteerVisit> {
+    return repository.findAll().filter { it.direction == VolunteerDirection.CATS }
     }
 
     fun getUpcomingVisits(): List<VolunteerVisit> {
