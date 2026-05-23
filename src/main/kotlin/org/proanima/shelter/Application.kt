@@ -4,6 +4,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.routing.routing
+import io.ktor.server.http.content.staticResources
 import org.proanima.shelter.routes.healthRoutes
 import org.proanima.shelter.routes.catRoutes
 import org.proanima.shelter.service.CatService
@@ -24,5 +25,6 @@ fun Application.module() {
     routing {
         healthRoutes()
         catRoutes(catService)
+        staticResources("/images", "static/images")
     }
 }
