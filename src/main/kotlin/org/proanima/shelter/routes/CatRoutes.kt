@@ -6,7 +6,7 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import org.proanima.shelter.service.CatService
-import org.proanima.shelter.service.displayCatName
+import org.proanima.shelter.views.renderCatDetailsPage
 import org.proanima.shelter.views.renderCatsListPage
 
 fun Route.catRoutes(catService: CatService) {
@@ -30,7 +30,8 @@ fun Route.catRoutes(catService: CatService) {
         if (cat == null) {
             call.respondText("Cat not found")
         } else {
-            call.respondText(displayCatName(cat.name))
+            val html = renderCatDetailsPage(cat)
+            call.respondText(html, contentType = ContentType.Text.Html)
         }
     }
 }

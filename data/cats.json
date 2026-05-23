@@ -4,7 +4,7 @@
     "name": "Mila",
     "age": 2,
     "description": "Calm and friendly cat.",
-    "photoUrl": "/images/mila.jpg",
+    "photoUrl": null,
     "isAvailable": true,
     "createdAt": "2026-05-20T20:30:00+02:00",
     "updatedAt": "2026-05-20T20:30:00+02:00"
