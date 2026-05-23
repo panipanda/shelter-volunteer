@@ -5,6 +5,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.routing.routing
 import org.proanima.shelter.routes.healthRoutes
+import org.proanima.shelter.routes.catRoutes
 
 fun main() {
     embeddedServer(
@@ -18,5 +19,6 @@ fun main() {
 fun Application.module() {
     routing {
         healthRoutes()
+        catRoutes()
     }
 }
