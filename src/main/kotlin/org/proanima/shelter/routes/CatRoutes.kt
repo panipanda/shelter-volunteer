@@ -1,28 +1,27 @@
 package org.proanima.shelter.routes
 
+import io.ktor.http.ContentType
 import io.ktor.server.application.call
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.service.displayCatName
+import org.proanima.shelter.views.renderCatsListPage
 
 fun Route.catRoutes(catService: CatService) {
     get("/cats") {
         val cats = catService.getAllCats()
+        val html = renderCatsListPage(cats)
 
-        val response = cats.joinToString(separator = "\n") { cat ->
-            displayCatName(cat.name)
-        }
-
-        call.respondText(response)
+        call.respondText(html, contentType = ContentType.Text.Html)
     }
 
     get("/cats/{id}") {
         val id = call.parameters["id"]?.toIntOrNull()
 
         if (id == null) {
-            call.respondText("Invalid cat ID")
+            call.respondText("Invalid cat id")
             return@get
         }
 
@@ -33,5 +32,5 @@ fun Route.catRoutes(catService: CatService) {
         } else {
             call.respondText(displayCatName(cat.name))
         }
-        }
     }
+}
