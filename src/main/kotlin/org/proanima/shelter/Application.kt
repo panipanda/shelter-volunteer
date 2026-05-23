@@ -6,6 +6,8 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.routing.routing
 import org.proanima.shelter.routes.healthRoutes
 import org.proanima.shelter.routes.catRoutes
+import org.proanima.shelter.service.CatService
+import org.proanima.shelter.repository.JsonCatRepository
 
 fun main() {
     embeddedServer(
@@ -17,8 +19,10 @@ fun main() {
 }
 
 fun Application.module() {
+    val catService = CatService(JsonCatRepository())
+
     routing {
         healthRoutes()
-        catRoutes()
+        catRoutes(catService)
     }
 }
