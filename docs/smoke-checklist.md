@@ -408,6 +408,35 @@ Acceptance criteria:
 - `/images/default-cat.jpg` is available;
 - the file is loaded from `src/main/resources/static/images/default-cat.jpg`.
 
+## Automated tests
+
+Run automated tests after changing repositories, services, routes, views, models, or Gradle dependencies.
+
+### Windows
+
+    .\gradlew.bat test
+
+### Linux/macOS
+
+    ./gradlew test
+
+Expected result:
+
+    BUILD SUCCESSFUL
+
+Current automated coverage includes:
+
+- repository tests;
+- service tests;
+- route tests for visit pages.
+
+Acceptance criteria:
+
+- all automated tests pass;
+- route tests confirm that `/visits` returns upcoming visits;
+- route tests confirm that `/visits/archive` returns completed visits;
+- visit pages do not mix upcoming and archived visit data.
+
 ## Regression checks after route, view, service, repository, static resource, or JSON changes
 
 After changing routes, views, services, repositories, static resources, or JSON data, run a build.
