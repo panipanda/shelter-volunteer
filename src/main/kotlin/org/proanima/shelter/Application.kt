@@ -9,6 +9,9 @@ import org.proanima.shelter.routes.healthRoutes
 import org.proanima.shelter.routes.catRoutes
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.repository.JsonCatRepository
+import org.proanima.shelter.routes.visitRoutes
+import org.proanima.shelter.service.VisitService
+import org.proanima.shelter.repository.JsonVisitRepository
 
 fun main() {
     embeddedServer(
@@ -21,10 +24,12 @@ fun main() {
 
 fun Application.module() {
     val catService = CatService(JsonCatRepository())
+    val visitService = VisitService(JsonVisitRepository())
 
     routing {
         healthRoutes()
         catRoutes(catService)
+        visitRoutes(visitService)
         staticResources("/images", "static/images")
     }
 }
