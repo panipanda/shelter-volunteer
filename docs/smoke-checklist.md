@@ -1,6 +1,6 @@
 # Smoke Checklist
 
-This checklist covers the current MVP routes, static image resources, and local application startup.
+This checklist covers the current MVP routes, static image resources, visit pages, and local application startup.
 
 ## Preconditions
 
@@ -9,6 +9,7 @@ This checklist covers the current MVP routes, static image resources, and local 
 - The working tree is clean or current changes are intentional.
 - The application is run from the project root.
 - Test data exists in `data/cats.json`.
+- Test data exists in `data/visits.json`.
 - Static image resources exist under `src/main/resources/static/images/`.
 
 ## Build check
@@ -141,40 +142,6 @@ Example expected HTML content:
 
 The exact names and ids depend on the current contents of `data/cats.json`.
 
-## Static default cat image
-
-Open in a browser:
-
-```text
-http://localhost:8080/images/default-cat.jpg
-```
-
-Or check from terminal.
-
-### Windows PowerShell
-
-```powershell
-Invoke-WebRequest http://localhost:8080/images/default-cat.jpg
-```
-
-### Linux/macOS
-
-```bash
-curl -I http://localhost:8080/images/default-cat.jpg
-```
-
-Expected result:
-
-- image is returned successfully;
-- browser displays the default cat image;
-- response is not `404 Not Found`.
-
-Acceptance criteria:
-
-- static image resources are served by Ktor;
-- `/images/default-cat.jpg` is available;
-- the file is loaded from `src/main/resources/static/images/default-cat.jpg`.
-
 ## Cat details endpoint — existing cat
 
 Open an existing cat page, for example:
@@ -285,6 +252,162 @@ Acceptance criteria:
 - invalid non-numeric path parameter is handled safely;
 - response body clearly explains that the id is invalid.
 
+## Upcoming visits endpoint
+
+Open in a browser:
+
+```text
+http://localhost:8080/visits
+```
+
+Or check from terminal.
+
+### Windows PowerShell
+
+```powershell
+Invoke-WebRequest http://localhost:8080/visits
+```
+
+### Linux/macOS
+
+```bash
+curl http://localhost:8080/visits
+```
+
+Expected result:
+
+- response is returned successfully;
+- response is an HTML page;
+- page contains the `Volunteer visits` heading;
+- page contains upcoming visits from `data/visits.json`;
+- visits with `COMPLETED` status are not shown on this page;
+- page displays visit title;
+- page displays date, time, and timezone;
+- page displays direction;
+- page displays status;
+- page displays availability through `displayVisitAvailability`;
+- page displays capacity or fallback text;
+- page displays signup instruction or fallback text;
+- page contains navigation links to:
+  - `/cats`
+  - `/visits`
+  - `/visits/archive`
+
+Example expected content for the current test data:
+
+```text
+Volunteer visits
+Cat shelter visit
+2026-06-12
+11:00
+Europe/Belgrade
+OPEN
+Free places: 2
+```
+
+Acceptance criteria:
+
+- application does not crash;
+- upcoming visits are loaded from `data/visits.json`;
+- completed visits are excluded;
+- nullable visit fields are handled safely;
+- HTML response is returned with `ContentType.Text.Html`.
+
+## Visit archive endpoint
+
+Open in a browser:
+
+```text
+http://localhost:8080/visits/archive
+```
+
+Or check from terminal.
+
+### Windows PowerShell
+
+```powershell
+Invoke-WebRequest http://localhost:8080/visits/archive
+```
+
+### Linux/macOS
+
+```bash
+curl http://localhost:8080/visits/archive
+```
+
+Expected result:
+
+- response is returned successfully;
+- response is an HTML page;
+- page contains the `Visit archive` heading;
+- page contains completed visits from `data/visits.json`;
+- visits without `COMPLETED` status are not shown on this page;
+- page displays visit title;
+- page displays date, time, and timezone;
+- page displays direction;
+- page displays status;
+- page displays availability through `displayVisitAvailability`;
+- page displays public summary if present;
+- page contains navigation links to:
+  - `/cats`
+  - `/visits`
+  - `/visits/archive`
+
+Example expected content for the current test data:
+
+```text
+Visit archive
+Cat shelter visit
+2026-05-10
+11:00
+Europe/Belgrade
+COMPLETED
+Visit completed
+Visit completed. Volunteers helped with cleaning, feeding and cat socialization.
+```
+
+Acceptance criteria:
+
+- application does not crash;
+- archived visits are loaded from `data/visits.json`;
+- only completed visits are shown;
+- nullable visit fields are handled safely;
+- HTML response is returned with `ContentType.Text.Html`.
+
+## Static default cat image
+
+Open in a browser:
+
+```text
+http://localhost:8080/images/default-cat.jpg
+```
+
+Or check from terminal.
+
+### Windows PowerShell
+
+```powershell
+Invoke-WebRequest http://localhost:8080/images/default-cat.jpg
+```
+
+### Linux/macOS
+
+```bash
+curl -I http://localhost:8080/images/default-cat.jpg
+```
+
+Expected result:
+
+- image is returned successfully;
+- browser displays the default cat image;
+- response is not `404 Not Found`.
+
+Acceptance criteria:
+
+- static image resources are served by Ktor;
+- `/images/default-cat.jpg` is available;
+- the file is loaded from `src/main/resources/static/images/default-cat.jpg`.
+
 ## Regression checks after route, view, service, repository, static resource, or JSON changes
 
 After changing routes, views, services, repositories, static resources, or JSON data, run a build.
@@ -309,6 +432,8 @@ Then manually re-check:
 - `GET /cats/1`
 - `GET /cats/999`
 - `GET /cats/abc`
+- `GET /visits`
+- `GET /visits/archive`
 
 ## Stop application
 
@@ -344,7 +469,18 @@ Current implemented pages:
 - `/cats` returns HTML.
 - `/cats/{id}` returns HTML for an existing cat.
 - `/cats/{id}` returns plain text for missing or invalid cat ids.
+- `/visits` returns HTML with upcoming visits.
+- `/visits/archive` returns HTML with completed visits.
 - static image resources are served from `/images/...`.
+
+Current known limitations:
+
+- HTML escaping is not implemented yet.
+- Visit details page is not implemented yet.
+- Error states for cat pages still return plain text.
+- There is no shared layout yet.
+- There is no CSS yet.
+- There are no route tests yet.
 
 Future improvements:
 
@@ -353,4 +489,5 @@ Future improvements:
 - CSS styling.
 - Automated route tests.
 - HTML pages for error states.
-- Visit pages and guide page.
+- Volunteer guide page.
+j
