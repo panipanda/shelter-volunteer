@@ -10,6 +10,7 @@ import org.proanima.shelter.repository.JsonVisitRepository
 import org.proanima.shelter.routes.catRoutes
 import org.proanima.shelter.routes.healthRoutes
 import org.proanima.shelter.routes.visitRoutes
+import org.proanima.shelter.routes.guideRoutes
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.service.VisitService
 
@@ -37,6 +38,7 @@ fun Application.configureRoutes(
         healthRoutes()
         catRoutes(catService)
         visitRoutes(visitService)
+        guideRoutes()
         staticResources("/images", "static/images")
     }
 }
