@@ -17,7 +17,7 @@ fun renderVisitsPage(visits: List<VolunteerVisit>): String {
 
             <nav>
                 <a href="/cats">Cats</a> |
-                <a href="/visits">Upcoming visits</a> |
+                <a href="/guide">Volunteer guide</a> |
                 <a href="/visits/archive">Visit archive</a>
             </nav>
 
@@ -41,8 +41,8 @@ fun renderVisitArchivePage(visits: List<VolunteerVisit>): String {
 
             <nav>
                 <a href="/cats">Cats</a> |
-                <a href="/visits">Upcoming visits</a> |
-                <a href="/visits/archive">Visit archive</a>
+                <a href="/guide">Volunteer guide</a> |
+                <a href="/visits">Upcoming visits</a>
             </nav>
 
             ${renderVisitList(visits, emptyMessage = "No completed visits yet.")}

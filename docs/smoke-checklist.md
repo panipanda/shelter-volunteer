@@ -374,6 +374,23 @@ Acceptance criteria:
 - nullable visit fields are handled safely;
 - HTML response is returned with `ContentType.Text.Html`.
 
+## Volunteer guide endpoint
+
+### `/guide`
+
+Expected:
+
+- Page opens successfully.
+- Page title or main heading contains `Volunteer guide`.
+- Page contains the section `Before the visit`.
+- Page contains the section `What to bring`.
+- Page contains the section `During the visit`.
+- Page contains the section `How signup works`.
+- Navigation links are visible:
+  - `Cats` -> `/cats`
+  - `Volunteer visits` -> `/visits`
+  - `Visit archive` -> `/visits/archive`
+
 ## Static default cat image
 
 Open in a browser:
@@ -428,7 +445,11 @@ Current automated coverage includes:
 
 - repository tests;
 - service tests;
-- route tests for visit pages.
+- route tests for visit pages;
+- route tests for guide page:
+  - `GET /guide` returns `200 OK`;
+  - response contains the main guide sections;
+  - response contains navigation links to `/cats`, `/visits`, and `/visits/archive`.
 
 Acceptance criteria:
 
@@ -440,6 +461,16 @@ Acceptance criteria:
 ## Regression checks after route, view, service, repository, static resource, or JSON changes
 
 After changing routes, views, services, repositories, static resources, or JSON data, run a build.
+
+- After adding `/guide`, verify that existing pages still open:
+  - `/cats`
+  - `/cats/1`
+  - `/visits`
+  - `/visits/archive`
+  - `/health`
+- Verify that visit pages navigation does not link to the current page unnecessarily:
+  - `/visits` contains link to `/guide`
+  - `/visits/archive` contains link to `/guide`
 
 ### Windows
 
@@ -500,6 +531,7 @@ Current implemented pages:
 - `/cats/{id}` returns plain text for missing or invalid cat ids.
 - `/visits` returns HTML with upcoming visits.
 - `/visits/archive` returns HTML with completed visits.
+- `/guide` — volunteer guide page
 - static image resources are served from `/images/...`.
 
 Current known limitations:
