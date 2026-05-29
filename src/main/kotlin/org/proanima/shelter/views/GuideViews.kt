@@ -8,11 +8,7 @@ fun renderGuidePage(): String = """
         <title>Volunteer guide</title>
     </head>
     <body>
-        <nav>
-            <a href="/cats">Cats</a> |
-            <a href="/visits">Volunteer visits</a> |
-            <a href="/visits/archive">Visit archive</a>
-        </nav>
+        ${renderNavigation()}
 
         <main>
             <h1>Volunteer guide</h1>

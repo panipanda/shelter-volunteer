@@ -12,14 +12,9 @@ fun renderVisitsPage(visits: List<VolunteerVisit>): String {
             <title>Volunteer visits</title>
         </head>
         <body>
+            ${renderNavigation()}
             <h1>Volunteer visits</h1>
             <p>Upcoming shelter visits for volunteers.</p>
-
-            <nav>
-                <a href="/cats">Cats</a> |
-                <a href="/guide">Volunteer guide</a> |
-                <a href="/visits/archive">Visit archive</a>
-            </nav>
 
             ${renderVisitList(visits, emptyMessage = "No upcoming visits are available right now.")}
         </body>
@@ -36,14 +31,9 @@ fun renderVisitArchivePage(visits: List<VolunteerVisit>): String {
             <title>Visit archive</title>
         </head>
         <body>
+            ${renderNavigation()}
             <h1>Visit archive</h1>
             <p>Past shelter visits and public summaries.</p>
-
-            <nav>
-                <a href="/cats">Cats</a> |
-                <a href="/guide">Volunteer guide</a> |
-                <a href="/visits">Upcoming visits</a>
-            </nav>
 
             ${renderVisitList(visits, emptyMessage = "No completed visits yet.")}
         </body>
