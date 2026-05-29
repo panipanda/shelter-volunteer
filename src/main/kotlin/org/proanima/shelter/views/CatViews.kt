@@ -19,6 +19,7 @@ fun renderCatsListPage(cats: List<Cat>): String {
             <title>Cats</title>
         </head>
         <body>
+            ${renderNavigation()}
             <h1>Cats</h1>
             <ul>
                 $catItems
@@ -42,6 +43,7 @@ fun renderCatDetailsPage(cat: Cat): String {
             <title>$name</title>
         </head>
         <body>
+            ${renderNavigation()}
             <p><a href="/cats">Back to cats</a></p>
 
             <h1>$name</h1>
