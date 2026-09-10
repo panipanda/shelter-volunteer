@@ -456,6 +456,41 @@ Acceptance criteria:
   classpath resource baked into the build);
 - this endpoint is intentionally not language-prefixed.
 
+## Stylesheet
+
+Open in a browser:
+
+```text
+http://localhost:8080/styles/main.css
+```
+
+Or check from terminal.
+
+### Windows PowerShell
+
+```powershell
+Invoke-WebRequest http://localhost:8080/styles/main.css
+```
+
+### Linux/macOS
+
+```bash
+curl -I http://localhost:8080/styles/main.css
+```
+
+Expected result:
+
+- response is returned successfully, not `404 Not Found`;
+- content type is CSS-ish (`text/css`).
+
+Acceptance criteria:
+
+- `src/main/resources/static/styles/main.css` is served (classpath resource, bundled with the
+  build — unlike `/images/...`, CSS is application styling, not per-record content, so baking it
+  into the JAR is the right call here, not a repeat of the media-storage mistake);
+- every page's `<head>` links it (`<link rel="stylesheet" href="/styles/main.css">`);
+- narrow/mobile viewport does not visibly break (nav wraps, content stays within viewport width).
+
 ## Automated tests
 
 Run automated tests after changing repositories, services, routes, views, models, or Gradle dependencies.
@@ -520,6 +555,7 @@ Then manually re-check:
 
 - `GET /health`
 - `GET /images/default-cat.jpg`
+- `GET /styles/main.css`
 - `GET /ru/cats`
 - `GET /ru/cats/1`
 - `GET /ru/cats/999`
@@ -566,7 +602,9 @@ Current implemented pages:
 - `/{lang}/visits` returns HTML with upcoming visits.
 - `/{lang}/visits/archive` returns HTML with completed visits.
 - `/{lang}/guide` — volunteer guide page (body content is not actually localized yet, see below).
-- static image resources are served from `/images/...`, unprefixed.
+- static image resources are served from `/images/...`, unprefixed (real directory on disk).
+- CSS is served from `/styles/main.css`, unprefixed (classpath resource, bundled with the build).
+- every page shares one skeleton via `pageLayout()` in `views/Layout.kt`: `<head>`/nav/`<main>`/footer.
 
 Current known limitations:
 
@@ -576,8 +614,8 @@ Current known limitations:
   `ru` and `sr` fall back to this file through the JVM's default `ResourceBundle` lookup.
 - `content/volunteer-guide.md` only exists in English — `ru`/`sr` fall back to it through
   `MarkdownGuideRepository`, same convention as `LocalizedText` and `messages.properties`.
-- There is no shared layout yet (each page repeats its own `<!DOCTYPE>`/`<head>` boilerplate).
-- There is no CSS yet.
+- Styling is intentionally minimal (container width, nav, cat-list pills, visit-card look,
+  responsive nav wrap) — no design system, no cat photo grid/thumbnails beyond the existing `<img>`.
 - There are no route tests for `/` or `/{lang}/cats` (only visits and guide routes are covered).
 - Error states for cat pages (`Cat not found`, `Invalid cat id`) still return plain text, not a
   styled HTML page.
@@ -586,7 +624,5 @@ Future improvements:
 
 - Real `ru` (priority) and `sr` translations for JSON content, UI strings, and
   `content/volunteer-guide.md`.
-- Shared layout rendering.
-- CSS styling.
 - Route tests for `/` and `/{lang}/cats`.
 - HTML pages for error states.

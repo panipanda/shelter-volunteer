@@ -3,15 +3,11 @@ package org.proanima.shelter.views
 import kotlinx.html.FlowContent
 import kotlinx.html.HTML
 import kotlinx.html.article
-import kotlinx.html.body
-import kotlinx.html.h1
 import kotlinx.html.h2
-import kotlinx.html.head
-import kotlinx.html.meta
+import kotlinx.html.h1
 import kotlinx.html.p
 import kotlinx.html.small
 import kotlinx.html.strong
-import kotlinx.html.title
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
@@ -23,13 +19,7 @@ import org.proanima.shelter.service.displayVisitStatus
 fun HTML.visitsPage(visits: List<VolunteerVisit>, locale: AppLocale) {
     val messages = messagesFor(locale)
 
-    lang = locale.code
-    head {
-        meta(charset = "UTF-8")
-        title { +messages.t("visit.page.upcoming.title") }
-    }
-    body {
-        navigation(locale)
+    pageLayout(locale, pageTitle = messages.t("visit.page.upcoming.title")) {
         h1 { +messages.t("visit.page.upcoming.title") }
         p { +messages.t("visit.page.upcoming.intro") }
         visitList(visits, locale, messages.t("visit.page.upcoming.empty"))
@@ -39,13 +29,7 @@ fun HTML.visitsPage(visits: List<VolunteerVisit>, locale: AppLocale) {
 fun HTML.visitArchivePage(visits: List<VolunteerVisit>, locale: AppLocale) {
     val messages = messagesFor(locale)
 
-    lang = locale.code
-    head {
-        meta(charset = "UTF-8")
-        title { +messages.t("visit.page.archive.title") }
-    }
-    body {
-        navigation(locale)
+    pageLayout(locale, pageTitle = messages.t("visit.page.archive.title")) {
         h1 { +messages.t("visit.page.archive.title") }
         p { +messages.t("visit.page.archive.intro") }
         visitList(visits, locale, messages.t("visit.page.archive.empty"))

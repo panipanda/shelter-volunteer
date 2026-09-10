@@ -2,15 +2,11 @@ package org.proanima.shelter.views
 
 import kotlinx.html.HTML
 import kotlinx.html.a
-import kotlinx.html.body
 import kotlinx.html.h1
-import kotlinx.html.head
 import kotlinx.html.img
 import kotlinx.html.li
-import kotlinx.html.meta
 import kotlinx.html.p
 import kotlinx.html.strong
-import kotlinx.html.title
 import kotlinx.html.ul
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
@@ -25,15 +21,9 @@ fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale) {
     val prefix = "/${locale.code}"
     val messages = messagesFor(locale)
 
-    lang = locale.code
-    head {
-        meta(charset = "UTF-8")
-        title { +messages.t("cat.page.title") }
-    }
-    body {
-        navigation(locale)
+    pageLayout(locale, pageTitle = messages.t("cat.page.title")) {
         h1 { +messages.t("cat.page.title") }
-        ul {
+        ul(classes = "cat-list") {
             cats.forEach { cat ->
                 li {
                     a(href = "$prefix/cats/${cat.id}") { +displayCatName(cat.name, locale) }
@@ -52,13 +42,7 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale) {
     val photoUrl = displayPhotoUrl(cat.photoUrl)
     val description = cat.description.forLocale(locale)
 
-    lang = locale.code
-    head {
-        meta(charset = "UTF-8")
-        title { +name }
-    }
-    body {
-        navigation(locale)
+    pageLayout(locale, pageTitle = name) {
         p { a(href = "$prefix/cats") { +messages.t("cat.backToCats") } }
 
         h1 { +name }
