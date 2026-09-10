@@ -2,6 +2,10 @@
 
 This checklist covers the current MVP routes, static image resources, visit pages, and local application startup.
 
+Pages now live under a language prefix: `/ru`, `/en`, `/sr`. `ru` is the default and top-priority
+locale — `/` redirects there. `/health` and `/images/...` stay unprefixed, since they are not
+localized content. Examples below use `/ru` unless noted otherwise.
+
 ## Preconditions
 
 - JDK 21 is installed and used by the project.
@@ -66,6 +70,19 @@ Expected result:
 - the server listens on port `8080`;
 - the process keeps running until stopped manually.
 
+## Root redirect
+
+Open in a browser:
+
+```text
+http://localhost:8080/
+```
+
+Expected result:
+
+- browser is redirected to `http://localhost:8080/ru`;
+- the homepage loads successfully after the redirect.
+
 ## Health endpoint
 
 Open in a browser:
@@ -97,14 +114,15 @@ OK
 Acceptance criteria:
 
 - response is returned without server error;
-- response body is exactly `OK`.
+- response body is exactly `OK`;
+- this endpoint is intentionally not language-prefixed.
 
 ## Cat list endpoint
 
 Open in a browser:
 
 ```text
-http://localhost:8080/cats
+http://localhost:8080/ru/cats
 ```
 
 Or check from terminal.
@@ -112,13 +130,13 @@ Or check from terminal.
 ### Windows PowerShell
 
 ```powershell
-Invoke-WebRequest http://localhost:8080/cats
+Invoke-WebRequest http://localhost:8080/ru/cats
 ```
 
 ### Linux/macOS
 
 ```bash
-curl http://localhost:8080/cats
+curl http://localhost:8080/ru/cats
 ```
 
 Expected result:
@@ -128,7 +146,7 @@ Expected result:
 - page contains the `Cats` heading;
 - page contains cat names from `data/cats.json`;
 - each cat is displayed as a list item;
-- each cat name links to `/cats/{id}`;
+- each cat name links to `/ru/cats/{id}`;
 - cats with missing names are displayed as `Unnamed`.
 
 Example expected HTML content:
@@ -136,7 +154,7 @@ Example expected HTML content:
 ```html
 <h1>Cats</h1>
 <ul>
-    <li><a href="/cats/1">Mila</a></li>
+    <li><a href="/ru/cats/1">Mila</a></li>
 </ul>
 ```
 
@@ -147,7 +165,7 @@ The exact names and ids depend on the current contents of `data/cats.json`.
 Open an existing cat page, for example:
 
 ```text
-http://localhost:8080/cats/1
+http://localhost:8080/ru/cats/1
 ```
 
 Or check from terminal.
@@ -155,13 +173,13 @@ Or check from terminal.
 ### Windows PowerShell
 
 ```powershell
-Invoke-WebRequest http://localhost:8080/cats/1
+Invoke-WebRequest http://localhost:8080/ru/cats/1
 ```
 
 ### Linux/macOS
 
 ```bash
-curl http://localhost:8080/cats/1
+curl http://localhost:8080/ru/cats/1
 ```
 
 Expected result:
@@ -175,22 +193,23 @@ Expected result:
 - page displays cat description;
 - page displays a cat image if `photoUrl` is present;
 - page displays the default cat image if `photoUrl` is missing or `null`;
-- image is loaded from `/images/...`;
-- page contains a link back to `/cats`.
+- image is loaded from `/images/...` (unprefixed);
+- page contains a link back to `/ru/cats`.
 
 Acceptance criteria:
 
 - application does not crash;
 - nullable cat fields are handled through display helpers;
 - image URL is rendered into the HTML page;
-- broken image icon is not shown when the image file exists.
+- broken image icon is not shown when the image file exists;
+- dynamic text (name, description) is HTML-escaped, not inserted raw.
 
 ## Cat details endpoint — missing cat
 
 Open:
 
 ```text
-http://localhost:8080/cats/999
+http://localhost:8080/ru/cats/999
 ```
 
 Or check from terminal.
@@ -198,13 +217,13 @@ Or check from terminal.
 ### Windows PowerShell
 
 ```powershell
-Invoke-WebRequest http://localhost:8080/cats/999
+Invoke-WebRequest http://localhost:8080/ru/cats/999
 ```
 
 ### Linux/macOS
 
 ```bash
-curl http://localhost:8080/cats/999
+curl http://localhost:8080/ru/cats/999
 ```
 
 Expected response body:
@@ -223,7 +242,7 @@ Acceptance criteria:
 Open:
 
 ```text
-http://localhost:8080/cats/abc
+http://localhost:8080/ru/cats/abc
 ```
 
 Or check from terminal.
@@ -231,13 +250,13 @@ Or check from terminal.
 ### Windows PowerShell
 
 ```powershell
-Invoke-WebRequest http://localhost:8080/cats/abc
+Invoke-WebRequest http://localhost:8080/ru/cats/abc
 ```
 
 ### Linux/macOS
 
 ```bash
-curl http://localhost:8080/cats/abc
+curl http://localhost:8080/ru/cats/abc
 ```
 
 Expected response body:
@@ -257,7 +276,7 @@ Acceptance criteria:
 Open in a browser:
 
 ```text
-http://localhost:8080/visits
+http://localhost:8080/ru/visits
 ```
 
 Or check from terminal.
@@ -265,13 +284,13 @@ Or check from terminal.
 ### Windows PowerShell
 
 ```powershell
-Invoke-WebRequest http://localhost:8080/visits
+Invoke-WebRequest http://localhost:8080/ru/visits
 ```
 
 ### Linux/macOS
 
 ```bash
-curl http://localhost:8080/visits
+curl http://localhost:8080/ru/visits
 ```
 
 Expected result:
@@ -283,15 +302,14 @@ Expected result:
 - visits with `COMPLETED` status are not shown on this page;
 - page displays visit title;
 - page displays date, time, and timezone;
-- page displays direction;
-- page displays status;
+- page displays direction and status as translated labels, not raw enum names;
 - page displays availability through `displayVisitAvailability`;
 - page displays capacity or fallback text;
 - page displays signup instruction or fallback text;
 - page contains navigation links to:
-  - `/cats`
-  - `/visits`
-  - `/visits/archive`
+  - `/ru/cats`
+  - `/ru/visits`
+  - `/ru/visits/archive`
 
 Example expected content for the current test data:
 
@@ -301,7 +319,7 @@ Cat shelter visit
 2026-06-12
 11:00
 Europe/Belgrade
-OPEN
+Open
 Free places: 2
 ```
 
@@ -318,7 +336,7 @@ Acceptance criteria:
 Open in a browser:
 
 ```text
-http://localhost:8080/visits/archive
+http://localhost:8080/ru/visits/archive
 ```
 
 Or check from terminal.
@@ -326,13 +344,13 @@ Or check from terminal.
 ### Windows PowerShell
 
 ```powershell
-Invoke-WebRequest http://localhost:8080/visits/archive
+Invoke-WebRequest http://localhost:8080/ru/visits/archive
 ```
 
 ### Linux/macOS
 
 ```bash
-curl http://localhost:8080/visits/archive
+curl http://localhost:8080/ru/visits/archive
 ```
 
 Expected result:
@@ -344,14 +362,13 @@ Expected result:
 - visits without `COMPLETED` status are not shown on this page;
 - page displays visit title;
 - page displays date, time, and timezone;
-- page displays direction;
-- page displays status;
+- page displays direction and status as translated labels, not raw enum names;
 - page displays availability through `displayVisitAvailability`;
 - page displays public summary if present;
 - page contains navigation links to:
-  - `/cats`
-  - `/visits`
-  - `/visits/archive`
+  - `/ru/cats`
+  - `/ru/visits`
+  - `/ru/visits/archive`
 
 Example expected content for the current test data:
 
@@ -361,7 +378,7 @@ Cat shelter visit
 2026-05-10
 11:00
 Europe/Belgrade
-COMPLETED
+Completed
 Visit completed
 Visit completed. Volunteers helped with cleaning, feeding and cat socialization.
 ```
@@ -376,7 +393,7 @@ Acceptance criteria:
 
 ## Volunteer guide endpoint
 
-### `/guide`
+### `/ru/guide`
 
 Expected:
 
@@ -387,9 +404,20 @@ Expected:
 - Page contains the section `During the visit`.
 - Page contains the section `How signup works`.
 - Navigation links are visible:
-  - `Cats` -> `/cats`
-  - `Volunteer visits` -> `/visits`
-  - `Visit archive` -> `/visits/archive`
+  - `Cats` -> `/ru/cats`
+  - `Volunteer visits` -> `/ru/visits`
+  - `Visit archive` -> `/ru/visits/archive`
+
+Note: guide body content is still hardcoded in English in `GuideViews.kt` regardless of locale —
+`content/volunteer-guide.md` exists but is not read by the application yet. This is a known gap,
+see "Current known limitations" below.
+
+## Other locales
+
+Repeat the cat list, cat details, visits, visit archive, and guide checks above under `/en` and
+`/sr`. Since `ru`/`sr` translations for JSON content (`data/cats.json`, `data/visits.json`) and for
+UI strings (`src/main/resources/i18n/messages.properties`) are not filled in yet, expect the same
+English text to appear under all three prefixes — this is the intended fallback behavior, not a bug.
 
 ## Static default cat image
 
@@ -423,7 +451,8 @@ Acceptance criteria:
 
 - static image resources are served by Ktor;
 - `/images/default-cat.jpg` is available;
-- the file is loaded from `src/main/resources/static/images/default-cat.jpg`.
+- the file is loaded from `src/main/resources/static/images/default-cat.jpg`;
+- this endpoint is intentionally not language-prefixed.
 
 ## Automated tests
 
@@ -445,17 +474,17 @@ Current automated coverage includes:
 
 - repository tests;
 - service tests;
-- route tests for visit pages;
-- route tests for guide page:
-  - `GET /guide` returns `200 OK`;
+- route tests for visit pages (targeting `/ru/visits` and `/ru/visits/archive`);
+- route tests for guide page (targeting `/ru/guide`):
+  - `GET /ru/guide` returns `200 OK`;
   - response contains the main guide sections;
-  - response contains navigation links to `/cats`, `/visits`, and `/visits/archive`.
+  - response contains navigation links to `/ru/cats`, `/ru/visits`, and `/ru/visits/archive`.
 
 Acceptance criteria:
 
 - all automated tests pass;
-- route tests confirm that `/visits` returns upcoming visits;
-- route tests confirm that `/visits/archive` returns completed visits;
+- route tests confirm that `/ru/visits` returns upcoming visits;
+- route tests confirm that `/ru/visits/archive` returns completed visits;
 - visit pages do not mix upcoming and archived visit data.
 
 ## Regression checks after route, view, service, repository, static resource, or JSON changes
@@ -463,14 +492,15 @@ Acceptance criteria:
 After changing routes, views, services, repositories, static resources, or JSON data, run a build.
 
 - After adding `/guide`, verify that existing pages still open:
-  - `/cats`
-  - `/cats/1`
-  - `/visits`
-  - `/visits/archive`
+  - `/ru/cats`
+  - `/ru/cats/1`
+  - `/ru/visits`
+  - `/ru/visits/archive`
   - `/health`
 - Verify that visit pages navigation does not link to the current page unnecessarily:
-  - `/visits` contains link to `/guide`
-  - `/visits/archive` contains link to `/guide`
+  - `/ru/visits` contains link to `/ru/guide`
+  - `/ru/visits/archive` contains link to `/ru/guide`
+- Verify that `/`, `/en`, and `/sr` still resolve the same set of pages as `/ru`.
 
 ### Windows
 
@@ -488,12 +518,12 @@ Then manually re-check:
 
 - `GET /health`
 - `GET /images/default-cat.jpg`
-- `GET /cats`
-- `GET /cats/1`
-- `GET /cats/999`
-- `GET /cats/abc`
-- `GET /visits`
-- `GET /visits/archive`
+- `GET /ru/cats`
+- `GET /ru/cats/1`
+- `GET /ru/cats/999`
+- `GET /ru/cats/abc`
+- `GET /ru/visits`
+- `GET /ru/visits/archive`
 
 ## Stop application
 
@@ -525,30 +555,36 @@ Expected result:
 
 Current implemented pages:
 
-- `/health` returns plain text.
-- `/cats` returns HTML.
-- `/cats/{id}` returns HTML for an existing cat.
-- `/cats/{id}` returns plain text for missing or invalid cat ids.
-- `/visits` returns HTML with upcoming visits.
-- `/visits/archive` returns HTML with completed visits.
-- `/guide` — volunteer guide page
-- static image resources are served from `/images/...`.
+- `/` redirects to `/ru`.
+- `/health` returns plain text, unprefixed.
+- `/{lang}` (`ru`, `en`, `sr`) returns the homepage HTML.
+- `/{lang}/cats` returns HTML.
+- `/{lang}/cats/{id}` returns HTML for an existing cat.
+- `/{lang}/cats/{id}` returns plain text for missing or invalid cat ids.
+- `/{lang}/visits` returns HTML with upcoming visits.
+- `/{lang}/visits/archive` returns HTML with completed visits.
+- `/{lang}/guide` — volunteer guide page (body content is not actually localized yet, see below).
+- static image resources are served from `/images/...`, unprefixed.
 
 Current known limitations:
 
-- HTML escaping is not implemented yet.
-- Visit details page is not implemented yet.
-- Error states for cat pages still return plain text.
-- There is no shared layout yet.
+- `data/cats.json` and `data/visits.json` only have `en` translations filled in — `ru` and `sr`
+  fall back to `en` through `LocalizedText.forLocale()`.
+- UI strings in `src/main/resources/i18n/messages.properties` are English-only (no locale suffix) —
+  `ru` and `sr` fall back to this file through the JVM's default `ResourceBundle` lookup.
+- `content/volunteer-guide.md` is not read by the application — guide page content is hardcoded
+  English HTML in `GuideViews.kt` regardless of locale.
+- There is no shared layout yet (each page repeats its own `<!DOCTYPE>`/`<head>` boilerplate).
 - There is no CSS yet.
-- There are no route tests yet.
+- There are no route tests for `/` or `/{lang}/cats` (only visits and guide routes are covered).
+- Error states for cat pages (`Cat not found`, `Invalid cat id`) still return plain text, not a
+  styled HTML page.
 
 Future improvements:
 
-- HTML escaping for user-visible data from JSON.
+- Real `ru` (priority) and `sr` translations for JSON content and UI strings.
+- Wire `content/volunteer-guide.md` into `GuideViews.kt`, per locale.
 - Shared layout rendering.
 - CSS styling.
-- Automated route tests.
+- Route tests for `/` and `/{lang}/cats`.
 - HTML pages for error states.
-- Volunteer guide page.
-j

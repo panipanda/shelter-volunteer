@@ -1,47 +1,73 @@
 package org.proanima.shelter.service
 
+import org.proanima.shelter.i18n.messagesFor
+import org.proanima.shelter.i18n.t
+import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.VisitStatus
+import org.proanima.shelter.model.VolunteerDirection
 
-fun displayCatName(name: String?): String {
-    return name ?: "Unnamed"
+fun displayCatName(name: String?, locale: AppLocale): String {
+    return name ?: messagesFor(locale).t("cat.name.unnamed")
 }
 
 fun displayPhotoUrl(photoUrl: String?): String {
     return photoUrl ?: "/images/default-cat.jpg"
 }
 
-fun displayCatAge(age: Int?): String {
+fun displayCatAge(age: Int?, locale: AppLocale): String {
+    val messages = messagesFor(locale)
     return if (age == null) {
-        "Age unknown"
+        messages.t("cat.age.unknown")
     } else if (age == 1) {
-        "1 year old"
+        messages.t("cat.age.oneYear")
     } else {
-        "$age years old"
+        messages.t("cat.age.years", age)
     }
 }
 
-fun displayCatAvailability(isAvailable: Boolean): String {
+fun displayCatAvailability(isAvailable: Boolean, locale: AppLocale): String {
+    val messages = messagesFor(locale)
     return if (isAvailable) {
-        "Available for adoption"
+        messages.t("cat.status.available")
     } else {
-        "Not available for adoption"
+        messages.t("cat.status.unavailable")
     }
 }
 
-fun displayVisitAvailability(status: VisitStatus, freePlaces: Int?): String {
+fun displayVisitAvailability(status: VisitStatus, freePlaces: Int?, locale: AppLocale): String {
+    val messages = messagesFor(locale)
     return if (status == VisitStatus.CANCELLED) {
-        "Visit cancelled"
+        messages.t("visit.availability.cancelled")
     } else if (status == VisitStatus.TENTATIVE) {
-        "Details are being updated"
+        messages.t("visit.availability.tentative")
     } else if (status == VisitStatus.COMPLETED) {
-        "Visit completed"
+        messages.t("visit.availability.completed")
     } else if (status == VisitStatus.FULL) {
-        "No places left"
+        messages.t("visit.availability.full")
     } else if (freePlaces == null) {
-        "Availability is being updated"
+        messages.t("visit.availability.unknown")
     } else if (freePlaces > 0) {
-        "Free places: $freePlaces"
+        messages.t("visit.availability.free", freePlaces)
     } else {
-        "No places left"
+        messages.t("visit.availability.full")
     }
+}
+
+fun displayVisitStatus(status: VisitStatus, locale: AppLocale): String {
+    val key = when (status) {
+        VisitStatus.OPEN -> "visit.status.open"
+        VisitStatus.FULL -> "visit.status.full"
+        VisitStatus.TENTATIVE -> "visit.status.tentative"
+        VisitStatus.CANCELLED -> "visit.status.cancelled"
+        VisitStatus.COMPLETED -> "visit.status.completed"
+    }
+    return messagesFor(locale).t(key)
+}
+
+fun displayVisitDirection(direction: VolunteerDirection, locale: AppLocale): String {
+    val key = when (direction) {
+        VolunteerDirection.CATS -> "visit.direction.cats"
+        VolunteerDirection.DOGS -> "visit.direction.dogs"
+    }
+    return messagesFor(locale).t(key)
 }
