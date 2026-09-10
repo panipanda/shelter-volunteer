@@ -114,8 +114,16 @@ would add a dependency with no capability the DSL doesn't already provide for th
 and some engines (FreeMarker in particular) don't auto-escape by default, which is a real footgun
 for whoever picks one expecting "the engine handles it for me."
 
-`content/volunteer-guide.md` is still not read by the application — `GuideViews.kt`'s guide page
-content is hardcoded English text inside the DSL. Its `<html lang>` is intentionally left as `"en"`
-regardless of the route's locale, since the content itself isn't actually translated yet; wiring
-real per-locale guide files is a separate follow-up.
+`content/volunteer-guide.md` is read at request time through `GuideRepository` /
+`MarkdownGuideRepository` (matching the "access data through repository interfaces" rule above,
+extended to Markdown), parsed by a small hand-rolled subset parser (`parseGuideMarkdown` —
+headings, paragraphs, `- ` bullet lists only) into `GuideBlock` values that `GuideViews.kt` renders
+as real DSL tags. No markdown library was added: the content is small and fully author-controlled,
+and the subset actually used is tiny enough that a full parser would be more dependency than value.
+
+`MarkdownGuideRepository` looks for `content/volunteer-guide.{locale}.md` first and falls back to
+the unsuffixed `content/volunteer-guide.md` (English) — the same fallback convention as
+`messages.properties` and `LocalizedText`. No `ru`/`sr` translations exist yet, so `GuideViews.kt`'s
+`<html lang>` is intentionally left as `"en"` regardless of the route's locale until real translated
+files are added.
 

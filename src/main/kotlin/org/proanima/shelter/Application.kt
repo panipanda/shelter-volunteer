@@ -12,12 +12,14 @@ import io.ktor.server.routing.routing
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.repository.JsonCatRepository
 import org.proanima.shelter.repository.JsonVisitRepository
+import org.proanima.shelter.repository.MarkdownGuideRepository
 import org.proanima.shelter.routes.catRoutes
 import org.proanima.shelter.routes.healthRoutes
 import org.proanima.shelter.routes.visitRoutes
 import org.proanima.shelter.routes.guideRoutes
 import org.proanima.shelter.routes.homeRoutes
 import org.proanima.shelter.service.CatService
+import org.proanima.shelter.service.GuideService
 import org.proanima.shelter.service.VisitService
 
 fun main() {
@@ -32,13 +34,15 @@ fun main() {
 fun Application.module() {
     configureRoutes(
         catService = CatService(JsonCatRepository()),
-        visitService = VisitService(JsonVisitRepository())
+        visitService = VisitService(JsonVisitRepository()),
+        guideService = GuideService(MarkdownGuideRepository())
     )
 }
 
 fun Application.configureRoutes(
     catService: CatService,
-    visitService: VisitService
+    visitService: VisitService,
+    guideService: GuideService
 ) {
     routing {
         get("/") {
@@ -53,7 +57,7 @@ fun Application.configureRoutes(
                 homeRoutes(locale)
                 catRoutes(catService, locale)
                 visitRoutes(visitService, locale)
-                guideRoutes(locale)
+                guideRoutes(guideService, locale)
             }
         }
     }

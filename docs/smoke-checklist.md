@@ -408,9 +408,10 @@ Expected:
   - `Volunteer visits` -> `/ru/visits`
   - `Visit archive` -> `/ru/visits/archive`
 
-Note: guide body content is still hardcoded in English in `GuideViews.kt` regardless of locale —
-`content/volunteer-guide.md` exists but is not read by the application yet. This is a known gap,
-see "Current known limitations" below.
+Note: guide body content is now read from `content/volunteer-guide.md` at request time (via
+`GuideRepository`) and rendered as real DSL tags, not hardcoded in `GuideViews.kt` anymore. It is
+still English-only regardless of locale — no `content/volunteer-guide.ru.md` /
+`content/volunteer-guide.sr.md` exist yet, so every locale falls back to the English file.
 
 ## Other locales
 
@@ -572,8 +573,8 @@ Current known limitations:
   fall back to `en` through `LocalizedText.forLocale()`.
 - UI strings in `src/main/resources/i18n/messages.properties` are English-only (no locale suffix) —
   `ru` and `sr` fall back to this file through the JVM's default `ResourceBundle` lookup.
-- `content/volunteer-guide.md` is not read by the application — guide page content is hardcoded
-  English HTML in `GuideViews.kt` regardless of locale.
+- `content/volunteer-guide.md` only exists in English — `ru`/`sr` fall back to it through
+  `MarkdownGuideRepository`, same convention as `LocalizedText` and `messages.properties`.
 - There is no shared layout yet (each page repeats its own `<!DOCTYPE>`/`<head>` boilerplate).
 - There is no CSS yet.
 - There are no route tests for `/` or `/{lang}/cats` (only visits and guide routes are covered).
@@ -582,8 +583,8 @@ Current known limitations:
 
 Future improvements:
 
-- Real `ru` (priority) and `sr` translations for JSON content and UI strings.
-- Wire `content/volunteer-guide.md` into `GuideViews.kt`, per locale.
+- Real `ru` (priority) and `sr` translations for JSON content, UI strings, and
+  `content/volunteer-guide.md`.
 - Shared layout rendering.
 - CSS styling.
 - Route tests for `/` and `/{lang}/cats`.

@@ -9,9 +9,12 @@ import org.proanima.shelter.model.LocalizedText
 import org.proanima.shelter.model.VisitStatus
 import org.proanima.shelter.model.VolunteerDirection
 import org.proanima.shelter.model.VolunteerVisit
+import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.repository.CatRepository
+import org.proanima.shelter.repository.GuideRepository
 import org.proanima.shelter.repository.VisitRepository
 import org.proanima.shelter.service.CatService
+import org.proanima.shelter.service.GuideService
 import org.proanima.shelter.service.VisitService
 import org.proanima.shelter.model.Cat
 import kotlin.test.Test
@@ -78,12 +81,19 @@ class VisitRoutesTest {
         }
     }
 
+    private val guideRepository = object : GuideRepository {
+        override fun findGuideMarkdown(locale: AppLocale): String {
+            return "# Guide\n\nStub guide content for tests."
+        }
+    }
+
     @Test
     fun `GET visits returns upcoming visits page`() = testApplication {
         application {
             configureRoutes(
                 catService = CatService(catRepository),
-                visitService = VisitService(visitRepository)
+                visitService = VisitService(visitRepository),
+                guideService = GuideService(guideRepository)
             )
         }
 
@@ -103,7 +113,8 @@ class VisitRoutesTest {
         application {
             configureRoutes(
                 catService = CatService(catRepository),
-                visitService = VisitService(visitRepository)
+                visitService = VisitService(visitRepository),
+                guideService = GuideService(guideRepository)
             )
         }
 
