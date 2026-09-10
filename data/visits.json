@@ -5,11 +5,15 @@
     "date": "2026-06-12",
     "time": "11:00",
     "timezone": "Europe/Belgrade",
-    "title": "Cat shelter visit",
+    "title": {
+      "en": "Cat shelter visit"
+    },
     "capacity": 5,
     "freePlaces": 2,
     "status": "OPEN",
-    "signupInstruction": "Signup happens in the cat volunteer chat.",
+    "signupInstruction": {
+      "en": "Signup happens in the cat volunteer chat."
+    },
     "publicSummary": null,
     "lastUpdatedAt": "2026-05-20T20:30:00+02:00",
     "createdAt": "2026-05-20T20:30:00+02:00",
@@ -21,12 +25,16 @@
     "date": "2026-05-10",
     "time": "11:00",
     "timezone": "Europe/Belgrade",
-    "title": "Cat shelter visit",
+    "title": {
+      "en": "Cat shelter visit"
+    },
     "capacity": 5,
     "freePlaces": 0,
     "status": "COMPLETED",
     "signupInstruction": null,
-    "publicSummary": "Visit completed. Volunteers helped with cleaning, feeding and cat socialization.",
+    "publicSummary": {
+      "en": "Visit completed. Volunteers helped with cleaning, feeding and cat socialization."
+    },
     "lastUpdatedAt": "2026-05-10T18:00:00+02:00",
     "createdAt": "2026-05-01T12:00:00+02:00",
     "updatedAt": "2026-05-10T18:00:00+02:00"

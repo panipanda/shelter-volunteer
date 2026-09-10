@@ -3,7 +3,9 @@
     "id": 1,
     "name": "Mila",
     "age": 2,
-    "description": "Calm and friendly cat.",
+    "description": {
+      "en": "Calm and friendly cat."
+    },
     "photoUrl": null,
     "isAvailable": true,
     "createdAt": "2026-05-20T20:30:00+02:00",
@@ -13,7 +15,9 @@
     "id": 2,
     "name": "Marta",
     "age": null,
-    "description": "Shy but sweet cat.",
+    "description": {
+      "en": "Shy but sweet cat."
+    },
     "photoUrl": null,
     "isAvailable": true,
     "createdAt": "2026-05-20T20:30:00+02:00",

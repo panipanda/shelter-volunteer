@@ -5,6 +5,7 @@ import io.ktor.server.application.call
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
+import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.views.renderCatDetailsPage
 import org.proanima.shelter.views.renderCatsListPage
@@ -30,7 +31,8 @@ fun Route.catRoutes(catService: CatService) {
         if (cat == null) {
             call.respondText("Cat not found")
         } else {
-            val html = renderCatDetailsPage(cat)
+            // AppLocale.default — временно, заменится локалью из пути на шаге с роутингом
+            val html = renderCatDetailsPage(cat, AppLocale.default)
             call.respondText(html, contentType = ContentType.Text.Html)
         }
     }

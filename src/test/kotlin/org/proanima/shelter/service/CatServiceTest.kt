@@ -1,6 +1,7 @@
 package org.proanima.shelter.service
 
 import org.proanima.shelter.model.Cat
+import org.proanima.shelter.model.LocalizedText
 import org.proanima.shelter.repository.CatRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,7 +14,7 @@ class CatServiceTest {
             id = 1,
             name = "Zoka",
             age = 3,
-            description = "Calm and friendly cat.",
+            description = LocalizedText(en = "Calm and friendly cat."),
             photoUrl = "/images/cats/zoka.jpg",
             isAvailable = true,
             createdAt = "2026-05-20T20:30:00+02:00",
@@ -23,7 +24,7 @@ class CatServiceTest {
             id = 2,
             name = "Marta",
             age = null,
-            description = "Shy but sweet cat.",
+            description = LocalizedText(en = "Shy but sweet cat."),
             photoUrl = null,
             isAvailable = false,
             createdAt = "2026-05-20T20:30:00+02:00",

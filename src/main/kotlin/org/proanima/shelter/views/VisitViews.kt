@@ -1,9 +1,10 @@
 package org.proanima.shelter.views
 
+import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.VolunteerVisit
 import org.proanima.shelter.service.displayVisitAvailability
 
-fun renderVisitsPage(visits: List<VolunteerVisit>): String {
+fun renderVisitsPage(visits: List<VolunteerVisit>, locale: AppLocale): String {
     return """
         <!DOCTYPE html>
         <html lang="en">
@@ -16,13 +17,13 @@ fun renderVisitsPage(visits: List<VolunteerVisit>): String {
             <h1>Volunteer visits</h1>
             <p>Upcoming shelter visits for volunteers.</p>
 
-            ${renderVisitList(visits, emptyMessage = "No upcoming visits are available right now.")}
+            ${renderVisitList(visits, locale, emptyMessage = "No upcoming visits are available right now.")}
         </body>
         </html>
     """.trimIndent()
 }
 
-fun renderVisitArchivePage(visits: List<VolunteerVisit>): String {
+fun renderVisitArchivePage(visits: List<VolunteerVisit>, locale: AppLocale): String {
     return """
         <!DOCTYPE html>
         <html lang="en">
@@ -35,7 +36,7 @@ fun renderVisitArchivePage(visits: List<VolunteerVisit>): String {
             <h1>Visit archive</h1>
             <p>Past shelter visits and public summaries.</p>
 
-            ${renderVisitList(visits, emptyMessage = "No completed visits yet.")}
+            ${renderVisitList(visits, locale, emptyMessage = "No completed visits yet.")}
         </body>
         </html>
     """.trimIndent()
@@ -43,6 +44,7 @@ fun renderVisitArchivePage(visits: List<VolunteerVisit>): String {
 
 private fun renderVisitList(
     visits: List<VolunteerVisit>,
+    locale: AppLocale,
     emptyMessage: String
 ): String {
     if (visits.isEmpty()) {
@@ -50,19 +52,21 @@ private fun renderVisitList(
     }
 
     return visits.joinToString(separator = "\n") { visit ->
-        renderVisitCard(visit)
+        renderVisitCard(visit, locale)
     }
 }
 
-private fun renderVisitCard(visit: VolunteerVisit): String {
-    val title = escapeHtml(visit.title)
+private fun renderVisitCard(visit: VolunteerVisit, locale: AppLocale): String {
+    val title = escapeHtml(visit.title.forLocale(locale))
     val date = escapeHtml(visit.date)
     val time = escapeHtml(visit.time)
     val timezone = escapeHtml(visit.timezone)
     val availability = displayVisitAvailability(visit.status, visit.freePlaces)
     val capacity = visit.capacity?.toString() ?: "Capacity is being updated"
-    val signupInstruction = escapeHtml(visit.signupInstruction ?: "Signup information is being updated.")
-    val publicSummary = escapeHtml(visit.publicSummary ?: "No public summary yet.")
+    val signupInstruction = escapeHtml(
+        visit.signupInstruction?.forLocale(locale) ?: "Signup information is being updated."
+    )
+    val publicSummary = escapeHtml(visit.publicSummary?.forLocale(locale) ?: "No public summary yet.")
     val lastUpdatedAt = escapeHtml(visit.lastUpdatedAt)
 
     return """

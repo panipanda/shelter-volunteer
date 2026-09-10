@@ -1,5 +1,6 @@
 package org.proanima.shelter.views
 
+import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.service.displayCatAge
 import org.proanima.shelter.service.displayCatAvailability
@@ -29,12 +30,12 @@ fun renderCatsListPage(cats: List<Cat>): String {
     """.trimIndent()
 }
 
-fun renderCatDetailsPage(cat: Cat): String {
+fun renderCatDetailsPage(cat: Cat, locale: AppLocale): String {
     val name = escapeHtml(displayCatName(cat.name))
     val age = displayCatAge(cat.age)
     val availability = displayCatAvailability(cat.isAvailable)
     val photoUrl = escapeHtml(displayPhotoUrl(cat.photoUrl))
-    val description = escapeHtml(cat.description)
+    val description = escapeHtml(cat.description.forLocale(locale))
 
     return """
         <!DOCTYPE html>

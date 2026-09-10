@@ -5,6 +5,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
 import org.proanima.shelter.configureRoutes
+import org.proanima.shelter.model.LocalizedText
 import org.proanima.shelter.model.VisitStatus
 import org.proanima.shelter.model.VolunteerDirection
 import org.proanima.shelter.model.VolunteerVisit
@@ -27,11 +28,11 @@ class VisitRoutesTest {
             date = "2026-06-12",
             time = "11:00",
             timezone = "Europe/Belgrade",
-            title = "Cat shelter visit",
+            title = LocalizedText(en = "Cat shelter visit"),
             capacity = 5,
             freePlaces = 2,
             status = VisitStatus.OPEN,
-            signupInstruction = "Signup happens in the cat volunteer chat.",
+            signupInstruction = LocalizedText(en = "Signup happens in the cat volunteer chat."),
             publicSummary = null,
             lastUpdatedAt = "2026-05-20T20:30:00+02:00",
             createdAt = "2026-05-20T20:30:00+02:00",
@@ -43,12 +44,14 @@ class VisitRoutesTest {
             date = "2026-05-10",
             time = "11:00",
             timezone = "Europe/Belgrade",
-            title = "Completed cat shelter visit",
+            title = LocalizedText(en = "Completed cat shelter visit"),
             capacity = 5,
             freePlaces = 0,
             status = VisitStatus.COMPLETED,
             signupInstruction = null,
-            publicSummary = "Visit completed. Volunteers helped with cleaning, feeding and cat socialization.",
+            publicSummary = LocalizedText(
+                en = "Visit completed. Volunteers helped with cleaning, feeding and cat socialization."
+            ),
             lastUpdatedAt = "2026-05-10T18:00:00+02:00",
             createdAt = "2026-05-01T12:00:00+02:00",
             updatedAt = "2026-05-10T18:00:00+02:00"
