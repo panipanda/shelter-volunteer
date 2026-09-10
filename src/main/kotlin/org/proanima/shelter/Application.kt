@@ -3,7 +3,7 @@ package org.proanima.shelter
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.engine.embeddedServer
-import io.ktor.server.http.content.staticResources
+import io.ktor.server.http.content.staticFiles
 import io.ktor.server.netty.Netty
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.get
@@ -21,6 +21,7 @@ import org.proanima.shelter.routes.homeRoutes
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.service.GuideService
 import org.proanima.shelter.service.VisitService
+import java.io.File
 
 fun main() {
     embeddedServer(
@@ -50,7 +51,7 @@ fun Application.configureRoutes(
         }
 
         healthRoutes()
-        staticResources("/images", "static/images")
+        staticFiles("/images", File("data/images"))
 
         AppLocale.entries.forEach { locale ->
             route("/${locale.code}") {

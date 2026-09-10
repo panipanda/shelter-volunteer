@@ -14,7 +14,7 @@ localized content. Examples below use `/ru` unless noted otherwise.
 - The application is run from the project root.
 - Test data exists in `data/cats.json`.
 - Test data exists in `data/visits.json`.
-- Static image resources exist under `src/main/resources/static/images/`.
+- Static image resources exist under `data/images/`.
 
 ## Build check
 
@@ -452,7 +452,8 @@ Acceptance criteria:
 
 - static image resources are served by Ktor;
 - `/images/default-cat.jpg` is available;
-- the file is loaded from `src/main/resources/static/images/default-cat.jpg`;
+- the file is loaded from `data/images/default-cat.jpg` (a real directory on disk, not a
+  classpath resource baked into the build);
 - this endpoint is intentionally not language-prefixed.
 
 ## Automated tests

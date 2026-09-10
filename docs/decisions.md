@@ -127,3 +127,21 @@ the unsuffixed `content/volunteer-guide.md` (English) — the same fallback conv
 `<html lang>` is intentionally left as `"en"` regardless of the route's locale until real translated
 files are added.
 
+## Media storage
+
+Cat/visit photos are served from a real directory on disk (`data/images/`, via Ktor's
+`staticFiles`), not from `src/main/resources/static/images` on the classpath (`staticResources`).
+
+Reasoning: this project's whole "MVP data storage" decision above is built around content living
+in plain files that get edited without touching code or triggering a rebuild — that's explicitly
+why `data/cats.json`/`data/visits.json` aren't compiled into the JAR. Serving images from classpath
+resources broke that same promise for exactly one content type: adding or replacing a cat photo
+would have meant committing a binary into `src/main/resources`, rebuilding, and redeploying — the
+same heavyweight path as a code change, for what should be a content update. `data/images/` fixes
+that, and is also the natural mount point for a Docker volume once deployment is set up, so photos
+don't need to ship inside the image.
+
+Not addressed by this change: `Cat.photoUrl` is still an unvalidated free-form string with no
+constraint on scheme or path — nothing stops it from pointing outside `/images/` entirely. That's a
+data-validation gap, separate from where the bytes live on disk, and still open.
+
