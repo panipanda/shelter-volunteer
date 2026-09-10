@@ -98,3 +98,24 @@ Google Calendar integration is not part of MVP.
 
 It may be researched later for displaying or managing volunteer visits, but the MVP should not depend on it because the current real-world signup process happens through volunteer chats and coordinators.
 
+## HTML rendering
+
+All pages render through the Ktor HTML DSL (`kotlinx.html`), not hand-written HTML strings and not a
+separate template engine.
+
+Reasoning: the project briefly ran a mixed approach (homepage on the DSL, every other page as raw
+multiline strings with a manual `escapeHtml()` call per dynamic field). A real instance of a
+forgotten `escapeHtml()` call reached `main` before it was caught in review — the DSL closes that
+whole bug class structurally, since `kotlinx.html` escapes text nodes and attribute values by
+construction, not by each call site remembering to do it.
+
+A separate template engine (Thymeleaf/FreeMarker/Mustache) was considered and rejected again: it
+would add a dependency with no capability the DSL doesn't already provide for this project's scale,
+and some engines (FreeMarker in particular) don't auto-escape by default, which is a real footgun
+for whoever picks one expecting "the engine handles it for me."
+
+`content/volunteer-guide.md` is still not read by the application — `GuideViews.kt`'s guide page
+content is hardcoded English text inside the DSL. Its `<html lang>` is intentionally left as `"en"`
+regardless of the route's locale, since the content itself isn't actually translated yet; wiring
+real per-locale guide files is a separate follow-up.
+
