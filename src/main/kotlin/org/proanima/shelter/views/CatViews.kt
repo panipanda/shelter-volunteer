@@ -8,7 +8,7 @@ import org.proanima.shelter.service.displayPhotoUrl
 
 fun renderCatsListPage(cats: List<Cat>): String {
     val catItems = cats.joinToString(separator = "\n") { cat ->
-        "<li><a href=\"/cats/${cat.id}\">${displayCatName(cat.name)}</a></li>"
+        "<li><a href=\"/cats/${cat.id}\">${escapeHtml(displayCatName(cat.name))}</a></li>"
     }
 
     return """
@@ -30,10 +30,11 @@ fun renderCatsListPage(cats: List<Cat>): String {
 }
 
 fun renderCatDetailsPage(cat: Cat): String {
-    val name = displayCatName(cat.name)
+    val name = escapeHtml(displayCatName(cat.name))
     val age = displayCatAge(cat.age)
     val availability = displayCatAvailability(cat.isAvailable)
-    val photoUrl = displayPhotoUrl(cat.photoUrl)
+    val photoUrl = escapeHtml(displayPhotoUrl(cat.photoUrl))
+    val description = escapeHtml(cat.description)
 
     return """
         <!DOCTYPE html>
@@ -52,7 +53,7 @@ fun renderCatDetailsPage(cat: Cat): String {
 
             <p><strong>Age:</strong> $age</p>
             <p><strong>Status:</strong> $availability</p>
-            <p><strong>Description:</strong> ${cat.description}</p>
+            <p><strong>Description:</strong> $description</p>
         </body>
         </html>
     """.trimIndent()
