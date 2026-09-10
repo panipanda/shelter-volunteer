@@ -87,7 +87,7 @@ class VisitRoutesTest {
             )
         }
 
-        val response = client.get("/visits")
+        val response = client.get("/ru/visits")
         val body = response.bodyAsText()
 
         assertEquals(HttpStatusCode.OK, response.status)
@@ -107,7 +107,7 @@ class VisitRoutesTest {
             )
         }
 
-        val response = client.get("/visits/archive")
+        val response = client.get("/ru/visits/archive")
         val body = response.bodyAsText()
 
         assertEquals(HttpStatusCode.OK, response.status)

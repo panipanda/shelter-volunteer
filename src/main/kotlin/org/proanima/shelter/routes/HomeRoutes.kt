@@ -12,9 +12,12 @@ import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.title
 import kotlinx.html.ul
+import org.proanima.shelter.model.AppLocale
 
-fun Route.homeRoutes() {
-    get("/") {
+fun Route.homeRoutes(locale: AppLocale) {
+    get {
+        val prefix = "/${locale.code}"
+
         call.respondHtml {
             head {
                 title { +"Pro Anima Volunteer Hub" }
@@ -28,16 +31,16 @@ fun Route.homeRoutes() {
 
                 ul {
                     li {
-                        a(href = "/cats") { +"Cat catalogue" }
+                        a(href = "$prefix/cats") { +"Cat catalogue" }
                     }
                     li {
-                        a(href = "/guide") { +"Volunteer guide" }
+                        a(href = "$prefix/guide") { +"Volunteer guide" }
                     }
                     li {
-                        a(href = "/visits") { +"Upcoming visits" }
+                        a(href = "$prefix/visits") { +"Upcoming visits" }
                     }
                     li {
-                        a(href = "/visits/archive") { +"Visit archive" }
+                        a(href = "$prefix/visits/archive") { +"Visit archive" }
                     }
                 }
             }

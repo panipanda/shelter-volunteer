@@ -1,6 +1,8 @@
 package org.proanima.shelter.views
 
-fun renderGuidePage(): String = """
+import org.proanima.shelter.model.AppLocale
+
+fun renderGuidePage(locale: AppLocale): String = """
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -8,7 +10,7 @@ fun renderGuidePage(): String = """
         <title>Volunteer guide</title>
     </head>
     <body>
-        ${renderNavigation()}
+        ${renderNavigation(locale)}
 
         <main>
             <h1>Volunteer guide</h1>

@@ -13,7 +13,7 @@ fun renderVisitsPage(visits: List<VolunteerVisit>, locale: AppLocale): String {
             <title>Volunteer visits</title>
         </head>
         <body>
-            ${renderNavigation()}
+            ${renderNavigation(locale)}
             <h1>Volunteer visits</h1>
             <p>Upcoming shelter visits for volunteers.</p>
 
@@ -32,7 +32,7 @@ fun renderVisitArchivePage(visits: List<VolunteerVisit>, locale: AppLocale): Str
             <title>Visit archive</title>
         </head>
         <body>
-            ${renderNavigation()}
+            ${renderNavigation(locale)}
             <h1>Visit archive</h1>
             <p>Past shelter visits and public summaries.</p>
 

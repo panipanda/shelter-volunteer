@@ -7,9 +7,10 @@ import org.proanima.shelter.service.displayCatAvailability
 import org.proanima.shelter.service.displayCatName
 import org.proanima.shelter.service.displayPhotoUrl
 
-fun renderCatsListPage(cats: List<Cat>): String {
+fun renderCatsListPage(cats: List<Cat>, locale: AppLocale): String {
+    val prefix = "/${locale.code}"
     val catItems = cats.joinToString(separator = "\n") { cat ->
-        "<li><a href=\"/cats/${cat.id}\">${escapeHtml(displayCatName(cat.name))}</a></li>"
+        "<li><a href=\"$prefix/cats/${cat.id}\">${escapeHtml(displayCatName(cat.name))}</a></li>"
     }
 
     return """
@@ -20,7 +21,7 @@ fun renderCatsListPage(cats: List<Cat>): String {
             <title>Cats</title>
         </head>
         <body>
-            ${renderNavigation()}
+            ${renderNavigation(locale)}
             <h1>Cats</h1>
             <ul>
                 $catItems
@@ -31,6 +32,7 @@ fun renderCatsListPage(cats: List<Cat>): String {
 }
 
 fun renderCatDetailsPage(cat: Cat, locale: AppLocale): String {
+    val prefix = "/${locale.code}"
     val name = escapeHtml(displayCatName(cat.name))
     val age = displayCatAge(cat.age)
     val availability = displayCatAvailability(cat.isAvailable)
@@ -45,8 +47,8 @@ fun renderCatDetailsPage(cat: Cat, locale: AppLocale): String {
             <title>$name</title>
         </head>
         <body>
-            ${renderNavigation()}
-            <p><a href="/cats">Back to cats</a></p>
+            ${renderNavigation(locale)}
+            <p><a href="$prefix/cats">Back to cats</a></p>
 
             <h1>$name</h1>
 

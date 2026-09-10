@@ -1,10 +1,15 @@
 package org.proanima.shelter
 
 import io.ktor.server.application.Application
+import io.ktor.server.application.call
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.netty.Netty
+import io.ktor.server.response.respondRedirect
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.repository.JsonCatRepository
 import org.proanima.shelter.repository.JsonVisitRepository
 import org.proanima.shelter.routes.catRoutes
@@ -36,11 +41,20 @@ fun Application.configureRoutes(
     visitService: VisitService
 ) {
     routing {
-        homeRoutes()
+        get("/") {
+            call.respondRedirect("/${AppLocale.default.code}")
+        }
+
         healthRoutes()
-        catRoutes(catService)
-        visitRoutes(visitService)
-        guideRoutes()
         staticResources("/images", "static/images")
+
+        AppLocale.entries.forEach { locale ->
+            route("/${locale.code}") {
+                homeRoutes(locale)
+                catRoutes(catService, locale)
+                visitRoutes(visitService, locale)
+                guideRoutes(locale)
+            }
+        }
     }
 }

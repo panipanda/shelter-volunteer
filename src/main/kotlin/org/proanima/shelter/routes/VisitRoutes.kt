@@ -10,13 +10,12 @@ import org.proanima.shelter.service.VisitService
 import org.proanima.shelter.views.renderVisitArchivePage
 import org.proanima.shelter.views.renderVisitsPage
 
-fun Route.visitRoutes(visitService: VisitService) {
+fun Route.visitRoutes(visitService: VisitService, locale: AppLocale) {
     get("/visits") {
         val visits = visitService.getUpcomingVisits()
 
-        // AppLocale.default — временно, заменится локалью из пути на шаге с роутингом
         call.respondText(
-            text = renderVisitsPage(visits, AppLocale.default),
+            text = renderVisitsPage(visits, locale),
             contentType = ContentType.Text.Html
         )
     }
@@ -25,7 +24,7 @@ fun Route.visitRoutes(visitService: VisitService) {
         val visits = visitService.getArchivedVisits()
 
         call.respondText(
-            text = renderVisitArchivePage(visits, AppLocale.default),
+            text = renderVisitArchivePage(visits, locale),
             contentType = ContentType.Text.Html
         )
     }

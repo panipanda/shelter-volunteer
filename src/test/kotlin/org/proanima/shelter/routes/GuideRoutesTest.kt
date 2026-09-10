@@ -17,7 +17,7 @@ class GuideRoutesTest {
             module()
         }
 
-        val response = client.get("/guide")
+        val response = client.get("/ru/guide")
         val body = response.bodyAsText()
 
         assertEquals(HttpStatusCode.OK, response.status)
@@ -28,8 +28,8 @@ class GuideRoutesTest {
         assertTrue(body.contains("During the visit"))
         assertTrue(body.contains("How signup works"))
 
-        assertTrue(body.contains("""href="/cats""""))
-        assertTrue(body.contains("""href="/visits""""))
-        assertTrue(body.contains("""href="/visits/archive""""))
+        assertTrue(body.contains("""href="/ru/cats""""))
+        assertTrue(body.contains("""href="/ru/visits""""))
+        assertTrue(body.contains("""href="/ru/visits/archive""""))
     }
 }

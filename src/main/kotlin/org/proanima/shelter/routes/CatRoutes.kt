@@ -10,10 +10,10 @@ import org.proanima.shelter.service.CatService
 import org.proanima.shelter.views.renderCatDetailsPage
 import org.proanima.shelter.views.renderCatsListPage
 
-fun Route.catRoutes(catService: CatService) {
+fun Route.catRoutes(catService: CatService, locale: AppLocale) {
     get("/cats") {
         val cats = catService.getAllCats()
-        val html = renderCatsListPage(cats)
+        val html = renderCatsListPage(cats, locale)
 
         call.respondText(html, contentType = ContentType.Text.Html)
     }
@@ -31,8 +31,7 @@ fun Route.catRoutes(catService: CatService) {
         if (cat == null) {
             call.respondText("Cat not found")
         } else {
-            // AppLocale.default — временно, заменится локалью из пути на шаге с роутингом
-            val html = renderCatDetailsPage(cat, AppLocale.default)
+            val html = renderCatDetailsPage(cat, locale)
             call.respondText(html, contentType = ContentType.Text.Html)
         }
     }
