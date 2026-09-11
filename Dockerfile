@@ -4,7 +4,7 @@ COPY gradlew gradlew.bat ./
 COPY gradle ./gradle
 COPY settings.gradle.kts build.gradle.kts ./
 COPY src ./src
-RUN ./gradlew --no-daemon installDist -x test
+RUN chmod +x gradlew && ./gradlew --no-daemon installDist -x test
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
