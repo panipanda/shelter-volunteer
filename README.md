@@ -2,6 +2,8 @@
 
 MVP volunteer website for Pro Anima cat shelter.
 
+Live at [shelter-volunteer.onrender.com](https://shelter-volunteer.onrender.com).
+
 This repository is a Kotlin/Ktor learning project and a future production-ready MVP website for shelter volunteers.
 
 ## MVP goal
@@ -203,7 +205,7 @@ JSON files should store public image URLs, not internal filesystem paths.
 - HTML/CSS
 - JSON/Markdown storage for MVP
 - SQLite later
-- Docker/deploy later
+- Docker, deployed to Render (see [docs/deploy.md](docs/deploy.md))
 
 ## Current source structure
 
@@ -253,7 +255,7 @@ docs/
 
 See [SETUP.md](SETUP.md) for local setup, Java, Gradle, wrapper, build, and troubleshooting instructions.
 
-See [docs/deploy.md](docs/deploy.md) for Fly.io deployment and automatic deploy from GitHub.
+See [docs/deploy.md](docs/deploy.md) for Render deployment and automatic deploy from GitHub.
 
 Basic build command on Windows:
 

@@ -3,7 +3,8 @@
 
 Goal: publish a small volunteer website for Pro Anima cat shelter volunteers. `ru` is the
 default locale and now has real content alongside `en`; `sr` still falls back to `en` (see
-`docs/decisions.md` "Language" and `docs/smoke-checklist.md`).
+`docs/decisions.md` "Language" and `docs/smoke-checklist.md`). The site is live, deployed to
+Render (see `docs/deploy.md`).
 
 Storage:
 
@@ -23,7 +24,7 @@ Features:
 - Manual availability updates
 - Language switcher (ru/en/sr)
 - Basic tests
-- Production deploy
+- Production deploy — done, see `docs/deploy.md`
 
 ## Phase 2 — SQLite storage
 

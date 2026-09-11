@@ -38,9 +38,8 @@ new photo) means editing the file under `data/` or `content/`, committing it, an
    repo. Render reads `render.yaml` from the repo root and proposes the `shelter-volunteer`
    web service on the free plan — confirm and apply.
 
-3. Render builds the Docker image and deploys automatically. Once done, the app is live at
-   `https://shelter-volunteer.onrender.com` (or whatever subdomain Render assigns if that one
-   is taken).
+3. Render builds the Docker image and deploys automatically. The app is live at
+   [shelter-volunteer.onrender.com](https://shelter-volunteer.onrender.com).
 
 If Render ever asks for a card during signup, that's identity verification, not a charge — the
 free plan stays $0 as long as usage stays within the limits above.
