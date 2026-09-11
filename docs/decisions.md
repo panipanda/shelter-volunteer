@@ -2,9 +2,19 @@
 
 ## Language
 
-MVP language: English.
+The site supports three locales via a `/{locale}` path prefix: `ru` (default), `en`, `sr`.
 
-Russian localization is postponed to a later phase.
+This supersedes the original plan (English-first MVP, Russian localization postponed to a later
+phase): locale-prefixed routing and a `ru`-default content model were added early, and real `ru`
+translations for JSON content (`data/cats.json`, `data/visits.json`), UI strings
+(`messages_ru.properties`), and the volunteer guide (`content/volunteer-guide.ru.md`) were filled
+in soon after, since `ru` was the locale most volunteers would actually see by default.
+
+`sr` has no translations yet and falls back to `en` everywhere, through the same convention as
+`LocalizedText.forLocale()`, the JVM `ResourceBundle` lookup for `messages.properties`, and
+`MarkdownGuideRepository`'s file-existence check. See `docs/smoke-checklist.md` for the current
+per-locale coverage, and a RU/EN/SR switcher in the page nav lets visitors change locale without
+editing the URL by hand.
 
 ## Visit archive
 

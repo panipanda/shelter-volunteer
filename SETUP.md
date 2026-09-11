@@ -287,16 +287,22 @@ data/
 
 content/
   volunteer-guide.md
+  volunteer-guide.ru.md
 ```
 
 Purpose:
 
 ```text
-data/cats.json                public cat catalogue data
-data/visits.json              public volunteer visit data
+data/cats.json                public cat catalogue data (per-field ru/en/sr text)
+data/visits.json              public volunteer visit data (per-field ru/en/sr text)
 data/visit-participants.json  internal participant history, not public in MVP
-content/volunteer-guide.md    volunteer instruction content
+content/volunteer-guide.md    volunteer instruction content, English (fallback for sr too)
+content/volunteer-guide.ru.md volunteer instruction content, Russian
 ```
+
+UI strings follow the same per-locale-file convention under
+`src/main/resources/i18n/`: `messages.properties` (English, also the `sr` fallback) and
+`messages_ru.properties`.
 
 ## JSON validation
 

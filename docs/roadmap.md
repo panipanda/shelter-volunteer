@@ -1,7 +1,9 @@
 # Roadmap
 ## Phase 1 — MVP with JSON/Markdown storage
 
-Goal: publish a small English-language website for Pro Anima cat shelter volunteers.
+Goal: publish a small volunteer website for Pro Anima cat shelter volunteers. `ru` is the
+default locale and now has real content alongside `en`; `sr` still falls back to `en` (see
+`docs/decisions.md` "Language" and `docs/smoke-checklist.md`).
 
 Storage:
 
@@ -19,6 +21,7 @@ Features:
 - Read-only cat visit calendar
 - Visit archive with public summaries
 - Manual availability updates
+- Language switcher (ru/en/sr)
 - Basic tests
 - Production deploy
 

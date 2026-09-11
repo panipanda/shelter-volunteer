@@ -429,6 +429,31 @@ Repeat the cat list, cat details, visits, visit archive, and guide checks above 
   (falls back to the unsuffixed `content/volunteer-guide.md`), since `lang` reflects which file was
   actually resolved, not the route locale.
 
+## Language switcher
+
+Every page shows a `RU · EN · SR` switcher in the nav, right below the main links.
+
+Open any page, for example:
+
+```text
+http://localhost:8080/ru/cats/1
+```
+
+Expected result:
+
+- the current locale (`RU`) is shown as plain text, not a link;
+- `EN` and `SR` are links;
+- clicking `EN` opens `http://localhost:8080/en/cats/1` — same page, only the locale prefix
+  changes, the rest of the path (`/cats/1`) is preserved;
+- this also holds on `/{lang}/guide`, `/{lang}/visits`, `/{lang}/visits/archive`, and the home
+  page (`/{lang}`).
+
+Acceptance criteria:
+
+- the switcher never links to the currently active locale;
+- switching locale keeps the same route (cat id, page type) instead of always going to the
+  locale's home page.
+
 ## Static default cat image
 
 Open in a browser:
@@ -610,10 +635,12 @@ Current implemented pages:
 - `/{lang}/cats/{id}` returns plain text for missing or invalid cat ids.
 - `/{lang}/visits` returns HTML with upcoming visits.
 - `/{lang}/visits/archive` returns HTML with completed visits.
-- `/{lang}/guide` — volunteer guide page (body content is not actually localized yet, see below).
+- `/{lang}/guide` — volunteer guide page; `ru` and `en` body content is real, `sr` falls back to
+  the English file (see "Other locales" above).
 - static image resources are served from `/images/...`, unprefixed (real directory on disk).
 - CSS is served from `/styles/main.css`, unprefixed (classpath resource, bundled with the build).
-- every page shares one skeleton via `pageLayout()` in `views/Layout.kt`: `<head>`/nav/`<main>`/footer.
+- every page shares one skeleton via `pageLayout()` in `views/Layout.kt`: `<head>`/nav/language
+  switcher/`<main>`/footer.
 
 Current known limitations:
 

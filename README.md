@@ -30,8 +30,7 @@ Planned MVP features:
 - Read-only volunteer visit calendar
 - Visit archive with public summaries
 - Manually updated visit availability
-- English-first UI
-- Russian localization later
+- Multi-locale UI: `ru` (default) and `en` have real translated content; `sr` falls back to `en`
 
 ## Out of scope for MVP
 
@@ -55,7 +54,7 @@ The MVP uses file-based storage:
 - `data/cats.json` for cat catalogue data
 - `data/visits.json` for public volunteer visit data
 - `data/visit-participants.json` for internal participant history, not rendered publicly in MVP
-- `content/volunteer-guide.md` for volunteer instructions
+- `content/volunteer-guide.md` for volunteer instructions (plus a `.{locale}.md` variant per translated locale)
 
 Application code should access data through repository interfaces, not directly from routes.
 
@@ -93,6 +92,7 @@ Public website data lives in:
 data/cats.json
 data/visits.json
 content/volunteer-guide.md
+content/volunteer-guide.ru.md
 ```
 
 ### Internal data
@@ -235,12 +235,18 @@ data/
   visit-participants.json
 
 content/
-  volunteer-guide.md
+  volunteer-guide.md      English, also the fallback for sr
+  volunteer-guide.ru.md
+
+src/main/resources/i18n/
+  messages.properties     English, also the fallback for sr
+  messages_ru.properties
 
 docs/
   decisions.md
   mvp-scope.md
   roadmap.md
+  smoke-checklist.md
 ```
 
 ## Development setup
