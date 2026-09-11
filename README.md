@@ -253,6 +253,8 @@ docs/
 
 See [SETUP.md](SETUP.md) for local setup, Java, Gradle, wrapper, build, and troubleshooting instructions.
 
+See [docs/deploy.md](docs/deploy.md) for Fly.io deployment and automatic deploy from GitHub.
+
 Basic build command on Windows:
 
 ```powershell
