@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: shelter-volunteer
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: JAVA_OPTS
+        value: -Xmx256m -Xss256k -XX:MaxMetaspaceSize=128m
