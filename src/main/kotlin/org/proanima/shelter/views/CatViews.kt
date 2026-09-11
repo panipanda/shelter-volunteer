@@ -17,11 +17,11 @@ import org.proanima.shelter.service.displayCatAvailability
 import org.proanima.shelter.service.displayCatName
 import org.proanima.shelter.service.displayPhotoUrl
 
-fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale) {
+fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String) {
     val prefix = "/${locale.code}"
     val messages = messagesFor(locale)
 
-    pageLayout(locale, pageTitle = messages.t("cat.page.title")) {
+    pageLayout(locale, pageTitle = messages.t("cat.page.title"), currentPath = currentPath) {
         h1 { +messages.t("cat.page.title") }
         ul(classes = "cat-list") {
             cats.forEach { cat ->
@@ -33,7 +33,7 @@ fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale) {
     }
 }
 
-fun HTML.catDetailsPage(cat: Cat, locale: AppLocale) {
+fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
     val prefix = "/${locale.code}"
     val messages = messagesFor(locale)
     val name = displayCatName(cat.name, locale)
@@ -42,7 +42,7 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale) {
     val photoUrl = displayPhotoUrl(cat.photoUrl)
     val description = cat.description.forLocale(locale)
 
-    pageLayout(locale, pageTitle = name) {
+    pageLayout(locale, pageTitle = name, currentPath = currentPath) {
         p { a(href = "$prefix/cats") { +messages.t("cat.backToCats") } }
 
         h1 { +name }

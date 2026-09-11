@@ -49,6 +49,21 @@ nav a:hover {
     text-decoration: underline;
 }
 
+.lang-switch {
+    padding-top: 0;
+    border-bottom: none;
+    font-size: 0.85rem;
+}
+
+.lang-switch a {
+    font-weight: 600;
+}
+
+.lang-switch-current {
+    color: var(--color-muted);
+    font-weight: 700;
+}
+
 main {
     padding-top: var(--spacing);
     padding-bottom: 2rem;

@@ -21,6 +21,7 @@ import org.proanima.shelter.model.AppLocale
 fun HTML.pageLayout(
     locale: AppLocale,
     pageTitle: String,
+    currentPath: String,
     contentLang: String = locale.code,
     content: MAIN.() -> Unit
 ) {
@@ -33,7 +34,7 @@ fun HTML.pageLayout(
         link(rel = "stylesheet", href = "/styles/main.css", type = "text/css")
     }
     body {
-        navigation(locale)
+        navigation(locale, currentPath)
         main {
             content()
         }

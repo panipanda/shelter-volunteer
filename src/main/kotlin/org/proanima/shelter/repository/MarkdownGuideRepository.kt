@@ -7,14 +7,14 @@ class MarkdownGuideRepository(
     private val basePath: String = "content/volunteer-guide"
 ) : GuideRepository {
 
-    override fun findGuideMarkdown(locale: AppLocale): String {
+    override fun findGuideMarkdown(locale: AppLocale): GuideContent {
         val localized = File("$basePath.${locale.code}.md")
         if (localized.exists()) {
-            return localized.readText()
+            return GuideContent(localized.readText(), locale.code)
         }
 
-        // ru/sr переводов пока нет — намеренно падаем на English-версию без суффикса,
-        // а не на выдуманный перевод; появится content/volunteer-guide.ru.md — подхватится сам
-        return File("$basePath.md").readText()
+        // sr перевода пока нет — намеренно падаем на English-версию без суффикса,
+        // а не на выдуманный перевод; появится content/volunteer-guide.sr.md — подхватится сам
+        return GuideContent(File("$basePath.md").readText(), AppLocale.EN.code)
     }
 }

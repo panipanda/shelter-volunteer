@@ -16,20 +16,20 @@ import org.proanima.shelter.service.displayVisitAvailability
 import org.proanima.shelter.service.displayVisitDirection
 import org.proanima.shelter.service.displayVisitStatus
 
-fun HTML.visitsPage(visits: List<VolunteerVisit>, locale: AppLocale) {
+fun HTML.visitsPage(visits: List<VolunteerVisit>, locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
 
-    pageLayout(locale, pageTitle = messages.t("visit.page.upcoming.title")) {
+    pageLayout(locale, pageTitle = messages.t("visit.page.upcoming.title"), currentPath = currentPath) {
         h1 { +messages.t("visit.page.upcoming.title") }
         p { +messages.t("visit.page.upcoming.intro") }
         visitList(visits, locale, messages.t("visit.page.upcoming.empty"))
     }
 }
 
-fun HTML.visitArchivePage(visits: List<VolunteerVisit>, locale: AppLocale) {
+fun HTML.visitArchivePage(visits: List<VolunteerVisit>, locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
 
-    pageLayout(locale, pageTitle = messages.t("visit.page.archive.title")) {
+    pageLayout(locale, pageTitle = messages.t("visit.page.archive.title"), currentPath = currentPath) {
         h1 { +messages.t("visit.page.archive.title") }
         p { +messages.t("visit.page.archive.intro") }
         visitList(visits, locale, messages.t("visit.page.archive.empty"))

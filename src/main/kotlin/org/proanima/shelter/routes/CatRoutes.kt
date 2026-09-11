@@ -2,6 +2,7 @@ package org.proanima.shelter.routes
 
 import io.ktor.server.application.call
 import io.ktor.server.html.respondHtml
+import io.ktor.server.request.path
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -15,7 +16,7 @@ fun Route.catRoutes(catService: CatService, locale: AppLocale) {
         val cats = catService.getAllCats()
 
         call.respondHtml {
-            catsListPage(cats, locale)
+            catsListPage(cats, locale, call.request.path())
         }
     }
 
@@ -33,7 +34,7 @@ fun Route.catRoutes(catService: CatService, locale: AppLocale) {
             call.respondText("Cat not found")
         } else {
             call.respondHtml {
-                catDetailsPage(cat, locale)
+                catDetailsPage(cat, locale, call.request.path())
             }
         }
     }

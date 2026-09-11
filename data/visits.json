@@ -6,12 +6,14 @@
     "time": "11:00",
     "timezone": "Europe/Belgrade",
     "title": {
+      "ru": "Визит в приют для кошек",
       "en": "Cat shelter visit"
     },
     "capacity": 5,
     "freePlaces": 2,
     "status": "OPEN",
     "signupInstruction": {
+      "ru": "Запись проходит в чате волонтёров по кошкам.",
       "en": "Signup happens in the cat volunteer chat."
     },
     "publicSummary": null,
@@ -26,6 +28,7 @@
     "time": "11:00",
     "timezone": "Europe/Belgrade",
     "title": {
+      "ru": "Визит в приют для кошек",
       "en": "Cat shelter visit"
     },
     "capacity": 5,
@@ -33,6 +36,7 @@
     "status": "COMPLETED",
     "signupInstruction": null,
     "publicSummary": {
+      "ru": "Визит завершён. Волонтёры помогли с уборкой, кормлением и социализацией кошек.",
       "en": "Visit completed. Volunteers helped with cleaning, feeding and cat socialization."
     },
     "lastUpdatedAt": "2026-05-10T18:00:00+02:00",

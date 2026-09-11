@@ -10,11 +10,11 @@ import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 
-fun HTML.homePage(locale: AppLocale) {
+fun HTML.homePage(locale: AppLocale, currentPath: String) {
     val prefix = "/${locale.code}"
     val messages = messagesFor(locale)
 
-    pageLayout(locale, pageTitle = messages.t("home.title")) {
+    pageLayout(locale, pageTitle = messages.t("home.title"), currentPath = currentPath) {
         h1 { +messages.t("home.title") }
 
         p {

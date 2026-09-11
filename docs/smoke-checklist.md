@@ -408,17 +408,26 @@ Expected:
   - `Volunteer visits` -> `/ru/visits`
   - `Visit archive` -> `/ru/visits/archive`
 
-Note: guide body content is now read from `content/volunteer-guide.md` at request time (via
-`GuideRepository`) and rendered as real DSL tags, not hardcoded in `GuideViews.kt` anymore. It is
-still English-only regardless of locale — no `content/volunteer-guide.ru.md` /
-`content/volunteer-guide.sr.md` exist yet, so every locale falls back to the English file.
+Note: guide body content is now read from `content/volunteer-guide.md` (or the locale-specific
+`content/volunteer-guide.{locale}.md`, when present) at request time via `GuideRepository`, and
+rendered as real DSL tags, not hardcoded in `GuideViews.kt`. `content/volunteer-guide.ru.md` now
+exists with real Russian content — `/ru/guide` renders it instead of falling back to English.
+`content/volunteer-guide.sr.md` still doesn't exist, so `/sr/guide` still falls back to the
+unsuffixed English file.
 
 ## Other locales
 
 Repeat the cat list, cat details, visits, visit archive, and guide checks above under `/en` and
-`/sr`. Since `ru`/`sr` translations for JSON content (`data/cats.json`, `data/visits.json`) and for
-UI strings (`src/main/resources/i18n/messages.properties`) are not filled in yet, expect the same
-English text to appear under all three prefixes — this is the intended fallback behavior, not a bug.
+`/sr`.
+
+- `/ru` now has real translations for UI strings (`messages_ru.properties`), JSON content
+  (`data/cats.json`, `data/visits.json`) and the guide (`content/volunteer-guide.ru.md`) — expect
+  Russian text there, not an English fallback.
+- `/sr` still has no translations at all, so it falls back to English everywhere — this remains
+  the intended fallback behavior, not a bug.
+- On `/ru/guide`, the page's `<html lang>` should be `ru`; on `/sr/guide`, it should still be `en`
+  (falls back to the unsuffixed `content/volunteer-guide.md`), since `lang` reflects which file was
+  actually resolved, not the route locale.
 
 ## Static default cat image
 
@@ -608,12 +617,17 @@ Current implemented pages:
 
 Current known limitations:
 
-- `data/cats.json` and `data/visits.json` only have `en` translations filled in — `ru` and `sr`
-  fall back to `en` through `LocalizedText.forLocale()`.
-- UI strings in `src/main/resources/i18n/messages.properties` are English-only (no locale suffix) —
-  `ru` and `sr` fall back to this file through the JVM's default `ResourceBundle` lookup.
-- `content/volunteer-guide.md` only exists in English — `ru`/`sr` fall back to it through
-  `MarkdownGuideRepository`, same convention as `LocalizedText` and `messages.properties`.
+- `data/cats.json` and `data/visits.json` now have both `ru` and `en` translations filled in — only
+  `sr` still falls back to `en` through `LocalizedText.forLocale()`.
+- UI strings now have `src/main/resources/i18n/messages_ru.properties` alongside the English
+  default `messages.properties` — only `sr` still falls back to the English default through the
+  JVM's `ResourceBundle` lookup.
+- `content/volunteer-guide.ru.md` now exists — only `sr` still falls back to the unsuffixed English
+  `content/volunteer-guide.md` through `MarkdownGuideRepository`.
+- `cat.age.years={0} лет` is a single generic plural form for the `ru` bundle — it reads correctly
+  for 0/5+ but is grammatically off for 2-4 (e.g. "2 лет" instead of "2 года"), since
+  `displayCatAge` only branches on "exactly 1 year" vs. everything else; full Russian plural rules
+  would need a code change, not just a translation.
 - Styling is intentionally minimal (container width, nav, cat-list pills, visit-card look,
   responsive nav wrap) — no design system, no cat photo grid/thumbnails beyond the existing `<img>`.
 - There are no route tests for `/` or `/{lang}/cats` (only visits and guide routes are covered).
@@ -622,7 +636,8 @@ Current known limitations:
 
 Future improvements:
 
-- Real `ru` (priority) and `sr` translations for JSON content, UI strings, and
-  `content/volunteer-guide.md`.
+- Real `sr` translations for JSON content, UI strings, and `content/volunteer-guide.md`, matching
+  what `ru` now has.
+- Proper Russian plural handling for `cat.age.years` (2-4 vs. 5+ vs. 11-14).
 - Route tests for `/` and `/{lang}/cats`.
 - HTML pages for error states.

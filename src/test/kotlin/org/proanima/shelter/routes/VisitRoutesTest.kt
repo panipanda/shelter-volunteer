@@ -11,6 +11,7 @@ import org.proanima.shelter.model.VolunteerDirection
 import org.proanima.shelter.model.VolunteerVisit
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.repository.CatRepository
+import org.proanima.shelter.repository.GuideContent
 import org.proanima.shelter.repository.GuideRepository
 import org.proanima.shelter.repository.VisitRepository
 import org.proanima.shelter.service.CatService
@@ -82,8 +83,8 @@ class VisitRoutesTest {
     }
 
     private val guideRepository = object : GuideRepository {
-        override fun findGuideMarkdown(locale: AppLocale): String {
-            return "# Guide\n\nStub guide content for tests."
+        override fun findGuideMarkdown(locale: AppLocale): GuideContent {
+            return GuideContent("# Guide\n\nStub guide content for tests.", locale.code)
         }
     }
 
@@ -101,10 +102,10 @@ class VisitRoutesTest {
         val body = response.bodyAsText()
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertTrue(body.contains("Volunteer visits"))
+        assertTrue(body.contains("Визиты волонтёров"))
         assertTrue(body.contains("Cat shelter visit"))
         assertTrue(body.contains("2026-06-12"))
-        assertTrue(body.contains("Free places: 2"))
+        assertTrue(body.contains("Свободных мест: 2"))
         assertFalse(body.contains("Visit completed. Volunteers helped with cleaning, feeding and cat socialization."))
     }
 
@@ -122,10 +123,10 @@ class VisitRoutesTest {
         val body = response.bodyAsText()
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertTrue(body.contains("Visit archive"))
+        assertTrue(body.contains("Архив визитов"))
         assertTrue(body.contains("Completed cat shelter visit"))
         assertTrue(body.contains("2026-05-10"))
         assertTrue(body.contains("Visit completed. Volunteers helped with cleaning, feeding and cat socialization."))
-        assertFalse(body.contains("Free places: 2"))
+        assertFalse(body.contains("Свободных мест: 2"))
     }
 }

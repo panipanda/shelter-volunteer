@@ -22,14 +22,30 @@ class GuideRoutesTest {
 
         assertEquals(HttpStatusCode.OK, response.status)
 
-        assertTrue(body.contains("Volunteer guide"))
-        assertTrue(body.contains("Before the visit"))
-        assertTrue(body.contains("What to bring"))
-        assertTrue(body.contains("During the visit"))
-        assertTrue(body.contains("How signup works"))
+        assertTrue(body.contains("Гайд волонтёра"))
+        assertTrue(body.contains("Перед визитом"))
+        assertTrue(body.contains("Что взять с собой"))
+        assertTrue(body.contains("Во время визита"))
+        assertTrue(body.contains("Как работает запись"))
+        assertTrue(body.contains("""lang="ru""""))
 
         assertTrue(body.contains("""href="/ru/cats""""))
         assertTrue(body.contains("""href="/ru/visits""""))
         assertTrue(body.contains("""href="/ru/visits/archive""""))
+    }
+
+    @Test
+    fun `GET guide for sr locale falls back to English content`() = testApplication {
+        application {
+            module()
+        }
+
+        val response = client.get("/sr/guide")
+        val body = response.bodyAsText()
+
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        assertTrue(body.contains("Before the visit"))
+        assertTrue(body.contains("""lang="en""""))
     }
 }
