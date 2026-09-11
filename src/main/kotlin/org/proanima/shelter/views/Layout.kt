@@ -5,6 +5,7 @@ import kotlinx.html.MAIN
 import kotlinx.html.body
 import kotlinx.html.footer
 import kotlinx.html.head
+import kotlinx.html.lang
 import kotlinx.html.link
 import kotlinx.html.main
 import kotlinx.html.meta
