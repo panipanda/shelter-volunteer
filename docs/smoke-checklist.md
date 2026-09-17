@@ -146,7 +146,8 @@ Expected result:
 - page contains the `Cats` heading;
 - page contains cat names from `data/cats.json`;
 - each cat is displayed as a list item;
-- each cat name links to `/ru/cats/{id}`;
+- each cat name links to `/ru/cats/{slug}`, where `slug` is the cat's name lowercased
+  (e.g. `Mila` → `mila`; a cat without a name falls back to its numeric `id`);
 - cats with missing names are displayed as `Unnamed`.
 
 Example expected HTML content:
@@ -154,18 +155,18 @@ Example expected HTML content:
 ```html
 <h1>Cats</h1>
 <ul>
-    <li><a href="/ru/cats/1">Mila</a></li>
+    <li><a href="/ru/cats/mila">Mila</a></li>
 </ul>
 ```
 
-The exact names and ids depend on the current contents of `data/cats.json`.
+The exact names and slugs depend on the current contents of `data/cats.json`.
 
 ## Cat details endpoint — existing cat
 
 Open an existing cat page, for example:
 
 ```text
-http://localhost:8080/ru/cats/1
+http://localhost:8080/ru/cats/mila
 ```
 
 Or check from terminal.
@@ -173,20 +174,20 @@ Or check from terminal.
 ### Windows PowerShell
 
 ```powershell
-Invoke-WebRequest http://localhost:8080/ru/cats/1
+Invoke-WebRequest http://localhost:8080/ru/cats/mila
 ```
 
 ### Linux/macOS
 
 ```bash
-curl http://localhost:8080/ru/cats/1
+curl http://localhost:8080/ru/cats/mila
 ```
 
 Expected result:
 
 - response is returned successfully;
 - response is an HTML page;
-- page contains the display name of the cat with `id = 1`;
+- page contains the display name of the cat with slug `mila`;
 - if the cat name is missing in JSON, page contains `Unnamed`;
 - page displays cat age using the configured age fallback;
 - page displays cat location (shelter/foster home);
@@ -210,7 +211,7 @@ Acceptance criteria:
 Open:
 
 ```text
-http://localhost:8080/ru/cats/999
+http://localhost:8080/ru/cats/no-such-cat
 ```
 
 Or check from terminal.
@@ -218,13 +219,13 @@ Or check from terminal.
 ### Windows PowerShell
 
 ```powershell
-Invoke-WebRequest http://localhost:8080/ru/cats/999
+Invoke-WebRequest http://localhost:8080/ru/cats/no-such-cat
 ```
 
 ### Linux/macOS
 
 ```bash
-curl http://localhost:8080/ru/cats/999
+curl http://localhost:8080/ru/cats/no-such-cat
 ```
 
 Expected response body:
@@ -236,41 +237,9 @@ Cat not found
 Acceptance criteria:
 
 - application does not crash;
-- response body clearly explains that the cat was not found.
-
-## Cat details endpoint — invalid id
-
-Open:
-
-```text
-http://localhost:8080/ru/cats/abc
-```
-
-Or check from terminal.
-
-### Windows PowerShell
-
-```powershell
-Invoke-WebRequest http://localhost:8080/ru/cats/abc
-```
-
-### Linux/macOS
-
-```bash
-curl http://localhost:8080/ru/cats/abc
-```
-
-Expected response body:
-
-```text
-Invalid cat id
-```
-
-Acceptance criteria:
-
-- application does not crash;
-- invalid non-numeric path parameter is handled safely;
-- response body clearly explains that the id is invalid.
+- response body clearly explains that the cat was not found;
+- any slug that doesn't match a cat is handled the same way — there is no separate
+  "invalid slug" case, since any string is a syntactically valid slug.
 
 ## Upcoming visits endpoint
 
@@ -444,15 +413,15 @@ Expected result:
 
 - the current locale (`RU`) is shown as plain text, not a link;
 - `EN` and `SR` are links;
-- clicking `EN` opens `http://localhost:8080/en/cats/1` — same page, only the locale prefix
-  changes, the rest of the path (`/cats/1`) is preserved;
+- clicking `EN` opens `http://localhost:8080/en/cats/mila` — same page, only the locale prefix
+  changes, the rest of the path (`/cats/mila`) is preserved;
 - this also holds on `/{lang}/guide`, `/{lang}/visits`, `/{lang}/visits/archive`, and the home
   page (`/{lang}`).
 
 Acceptance criteria:
 
 - the switcher never links to the currently active locale;
-- switching locale keeps the same route (cat id, page type) instead of always going to the
+- switching locale keeps the same route (cat slug, page type) instead of always going to the
   locale's home page.
 
 ## Static default cat image
@@ -592,9 +561,8 @@ Then manually re-check:
 - `GET /images/default-cat.jpg`
 - `GET /styles/main.css`
 - `GET /ru/cats`
-- `GET /ru/cats/1`
-- `GET /ru/cats/999`
-- `GET /ru/cats/abc`
+- `GET /ru/cats/mila`
+- `GET /ru/cats/no-such-cat`
 - `GET /ru/visits`
 - `GET /ru/visits/archive`
 
@@ -632,8 +600,9 @@ Current implemented pages:
 - `/health` returns plain text, unprefixed.
 - `/{lang}` (`ru`, `en`, `sr`) returns the homepage HTML.
 - `/{lang}/cats` returns HTML.
-- `/{lang}/cats/{id}` returns HTML for an existing cat.
-- `/{lang}/cats/{id}` returns plain text for missing or invalid cat ids.
+- `/{lang}/cats/{slug}` returns HTML for an existing cat; the slug is derived from the cat's
+  name (see `catSlug()` in `service/DisplayHelpers.kt`), the numeric `id` is internal only.
+- `/{lang}/cats/{slug}` returns plain text for a slug that matches no cat.
 - `/{lang}/visits` returns HTML with upcoming visits.
 - `/{lang}/visits/archive` returns HTML with completed visits.
 - `/{lang}/guide` — volunteer guide page; `ru` and `en` body content is real, `sr` falls back to

@@ -20,15 +20,9 @@ fun Route.catRoutes(catService: CatService, locale: AppLocale) {
         }
     }
 
-    get("/cats/{id}") {
-        val id = call.parameters["id"]?.toIntOrNull()
-
-        if (id == null) {
-            call.respondText("Invalid cat id")
-            return@get
-        }
-
-        val cat = catService.getCatById(id)
+    get("/cats/{slug}") {
+        val slug = call.parameters["slug"]!!
+        val cat = catService.getCatBySlug(slug)
 
         if (cat == null) {
             call.respondText("Cat not found")

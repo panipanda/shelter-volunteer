@@ -76,4 +76,18 @@ class CatServiceTest {
 
         assertNull(result)
     }
+
+    @Test
+    fun `getCatBySlug returns cat matching the name-based slug`() {
+        val result = service.getCatBySlug("zoka")
+
+        assertEquals(1, result?.id)
+    }
+
+    @Test
+    fun `getCatBySlug returns null when no cat matches`() {
+        val result = service.getCatBySlug("no-such-cat")
+
+        assertNull(result)
+    }
 }

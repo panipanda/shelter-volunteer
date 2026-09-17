@@ -17,4 +17,8 @@ class CatService(private val repository: CatRepository) {
     fun getCatById(id: Int): Cat? {
         return repository.findById(id)
     }
+
+    fun getCatBySlug(slug: String): Cat? {
+        return repository.findAll().firstOrNull { catSlug(it.name, it.id) == slug }
+    }
 }

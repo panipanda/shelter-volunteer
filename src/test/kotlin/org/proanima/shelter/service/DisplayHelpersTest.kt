@@ -38,4 +38,24 @@ class DisplayHelpersTest {
     fun `displayCatAge with year and month switches to years after the first year`() {
         assertEquals("2 years old", displayCatAge(2024, 3, AppLocale.EN, today))
     }
+
+    @Test
+    fun `catSlug lowercases the cat name`() {
+        assertEquals("nami", catSlug("Nami", 3))
+    }
+
+    @Test
+    fun `catSlug replaces non-alphanumeric characters and trims edge hyphens`() {
+        assertEquals("mama-cat", catSlug(" Mama Cat! ", 1))
+    }
+
+    @Test
+    fun `catSlug falls back to the numeric id when name is missing`() {
+        assertEquals("5", catSlug(null, 5))
+    }
+
+    @Test
+    fun `catSlug falls back to the numeric id when name has no usable characters`() {
+        assertEquals("5", catSlug("!!!", 5))
+    }
 }

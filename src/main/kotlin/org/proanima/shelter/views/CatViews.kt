@@ -13,6 +13,7 @@ import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AdoptionStage
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Cat
+import org.proanima.shelter.service.catSlug
 import org.proanima.shelter.service.displayAdoptionStage
 import org.proanima.shelter.service.displayCatAge
 import org.proanima.shelter.service.displayCatLocation
@@ -28,7 +29,7 @@ fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String) {
         ul(classes = "cat-list") {
             cats.forEach { cat ->
                 li {
-                    a(href = "$prefix/cats/${cat.id}") { +displayCatName(cat.name, locale) }
+                    a(href = "$prefix/cats/${catSlug(cat.name, cat.id)}") { +displayCatName(cat.name, locale) }
                 }
             }
         }

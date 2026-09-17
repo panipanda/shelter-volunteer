@@ -34,6 +34,9 @@ Features:
 - Cat profile: split free-text description into character/behavior (`description`) and a
   separate `medicalStatus` field (vaccination, spaying/neutering, treatment) — done. Practical
   info a volunteer needs before a visit, kept apart from the adoption-facing narrative
+- Cat URLs use a name-based slug (`/cats/mila`) instead of the numeric `id` — done. `id` stays
+  internal; a cat without a name (or whose name has no usable characters) falls back to the
+  numeric id, same as before this change
 
 ## Phase 2 — SQLite storage
 
