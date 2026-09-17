@@ -20,7 +20,11 @@ Features:
 - Cat profile page
 - Volunteer guide
 - Read-only cat visit calendar
-- Visit archive with public summaries
+- Visit archive with public summaries — high priority: show cancelled/no-show visits
+  honestly instead of only successful ones (a content decision; may need a visit status field
+  in the model)
+- FAQ as a separate page (`content/faq.md`) — high priority: follow the `volunteer-guide.md`
+  pattern, the repository and markdown parser already exist for it
 - Manual availability updates
 - Language switcher (ru/en/sr)
 - Basic tests

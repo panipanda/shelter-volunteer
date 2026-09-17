@@ -137,6 +137,24 @@ the unsuffixed `content/volunteer-guide.md` (English) — the same fallback conv
 `<html lang>` is intentionally left as `"en"` regardless of the route's locale until real translated
 files are added.
 
+## Client-side JavaScript
+
+The MVP originally avoided JavaScript entirely as a blanket rule — the cat photo lightbox
+(`CatViews.kt`) was built as a pure CSS `:target` mechanism specifically to prove pages didn't
+need it, and code comments said so explicitly.
+
+That blanket rule is dropped: plain HTML/CSS stays the default for anything it can do — it's
+simpler to read and debug, and keeps working for visitors with JS disabled — but a small,
+dependency-free script is fine where it adds real value a static page can't provide on its own.
+First case: keyboard arrow-key navigation in the photo lightbox
+(`static/scripts/cat-gallery.js`), added because `:target` reacts to clicks but not to keydown
+events, and clicking was the only way to page through photos before this.
+
+Scripts should stay small and framework-free (plain `document.addEventListener`, no bundler, no
+new dependency) and act as progressive enhancement: the underlying CSS-only mechanism must keep
+working with JS disabled, and a script should only add a convenience layer on top, never be the
+only way a feature works.
+
 ## Media storage
 
 Cat/visit photos are served from a real directory on disk (`data/images/`, via Ktor's

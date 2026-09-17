@@ -55,8 +55,9 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
 
         h1 { +name }
 
-        // CSS-лайтбокс: клик по миниатюре ведёт на #photo-N, :target показывает
-        // соответствующий div поверх страницы. Закрытие — href="#" сбрасывает target. Без JS.
+        // CSS lightbox: clicking a thumbnail navigates to #photo-N, :target shows the
+        // matching div over the page; href="#" closes it by resetting the target. Works
+        // without JS; cat-gallery.js layers keyboard arrow support on top where it helps.
         div(classes = "cat-gallery") {
             photoUrls.forEachIndexed { index, url ->
                 a(href = "#photo-$index") {
