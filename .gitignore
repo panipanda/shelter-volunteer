@@ -38,6 +38,7 @@ build/
 
 # Notes
 notes/
+todo.md
 
 # IntelliJ IDEA
 .idea/

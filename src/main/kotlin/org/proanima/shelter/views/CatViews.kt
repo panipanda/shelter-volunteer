@@ -2,7 +2,9 @@ package org.proanima.shelter.views
 
 import kotlinx.html.HTML
 import kotlinx.html.a
+import kotlinx.html.div
 import kotlinx.html.h1
+import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.li
 import kotlinx.html.p
@@ -18,7 +20,7 @@ import org.proanima.shelter.service.displayAdoptionStage
 import org.proanima.shelter.service.displayCatAge
 import org.proanima.shelter.service.displayCatLocation
 import org.proanima.shelter.service.displayCatName
-import org.proanima.shelter.service.displayPhotoUrl
+import org.proanima.shelter.service.displayPhotoUrls
 
 fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String) {
     val prefix = "/${locale.code}"
@@ -43,7 +45,7 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
     val age = displayCatAge(cat.birthYear, cat.birthMonth, locale)
     val location = displayCatLocation(cat.location, locale)
     val adoptionStage = displayAdoptionStage(cat.adoptionStage, locale)
-    val photoUrl = displayPhotoUrl(cat.photoUrl)
+    val photoUrls = displayPhotoUrls(cat.photoUrls)
     val description = cat.description.forLocale(locale)
 
     pageLayout(locale, pageTitle = name, currentPath = currentPath) {
@@ -51,8 +53,21 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
 
         h1 { +name }
 
-        img(src = photoUrl, alt = name) {
-            width = "300"
+        // CSS-лайтбокс: клик по миниатюре ведёт на #photo-N, :target показывает
+        // соответствующий div поверх страницы. Закрытие — href="#" сбрасывает target. Без JS.
+        div(classes = "cat-gallery") {
+            photoUrls.forEachIndexed { index, url ->
+                a(href = "#photo-$index") {
+                    img(src = url, alt = name, classes = "cat-gallery-thumb")
+                }
+            }
+            photoUrls.forEachIndexed { index, url ->
+                div(classes = "cat-gallery-lightbox") {
+                    id = "photo-$index"
+                    a(href = "#", classes = "cat-gallery-lightbox-close")
+                    img(src = url, alt = name)
+                }
+            }
         }
 
         p { strong { +messages.t("cat.label.age") }; +" $age" }

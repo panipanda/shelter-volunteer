@@ -151,7 +151,7 @@ same heavyweight path as a code change, for what should be a content update. `da
 that, and is also the natural mount point for a Docker volume once deployment is set up, so photos
 don't need to ship inside the image.
 
-Not addressed by this change: `Cat.photoUrl` is still an unvalidated free-form string with no
-constraint on scheme or path — nothing stops it from pointing outside `/images/` entirely. That's a
+Not addressed by this change: `Cat.photoUrls` entries are still unvalidated free-form strings with no
+constraint on scheme or path — nothing stops one from pointing outside `/images/` entirely. That's a
 data-validation gap, separate from where the bytes live on disk, and still open.
 

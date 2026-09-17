@@ -7,7 +7,7 @@
       "ru": "Спокойная и дружелюбная кошка.",
       "en": "Calm and friendly cat."
     },
-    "photoUrl": null,
+    "photoUrls": [],
     "location": "IN_SHELTER",
     "adoptionStage": "FOR_ADOPTION",
     "createdAt": "2026-05-20T20:30:00+02:00",
@@ -21,7 +21,7 @@
       "ru": "Стеснительная, но ласковая кошка.",
       "en": "Shy but sweet cat."
     },
-    "photoUrl": null,
+    "photoUrls": [],
     "location": "IN_SHELTER",
     "adoptionStage": "FOR_ADOPTION",
     "createdAt": "2026-05-20T20:30:00+02:00",
@@ -40,7 +40,7 @@
       "ru": "Полностью здорова: дважды проверена на FIV/FeLV/FCoV — отрицательно, привита, стерилизована, обработана от паразитов, приучена к лотку.",
       "en": "Fully healthy: tested twice for FIV/FeLV/FCoV — negative both times, vaccinated, spayed, treated for parasites, litter-trained."
     },
-    "photoUrl": "/images/nami.jpg",
+    "photoUrls": ["/images/nami.jpg", "/images/nami-2.jpg", "/images/nami-3.jpg", "/images/nami-4.jpg"],
     "location": "IN_FOSTERHOME",
     "adoptionStage": "FOR_ADOPTION",
     "adoptionInstruction": {

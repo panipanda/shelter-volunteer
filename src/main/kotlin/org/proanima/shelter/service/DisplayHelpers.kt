@@ -13,8 +13,8 @@ fun displayCatName(name: String?, locale: AppLocale): String {
     return name ?: messagesFor(locale).t("cat.name.unnamed")
 }
 
-fun displayPhotoUrl(photoUrl: String?): String {
-    return photoUrl ?: "/images/default-cat.jpg"
+fun displayPhotoUrls(photoUrls: List<String>): List<String> {
+    return photoUrls.ifEmpty { listOf("/images/default-cat.jpg") }
 }
 
 // Урл кошки строится из имени, а не из id, чтобы он был человекочитаемым. Предполагает,

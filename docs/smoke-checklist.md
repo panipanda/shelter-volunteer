@@ -193,9 +193,10 @@ Expected result:
 - page displays cat location (shelter/foster home);
 - page displays adoption stage;
 - page displays cat description;
-- page displays a cat image if `photoUrl` is present;
-- page displays the default cat image if `photoUrl` is missing or `null`;
-- image is loaded from `/images/...` (unprefixed);
+- page displays a photo gallery with all `photoUrls` entries as thumbnails;
+- page displays the default cat image if `photoUrls` is empty;
+- clicking a thumbnail opens that photo full-size in a CSS-only lightbox (no page navigation, no JS);
+- images are loaded from `/images/...` (unprefixed);
 - page contains a link back to `/ru/cats`.
 
 Acceptance criteria:
