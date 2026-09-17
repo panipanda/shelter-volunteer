@@ -7,6 +7,7 @@ import kotlinx.html.h1
 import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.p
+import kotlinx.html.script
 import kotlinx.html.span
 import kotlinx.html.strong
 import org.proanima.shelter.i18n.messagesFor
@@ -80,6 +81,11 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
                         }
                     }
                 }
+            }
+        }
+        if (photoUrls.size > 1) {
+            script(src = "/scripts/cat-gallery.js") {
+                attributes["defer"] = "defer"
             }
         }
 

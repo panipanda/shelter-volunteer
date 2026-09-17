@@ -55,6 +55,7 @@ fun Application.configureRoutes(
         healthRoutes()
         staticFiles("/images", File("data/images"))
         staticResources("/styles", "static/styles")
+        staticResources("/scripts", "static/scripts")
 
         AppLocale.entries.forEach { locale ->
             route("/${locale.code}") {
