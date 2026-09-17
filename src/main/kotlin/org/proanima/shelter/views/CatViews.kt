@@ -10,6 +10,7 @@ import kotlinx.html.strong
 import kotlinx.html.ul
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
+import org.proanima.shelter.model.AdoptionStage
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.service.displayAdoptionStage
@@ -38,7 +39,7 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
     val prefix = "/${locale.code}"
     val messages = messagesFor(locale)
     val name = displayCatName(cat.name, locale)
-    val age = displayCatAge(cat.age, locale)
+    val age = displayCatAge(cat.age, cat.ageMonths, locale)
     val location = displayCatLocation(cat.location, locale)
     val adoptionStage = displayAdoptionStage(cat.adoptionStage, locale)
     val photoUrl = displayPhotoUrl(cat.photoUrl)
@@ -57,5 +58,11 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
         p { strong { +messages.t("cat.label.location") }; +" $location" }
         p { strong { +messages.t("cat.label.status") }; +" $adoptionStage" }
         p { strong { +messages.t("cat.label.description") }; +" $description" }
+
+        if (cat.adoptionStage == AdoptionStage.FOR_ADOPTION) {
+            val instruction = cat.adoptionInstruction?.forLocale(locale)
+                ?: messages.t("cat.adoptionInstruction.unknown")
+            p { strong { +messages.t("cat.label.howToAdopt") }; +" $instruction" }
+        }
     }
 }

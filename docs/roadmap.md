@@ -25,6 +25,10 @@ Features:
 - Language switcher (ru/en/sr)
 - Basic tests
 - Production deploy — done, see `docs/deploy.md`
+- Cat adoption instructions (`adoptionInstruction`) for cats with `adoptionStage == FOR_ADOPTION`,
+  shown on the cat profile page — done
+- Cat age: store birth date and compute age (years/months) instead of a hardcoded `age`/`ageMonths`
+  number that goes stale — near-term, see `todo.md`
 
 ## Phase 2 — SQLite storage
 

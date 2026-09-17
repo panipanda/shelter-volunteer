@@ -26,5 +26,24 @@
     "adoptionStage": "FOR_ADOPTION",
     "createdAt": "2026-05-20T20:30:00+02:00",
     "updatedAt": "2026-05-20T20:30:00+02:00"
+  },
+  {
+    "id": 3,
+    "name": "Nami",
+    "age": null,
+    "ageMonths": 8,
+    "description": {
+      "ru": "Весной 2026 мы забрали из приюта эту весёлую малышку на передержку для пристройства. И с тех пор она засиделась в ожидании своего человека. Нами активная, очень любит играть и отлично ладит с другими кошками. Очень социальная, обожает сидеть на ручках, обниматься и вычёсываться. Полностью здорова: дважды проверена на FIV/FeLV/FCoV — отрицательно, привита, стерилизована, обработана от паразитов, приучена к лотку.",
+      "en": "In spring 2026 we took this cheerful kitten from the shelter into foster care for adoption. She's still waiting for her person. Nami is active, loves to play and gets along great with other cats. Very social, loves being held, cuddling and being brushed. Fully healthy: tested twice for FIV/FeLV/FCoV — negative both times, vaccinated, spayed, treated for parasites, litter-trained."
+    },
+    "photoUrl": "/images/nami.jpg",
+    "location": "IN_FOSTERHOME",
+    "adoptionStage": "FOR_ADOPTION",
+    "adoptionInstruction": {
+      "ru": "Пишите координатору по пристройству в Telegram: @Nata_Rogava",
+      "en": "Contact the adoption coordinator on Telegram: @Nata_Rogava"
+    },
+    "createdAt": "2026-09-17T16:30:00+02:00",
+    "updatedAt": "2026-09-17T16:30:00+02:00"
   }
 ]

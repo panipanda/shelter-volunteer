@@ -16,14 +16,18 @@ fun displayPhotoUrl(photoUrl: String?): String {
     return photoUrl ?: "/images/default-cat.jpg"
 }
 
-fun displayCatAge(age: Int?, locale: AppLocale): String {
+fun displayCatAge(age: Int?, ageMonths: Int?, locale: AppLocale): String {
     val messages = messagesFor(locale)
-    return if (age == null) {
-        messages.t("cat.age.unknown")
-    } else if (age == 1) {
+    return if (age == 1) {
         messages.t("cat.age.oneYear")
-    } else {
+    } else if (age != null) {
         messages.t("cat.age.years", age)
+    } else if (ageMonths == 1) {
+        messages.t("cat.age.oneMonth")
+    } else if (ageMonths != null) {
+        messages.t("cat.age.months", ageMonths)
+    } else {
+        messages.t("cat.age.unknown")
     }
 }
 
