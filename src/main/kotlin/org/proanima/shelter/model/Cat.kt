@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 data class Cat(
     val id: Int,
     val name: String?,
-    val age: Int?,
-    val ageMonths: Int? = null,
+    val birthYear: Int? = null,
+    val birthMonth: Int? = null,
     val description: LocalizedText,
     val photoUrl: String?,
     val location: CatLocation,

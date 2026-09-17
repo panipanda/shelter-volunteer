@@ -28,7 +28,9 @@ Features:
 - Cat adoption instructions (`adoptionInstruction`) for cats with `adoptionStage == FOR_ADOPTION`,
   shown on the cat profile page — done
 - Cat age: store birth date and compute age (years/months) instead of a hardcoded `age`/`ageMonths`
-  number that goes stale — near-term, see `todo.md`
+  number that goes stale — done. Shelter cats rarely have a known day of birth, so `Cat` stores
+  `birthYear`/`birthMonth` (both nullable; month often unknown) instead of a full date, and
+  `displayCatAge` computes age from whichever precision is available
 
 ## Phase 2 — SQLite storage
 

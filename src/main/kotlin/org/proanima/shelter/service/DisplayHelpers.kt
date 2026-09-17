@@ -7,6 +7,7 @@ import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.CatLocation
 import org.proanima.shelter.model.VisitStatus
 import org.proanima.shelter.model.VolunteerDirection
+import java.time.LocalDate
 
 fun displayCatName(name: String?, locale: AppLocale): String {
     return name ?: messagesFor(locale).t("cat.name.unnamed")
@@ -16,18 +17,29 @@ fun displayPhotoUrl(photoUrl: String?): String {
     return photoUrl ?: "/images/default-cat.jpg"
 }
 
-fun displayCatAge(age: Int?, ageMonths: Int?, locale: AppLocale): String {
+// У приютских кошек редко известна точная дата рождения — обычно только год,
+// иногда месяц. Возраст считаем с той точностью, что есть: без месяца — по годам,
+// с месяцем — по месяцам, пока не наберётся полный год.
+fun displayCatAge(birthYear: Int?, birthMonth: Int?, locale: AppLocale, today: LocalDate = LocalDate.now()): String {
     val messages = messagesFor(locale)
-    return if (age == 1) {
+    if (birthYear == null) {
+        return messages.t("cat.age.unknown")
+    }
+    if (birthMonth == null) {
+        val years = today.year - birthYear
+        return if (years == 1) messages.t("cat.age.oneYear") else messages.t("cat.age.years", years)
+    }
+    val totalMonths = (today.year - birthYear) * 12 + (today.monthValue - birthMonth)
+    val years = totalMonths / 12
+    val months = totalMonths % 12
+    return if (years == 1) {
         messages.t("cat.age.oneYear")
-    } else if (age != null) {
-        messages.t("cat.age.years", age)
-    } else if (ageMonths == 1) {
+    } else if (years > 1) {
+        messages.t("cat.age.years", years)
+    } else if (months == 1) {
         messages.t("cat.age.oneMonth")
-    } else if (ageMonths != null) {
-        messages.t("cat.age.months", ageMonths)
     } else {
-        messages.t("cat.age.unknown")
+        messages.t("cat.age.months", months)
     }
 }
 

@@ -15,7 +15,7 @@ class CatServiceTest {
         Cat(
             id = 1,
             name = "Zoka",
-            age = 3,
+            birthYear = 2023,
             description = LocalizedText(en = "Calm and friendly cat."),
             photoUrl = "/images/cats/zoka.jpg",
             location = CatLocation.IN_SHELTER,
@@ -26,7 +26,7 @@ class CatServiceTest {
         Cat(
             id = 2,
             name = "Marta",
-            age = null,
+            birthYear = null,
             description = LocalizedText(en = "Shy but sweet cat."),
             photoUrl = null,
             location = CatLocation.IN_SHELTER,

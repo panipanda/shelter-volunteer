@@ -39,7 +39,7 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
     val prefix = "/${locale.code}"
     val messages = messagesFor(locale)
     val name = displayCatName(cat.name, locale)
-    val age = displayCatAge(cat.age, cat.ageMonths, locale)
+    val age = displayCatAge(cat.birthYear, cat.birthMonth, locale)
     val location = displayCatLocation(cat.location, locale)
     val adoptionStage = displayAdoptionStage(cat.adoptionStage, locale)
     val photoUrl = displayPhotoUrl(cat.photoUrl)
