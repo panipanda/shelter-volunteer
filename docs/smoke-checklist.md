@@ -196,6 +196,7 @@ Expected result:
 - page displays a photo gallery with all `photoUrls` entries as thumbnails;
 - page displays the default cat image if `photoUrls` is empty;
 - clicking a thumbnail opens that photo full-size in a CSS-only lightbox (no page navigation, no JS);
+- when the cat has more than one photo, prev/next arrows inside the lightbox step through the photos and wrap around at the ends;
 - images are loaded from `/images/...` (unprefixed);
 - page contains a link back to `/ru/cats`.
 

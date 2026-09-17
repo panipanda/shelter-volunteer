@@ -161,6 +161,30 @@ img {
     inset: 0;
 }
 
+.cat-gallery-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0.25rem 0.75rem;
+    font-size: 2.5rem;
+    line-height: 1;
+    color: #ffffff;
+    text-decoration: none;
+    user-select: none;
+}
+
+.cat-gallery-lightbox-nav:hover {
+    opacity: 0.7;
+}
+
+.cat-gallery-lightbox-prev {
+    left: 0.5rem;
+}
+
+.cat-gallery-lightbox-next {
+    right: 0.5rem;
+}
+
 footer {
     border-top: 1px solid var(--color-border);
     color: var(--color-muted);

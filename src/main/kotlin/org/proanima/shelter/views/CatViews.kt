@@ -66,6 +66,18 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
                     id = "photo-$index"
                     a(href = "#", classes = "cat-gallery-lightbox-close")
                     img(src = url, alt = name)
+                    if (photoUrls.size > 1) {
+                        val prevIndex = (index - 1 + photoUrls.size) % photoUrls.size
+                        val nextIndex = (index + 1) % photoUrls.size
+                        a(href = "#photo-$prevIndex", classes = "cat-gallery-lightbox-nav cat-gallery-lightbox-prev") {
+                            attributes["aria-label"] = messages.t("cat.gallery.prevPhoto")
+                            +"‹"
+                        }
+                        a(href = "#photo-$nextIndex", classes = "cat-gallery-lightbox-nav cat-gallery-lightbox-next") {
+                            attributes["aria-label"] = messages.t("cat.gallery.nextPhoto")
+                            +"›"
+                        }
+                    }
                 }
             }
         }
