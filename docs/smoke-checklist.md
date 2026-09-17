@@ -145,8 +145,10 @@ Expected result:
 - response is an HTML page;
 - page contains the `Cats` heading;
 - page contains cat names from `data/cats.json`;
-- each cat is displayed as a list item;
-- each cat name links to `/ru/cats/{slug}`, where `slug` is the cat's name lowercased
+- each cat is displayed as a preview card with a photo and its name;
+- the card photo is the cat's first `photoUrls` entry, or the default cat image if
+  `photoUrls` is empty (same fallback as the cat details gallery, via `displayPhotoUrls`);
+- each cat card links to `/ru/cats/{slug}`, where `slug` is the cat's name lowercased
   (e.g. `Mila` → `mila`; a cat without a name falls back to its numeric `id`);
 - cats with missing names are displayed as `Unnamed`.
 
@@ -154,9 +156,12 @@ Example expected HTML content:
 
 ```html
 <h1>Cats</h1>
-<ul>
-    <li><a href="/ru/cats/mila">Mila</a></li>
-</ul>
+<div class="cat-list">
+    <a href="/ru/cats/mila" class="cat-card">
+        <img src="/images/default-cat.jpg" alt="Mila" class="cat-card-photo">
+        <span>Mila</span>
+    </a>
+</div>
 ```
 
 The exact names and slugs depend on the current contents of `data/cats.json`.
@@ -627,8 +632,8 @@ Current known limitations:
   for 0/5+ but is grammatically off for 2-4 (e.g. "2 лет" instead of "2 года"), since
   `displayCatAge` only branches on "exactly 1 year" vs. everything else; full Russian plural rules
   would need a code change, not just a translation.
-- Styling is intentionally minimal (container width, nav, cat-list pills, visit-card look,
-  responsive nav wrap) — no design system, no cat photo grid/thumbnails beyond the existing `<img>`.
+- Styling is intentionally minimal (container width, nav, cat-list preview cards, visit-card
+  look, responsive nav wrap) — no design system.
 - There are no route tests for `/` or `/{lang}/cats` (only visits and guide routes are covered).
 - Error states for cat pages (`Cat not found`, `Invalid cat id`) still return plain text, not a
   styled HTML page.

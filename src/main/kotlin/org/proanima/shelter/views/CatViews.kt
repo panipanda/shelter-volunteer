@@ -6,10 +6,9 @@ import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.id
 import kotlinx.html.img
-import kotlinx.html.li
 import kotlinx.html.p
+import kotlinx.html.span
 import kotlinx.html.strong
-import kotlinx.html.ul
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AdoptionStage
@@ -28,10 +27,12 @@ fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String) {
 
     pageLayout(locale, pageTitle = messages.t("cat.page.title"), currentPath = currentPath) {
         h1 { +messages.t("cat.page.title") }
-        ul(classes = "cat-list") {
+        div(classes = "cat-list") {
             cats.forEach { cat ->
-                li {
-                    a(href = "$prefix/cats/${catSlug(cat.name, cat.id)}") { +displayCatName(cat.name, locale) }
+                val name = displayCatName(cat.name, locale)
+                a(href = "$prefix/cats/${catSlug(cat.name, cat.id)}", classes = "cat-card") {
+                    img(src = displayPhotoUrls(cat.photoUrls).first(), alt = name, classes = "cat-card-photo")
+                    span { +name }
                 }
             }
         }

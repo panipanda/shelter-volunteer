@@ -86,24 +86,34 @@ a {
 }
 
 .cat-list {
-    list-style: none;
-    padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 1rem;
 }
 
-.cat-list li {
-    margin-bottom: 0;
+.cat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 140px;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
-    padding: 0.5rem 1rem;
+    padding: 0.75rem;
+    text-decoration: none;
+    color: var(--color-text);
 }
 
-.cat-list li a {
+.cat-card-photo {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+}
+
+.cat-card span {
     font-weight: 600;
-    text-decoration: none;
+    text-align: center;
 }
 
 article {
