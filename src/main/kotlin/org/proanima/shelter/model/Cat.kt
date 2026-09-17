@@ -9,6 +9,7 @@ data class Cat(
     val birthYear: Int? = null,
     val birthMonth: Int? = null,
     val description: LocalizedText,
+    val medicalStatus: LocalizedText? = null,
     val photoUrl: String?,
     val location: CatLocation,
     val adoptionStage: AdoptionStage,

@@ -31,6 +31,9 @@ Features:
   number that goes stale — done. Shelter cats rarely have a known day of birth, so `Cat` stores
   `birthYear`/`birthMonth` (both nullable; month often unknown) instead of a full date, and
   `displayCatAge` computes age from whichever precision is available
+- Cat profile: split free-text description into character/behavior (`description`) and a
+  separate `medicalStatus` field (vaccination, spaying/neutering, treatment) — done. Practical
+  info a volunteer needs before a visit, kept apart from the adoption-facing narrative
 
 ## Phase 2 — SQLite storage
 

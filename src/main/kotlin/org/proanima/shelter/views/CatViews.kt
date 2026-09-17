@@ -59,6 +59,10 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
         p { strong { +messages.t("cat.label.status") }; +" $adoptionStage" }
         p { strong { +messages.t("cat.label.description") }; +" $description" }
 
+        cat.medicalStatus?.let { medicalStatus ->
+            p { strong { +messages.t("cat.label.medicalStatus") }; +" ${medicalStatus.forLocale(locale)}" }
+        }
+
         if (cat.adoptionStage == AdoptionStage.FOR_ADOPTION) {
             val instruction = cat.adoptionInstruction?.forLocale(locale)
                 ?: messages.t("cat.adoptionInstruction.unknown")
