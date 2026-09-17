@@ -31,6 +31,7 @@ fun HTML.pageLayout(
     head {
         meta(charset = "UTF-8")
         title { +pageTitle }
+        link(rel = "icon", href = "/images/default-cat.jpg", type = "image/jpeg")
         link(rel = "stylesheet", href = "/styles/main.css", type = "text/css")
     }
     body {
