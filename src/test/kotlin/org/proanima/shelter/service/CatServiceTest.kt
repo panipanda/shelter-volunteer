@@ -1,6 +1,8 @@
 package org.proanima.shelter.service
 
+import org.proanima.shelter.model.AdoptionStage
 import org.proanima.shelter.model.Cat
+import org.proanima.shelter.model.CatLocation
 import org.proanima.shelter.model.LocalizedText
 import org.proanima.shelter.repository.CatRepository
 import kotlin.test.Test
@@ -16,7 +18,8 @@ class CatServiceTest {
             age = 3,
             description = LocalizedText(en = "Calm and friendly cat."),
             photoUrl = "/images/cats/zoka.jpg",
-            isAvailable = true,
+            location = CatLocation.IN_SHELTER,
+            adoptionStage = AdoptionStage.FOR_ADOPTION,
             createdAt = "2026-05-20T20:30:00+02:00",
             updatedAt = "2026-05-20T20:30:00+02:00"
         ),
@@ -26,7 +29,8 @@ class CatServiceTest {
             age = null,
             description = LocalizedText(en = "Shy but sweet cat."),
             photoUrl = null,
-            isAvailable = false,
+            location = CatLocation.IN_SHELTER,
+            adoptionStage = AdoptionStage.NONE,
             createdAt = "2026-05-20T20:30:00+02:00",
             updatedAt = "2026-05-20T20:30:00+02:00"
         )

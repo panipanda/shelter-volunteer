@@ -8,7 +8,8 @@
       "en": "Calm and friendly cat."
     },
     "photoUrl": null,
-    "isAvailable": true,
+    "location": "IN_SHELTER",
+    "adoptionStage": "FOR_ADOPTION",
     "createdAt": "2026-05-20T20:30:00+02:00",
     "updatedAt": "2026-05-20T20:30:00+02:00"
   },
@@ -21,7 +22,8 @@
       "en": "Shy but sweet cat."
     },
     "photoUrl": null,
-    "isAvailable": true,
+    "location": "IN_SHELTER",
+    "adoptionStage": "FOR_ADOPTION",
     "createdAt": "2026-05-20T20:30:00+02:00",
     "updatedAt": "2026-05-20T20:30:00+02:00"
   }

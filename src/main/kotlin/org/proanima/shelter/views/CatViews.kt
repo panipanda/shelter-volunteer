@@ -12,8 +12,9 @@ import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Cat
+import org.proanima.shelter.service.displayAdoptionStage
 import org.proanima.shelter.service.displayCatAge
-import org.proanima.shelter.service.displayCatAvailability
+import org.proanima.shelter.service.displayCatLocation
 import org.proanima.shelter.service.displayCatName
 import org.proanima.shelter.service.displayPhotoUrl
 
@@ -38,7 +39,8 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
     val name = displayCatName(cat.name, locale)
     val age = displayCatAge(cat.age, locale)
-    val availability = displayCatAvailability(cat.isAvailable, locale)
+    val location = displayCatLocation(cat.location, locale)
+    val adoptionStage = displayAdoptionStage(cat.adoptionStage, locale)
     val photoUrl = displayPhotoUrl(cat.photoUrl)
     val description = cat.description.forLocale(locale)
 
@@ -52,7 +54,8 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
         }
 
         p { strong { +messages.t("cat.label.age") }; +" $age" }
-        p { strong { +messages.t("cat.label.status") }; +" $availability" }
+        p { strong { +messages.t("cat.label.location") }; +" $location" }
+        p { strong { +messages.t("cat.label.status") }; +" $adoptionStage" }
         p { strong { +messages.t("cat.label.description") }; +" $description" }
     }
 }

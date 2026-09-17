@@ -2,7 +2,9 @@ package org.proanima.shelter.service
 
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
+import org.proanima.shelter.model.AdoptionStage
 import org.proanima.shelter.model.AppLocale
+import org.proanima.shelter.model.CatLocation
 import org.proanima.shelter.model.VisitStatus
 import org.proanima.shelter.model.VolunteerDirection
 
@@ -25,13 +27,22 @@ fun displayCatAge(age: Int?, locale: AppLocale): String {
     }
 }
 
-fun displayCatAvailability(isAvailable: Boolean, locale: AppLocale): String {
-    val messages = messagesFor(locale)
-    return if (isAvailable) {
-        messages.t("cat.status.available")
-    } else {
-        messages.t("cat.status.unavailable")
+fun displayCatLocation(location: CatLocation, locale: AppLocale): String {
+    val key = when (location) {
+        CatLocation.IN_SHELTER -> "cat.location.inShelter"
+        CatLocation.IN_FOSTERHOME -> "cat.location.inFosterhome"
     }
+    return messagesFor(locale).t(key)
+}
+
+fun displayAdoptionStage(stage: AdoptionStage, locale: AppLocale): String {
+    val key = when (stage) {
+        AdoptionStage.NONE -> "cat.adoptionStage.none"
+        AdoptionStage.FOR_ADOPTION -> "cat.adoptionStage.forAdoption"
+        AdoptionStage.RESERVED -> "cat.adoptionStage.reserved"
+        AdoptionStage.ADOPTED -> "cat.adoptionStage.adopted"
+    }
+    return messagesFor(locale).t(key)
 }
 
 fun displayVisitAvailability(status: VisitStatus, freePlaces: Int?, locale: AppLocale): String {

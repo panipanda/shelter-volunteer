@@ -9,7 +9,8 @@ data class Cat(
     val age: Int?,
     val description: LocalizedText,
     val photoUrl: String?,
-    val isAvailable: Boolean,
+    val location: CatLocation,
+    val adoptionStage: AdoptionStage,
     val createdAt: String,
     val updatedAt: String
 )

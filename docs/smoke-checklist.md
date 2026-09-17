@@ -189,7 +189,8 @@ Expected result:
 - page contains the display name of the cat with `id = 1`;
 - if the cat name is missing in JSON, page contains `Unnamed`;
 - page displays cat age using the configured age fallback;
-- page displays adoption availability;
+- page displays cat location (shelter/foster home);
+- page displays adoption stage;
 - page displays cat description;
 - page displays a cat image if `photoUrl` is present;
 - page displays the default cat image if `photoUrl` is missing or `null`;

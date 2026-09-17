@@ -1,5 +1,6 @@
 package org.proanima.shelter.service
 
+import org.proanima.shelter.model.AdoptionStage
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.repository.CatRepository
 
@@ -10,7 +11,7 @@ class CatService(private val repository: CatRepository) {
     }
 
     fun getAvailableCats(): List<Cat> {
-        return repository.findAll().filter { it.isAvailable }
+        return repository.findAll().filter { it.adoptionStage == AdoptionStage.FOR_ADOPTION }
     }
 
     fun getCatById(id: Int): Cat? {
