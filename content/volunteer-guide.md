@@ -25,6 +25,16 @@ This page is a short guide for volunteers who want to help with cats at Pro Anim
 - Ask questions if you're unsure about something, coordinators are there to help you.
 - Have fun and enjoy your time with the cats!
 
+The shelter has three cat enclosures: the Lower one ("Moscow", airlock system, 14 cats), the Middle one ("small", airlock system, 12 cats) and the Upper one ("big", entrance without an airlock, 15 cats). Enter the enclosures as carefully as possible so that no cat gets out. Each enclosure has its own cleaning equipment: litter scoops, scrapers, brushes, sponges, a mop, and a broom with a dustpan. Never use the equipment of one enclosure to clean another. If an enclosure is short on equipment, write to the cat volunteers' chat.
+
+- First, assess each litter tray by how dirty it is. If more than half of the litter is still clean, just scoop out the waste and leave the tray. If the tray is dirty, empty it into the cart, wash it with the long-handled brush and add fresh litter. Don't add much litter: it swells a lot, and the bottom of the tray should just barely show through.
+- Only organic waste can go into the cart.
+- Always wash the bowls before pouring in clean water, and change the water every time. If a water bottle is less than half full, top it up or replace it.
+- Top up the food from the barrel if it's running low; a bowl should be no more than ¾ full.
+- After cleaning, wash the equipment so everything is ready for the next cleaning.
+- If there is little time or few volunteers, the floors can be left unwashed. The minimum is to clean the litter trays, wash the bowls and sweep the floor in the little house. The maximum is the same, plus washing the floors.
+- Bonus "maximum+" program: if there is time, you can sweep the inner yard by the cats.
+
 ## How signup works
 
 Visit signup is coordinated manually. Check the volunteer visits page, then follow the signup instructions shown for the selected visit.
