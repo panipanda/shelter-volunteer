@@ -12,7 +12,6 @@ import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.repository.JsonCatRepository
-import org.proanima.shelter.repository.JsonVisitRepository
 import org.proanima.shelter.repository.MarkdownGuideRepository
 import org.proanima.shelter.routes.catRoutes
 import org.proanima.shelter.routes.healthRoutes
@@ -21,8 +20,12 @@ import org.proanima.shelter.routes.guideRoutes
 import org.proanima.shelter.routes.homeRoutes
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.service.GuideService
-import org.proanima.shelter.service.VisitService
 import java.io.File
+import java.time.Clock
+import java.time.ZoneId
+
+// Расписание визитов привязано к времени Белграда, а не к часовому поясу сервера.
+private val SHELTER_ZONE = ZoneId.of("Europe/Belgrade")
 
 fun main() {
     val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -37,15 +40,14 @@ fun main() {
 fun Application.module() {
     configureRoutes(
         catService = CatService(JsonCatRepository()),
-        visitService = VisitService(JsonVisitRepository()),
         guideService = GuideService(MarkdownGuideRepository())
     )
 }
 
 fun Application.configureRoutes(
     catService: CatService,
-    visitService: VisitService,
-    guideService: GuideService
+    guideService: GuideService,
+    clock: Clock = Clock.system(SHELTER_ZONE)
 ) {
     routing {
         get("/") {
@@ -61,9 +63,9 @@ fun Application.configureRoutes(
 
         AppLocale.entries.forEach { locale ->
             route("/${locale.code}") {
-                homeRoutes(catService, visitService, locale)
+                homeRoutes(catService, locale, clock)
                 catRoutes(catService, locale)
-                visitRoutes(visitService, locale)
+                visitRoutes(locale)
                 guideRoutes(guideService, locale)
             }
         }

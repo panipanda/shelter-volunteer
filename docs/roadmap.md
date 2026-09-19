@@ -9,8 +9,6 @@ Render (see `docs/deploy.md`).
 Storage:
 
 - `cats.json`
-- `visits.json`
-- `visit-participants.json` for internal history, not public in MVP
 - `volunteer-guide.md`
 
 Features:

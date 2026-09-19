@@ -23,9 +23,8 @@ import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Cat
-import org.proanima.shelter.model.VolunteerVisit
-import org.proanima.shelter.service.displayVisitAvailability
-import java.time.LocalDate
+import org.proanima.shelter.service.NextVisit
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 import java.util.ResourceBundle
@@ -39,7 +38,7 @@ private const val ICON_CLEANING = """<path d="M14 3l7 7"/><path d="M12.5 8.5L4 1
 private const val ICON_FEEDING = """<path d="M3 11h18a8 8 0 0 1-8 8h-2a8 8 0 0 1-8-8z"/><path d="M8 7c0-1.5 1.5-1.5 1.5-3M13 7c0-1.5 1.5-1.5 1.5-3"/>"""
 private const val ICON_SOCIALIZATION = """<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>"""
 
-fun HTML.homePage(cats: List<Cat>, nextVisit: VolunteerVisit?, locale: AppLocale, currentPath: String) {
+fun HTML.homePage(cats: List<Cat>, nextVisit: NextVisit, locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
 
     pageLayout(locale, pageTitle = messages.t("home.title"), currentPath = currentPath, mainClass = "home") {
@@ -84,48 +83,32 @@ private fun UL.fact(value: String, label: String) {
     }
 }
 
-private fun FlowContent.nextVisitSection(visit: VolunteerVisit?, locale: AppLocale, messages: ResourceBundle) {
-    val visitsHref = "/${locale.code}/visits"
+private fun FlowContent.nextVisitSection(visit: NextVisit, locale: AppLocale, messages: ResourceBundle) {
+    // Для sr берём латиницу, иначе Java отдаст названия дней и месяцев кириллицей.
+    val javaLocale = Locale.forLanguageTag(if (locale == AppLocale.SR) "sr-Latn" else locale.code)
+    val weekday = visit.date.dayOfWeek.getDisplayName(TextStyle.FULL_STANDALONE, javaLocale)
+        .replaceFirstChar { it.titlecase(javaLocale) }
+    val month = visit.date.month.getDisplayName(TextStyle.SHORT_STANDALONE, javaLocale).trimEnd('.')
+    val departure = visit.departure.format(DateTimeFormatter.ofPattern("H:mm"))
 
     section(classes = "next-visit") {
         div(classes = "wrap") {
             div(classes = "visit-strip") {
-                if (visit == null) {
-                    div(classes = "visit-body") {
-                        h2 { +messages.t("home.nextVisit.title") }
-                        p { +messages.t("home.nextVisit.empty") }
-                    }
-                    a(href = visitsHref, classes = "button button-secondary") { +messages.t("home.link.visits") }
-                } else {
-                    visitDateBadge(visit, locale)
-                    div(classes = "visit-body") {
-                        span(classes = "pill") {
-                            +displayVisitAvailability(visit.status, visit.freePlaces, locale)
-                        }
-                        h2 { +visit.title.forLocale(locale) }
-                        p { +"${messages.t("visit.label.time")} ${visit.time}" }
-                    }
-                    div(classes = "visit-actions") {
-                        a(href = "#join", classes = "button") { +messages.t("home.nextVisit.cta") }
-                        a(href = visitsHref) { +messages.t("home.link.visits") }
-                    }
+                div(classes = "visit-date") {
+                    strong { +visit.date.dayOfMonth.toString() }
+                    span { +month }
+                }
+                div(classes = "visit-body") {
+                    span(classes = "pill") { +weekday }
+                    h2 { +messages.t("home.nextVisit.title") }
+                    p { +messages.t("home.nextVisit.departure", departure) }
+                    p { +messages.t("home.nextVisit.chat") }
+                }
+                div(classes = "visit-actions") {
+                    a(href = "#join", classes = "button") { +messages.t("home.nextVisit.cta") }
                 }
             }
         }
-    }
-}
-
-// Дату разбираем мягко: если в данных формат неожиданный, лучше показать карточку без
-// плашки с числом, чем уронить всю главную.
-private fun FlowContent.visitDateBadge(visit: VolunteerVisit, locale: AppLocale) {
-    val date = runCatching { LocalDate.parse(visit.date) }.getOrNull() ?: return
-    // Для sr берём латиницу, иначе Java отдаст названия месяцев кириллицей.
-    val javaLocale = Locale.forLanguageTag(if (locale == AppLocale.SR) "sr-Latn" else locale.code)
-    val month = date.month.getDisplayName(TextStyle.SHORT_STANDALONE, javaLocale).trimEnd('.')
-
-    div(classes = "visit-date") {
-        strong { +date.dayOfMonth.toString() }
-        span { +month }
     }
 }
 

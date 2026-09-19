@@ -40,7 +40,6 @@
 ### Data files
 
 - Store cat catalogue data in `data/cats.json`
-- Store public visit data in `data/visits.json`
 - Store volunteer guide content in `content/volunteer-guide.md`
 - Keep data structures close to future database tables
 

@@ -6,7 +6,7 @@ The site supports three locales via a `/{locale}` path prefix: `ru` (default), `
 
 This supersedes the original plan (English-first MVP, Russian localization postponed to a later
 phase): locale-prefixed routing and a `ru`-default content model were added early, and real `ru`
-translations for JSON content (`data/cats.json`, `data/visits.json`), UI strings
+translations for JSON content (`data/cats.json`), UI strings
 (`messages_ru.properties`), and the volunteer guide (`content/volunteer-guide.ru.md`) were filled
 in soon after, since `ru` was the locale most volunteers would actually see by default.
 
@@ -86,13 +86,15 @@ Routes and services must not depend on JSON-specific implementation details.
 
 ## Visit data
 
-Upcoming visits and archived visits use the same base model: `VolunteerVisit`.
+Visit data is not stored yet. Visits are organised in the cat volunteer chat, and sync with it is not
+implemented, so the test data (`data/visits.json`, `data/visit-participants.json`) and the whole visit
+data layer (`VolunteerVisit`, `VisitService`, `VisitRepository` and related code) were removed.
+The "Upcoming visits" and "Visit archive" pages are stubs that point to the chat and the coordinators.
+The data model will be designed again together with the sync.
 
-The application should separate upcoming and archived visits by date and status, not by using separate data structures.
-
-The public visit data is stored in `data/visits.json`.
-
-Internal participant history may be stored separately in `data/visit-participants.json`.
+The home page computes the next visit from the regular schedule (Wednesday 9:00 and Saturday 10:00,
+departure from Vračar, Belgrade time): whichever departure is nearest is shown, with no information
+about free places — only a pointer to the chat and the coordinators.
 
 Participant names and contacts must not be rendered publicly in MVP unless explicit consent exists.
 
@@ -163,7 +165,7 @@ Cat/visit photos are served from a real directory on disk (`data/images/`, via K
 
 Reasoning: this project's whole "MVP data storage" decision above is built around content living
 in plain files that get edited without touching code or triggering a rebuild — that's explicitly
-why `data/cats.json`/`data/visits.json` aren't compiled into the JAR. Serving images from classpath
+why `data/cats.json` isn't compiled into the JAR. Serving images from classpath
 resources broke that same promise for exactly one content type: adding or replacing a cat photo
 would have meant committing a binary into `src/main/resources`, rebuilding, and redeploying — the
 same heavyweight path as a code change, for what should be a content update. `data/images/` fixes

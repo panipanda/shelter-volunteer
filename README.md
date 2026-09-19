@@ -54,8 +54,7 @@ The following features are intentionally postponed:
 The MVP uses file-based storage:
 
 - `data/cats.json` for cat catalogue data
-- `data/visits.json` for public volunteer visit data
-- `data/visit-participants.json` for internal participant history, not rendered publicly in MVP
+- Volunteer visits are not stored yet: the "Upcoming visits" and "Visit archive" pages are stubs until sync with the cat volunteer chat is implemented. The home page computes the next visit from the regular schedule (Wednesday 9:00, Saturday 10:00, Vračar)
 - `content/volunteer-guide.md` for volunteer instructions (plus a `.{locale}.md` variant per translated locale)
 
 Application code should access data through repository interfaces, not directly from routes.
@@ -92,20 +91,13 @@ Public website data lives in:
 
 ```text
 data/cats.json
-data/visits.json
 content/volunteer-guide.md
 content/volunteer-guide.ru.md
 ```
 
 ### Internal data
 
-Participant history may be stored in:
-
-```text
-data/visit-participants.json
-```
-
-This file is internal operational data. It must not be rendered on public pages during MVP development unless explicit consent exists.
+There is no internal data yet. Participant history, once it exists, is internal operational data and must not be rendered on public pages during MVP development unless explicit consent exists.
 
 ## Visit calendar approach
 
@@ -144,7 +136,7 @@ Participant names and contacts must not be rendered publicly in MVP unless expli
 
 Participant data is treated as internal operational data.
 
-The file `data/visit-participants.json` may be used later for internal history, but it must not be rendered on public pages during MVP development.
+Participant history, if it is stored later, must not be rendered on public pages during MVP development.
 
 Public pages should show only safe, aggregated, or consent-approved information.
 
@@ -233,8 +225,6 @@ Current project data/content/docs structure:
 ```text
 data/
   cats.json
-  visits.json
-  visit-participants.json
 
 content/
   volunteer-guide.md      English, also the fallback for missing translations

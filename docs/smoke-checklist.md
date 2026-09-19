@@ -1,6 +1,6 @@
 # Smoke Checklist
 
-This checklist covers the current MVP routes, static image resources, visit pages, and local application startup.
+This checklist covers the current MVP routes, static image resources, visit stub pages, and local application startup.
 
 Pages now live under a language prefix: `/ru`, `/en`, `/sr`. `ru` is the default and top-priority
 locale — `/` redirects there. `/health` and `/images/...` stay unprefixed, since they are not
@@ -13,7 +13,6 @@ localized content. Examples below use `/ru` unless noted otherwise.
 - The working tree is clean or current changes are intentional.
 - The application is run from the project root.
 - Test data exists in `data/cats.json`.
-- Test data exists in `data/visits.json`.
 - Static image resources exist under `data/images/`.
 
 ## Build check
@@ -250,7 +249,22 @@ Acceptance criteria:
 - any slug that doesn't match a cat is handled the same way — there is no separate
   "invalid slug" case, since any string is a syntactically valid slug.
 
-## Upcoming visits endpoint
+## Home page: next visit card
+
+Open `http://localhost:8080/ru`.
+
+Expected result:
+
+- the "Ближайший визит" card shows the date and weekday of the nearest departure: Wednesday 9:00
+  or Saturday 10:00 (from Vračar), whichever comes first; once today's departure time has passed,
+  the next one is shown;
+- the card mentions the cat volunteer chat and the coordinators, and does not show free places;
+- the button "Записаться в чате" scrolls to the "How to join" block;
+- the same card is shown in `/en` and `/sr` with translated text.
+
+## Upcoming visits endpoint (stub)
+
+Visit data is not stored yet: the page is a stub until sync with the cat volunteer chat is implemented.
 
 Open in a browser:
 
@@ -277,40 +291,21 @@ Expected result:
 - response is returned successfully;
 - response is an HTML page;
 - page contains the `Volunteer visits` heading;
-- page contains upcoming visits from `data/visits.json`;
-- visits with `COMPLETED` status are not shown on this page;
-- page displays visit title;
-- page displays date, time, and timezone;
-- page displays direction and status as translated labels, not raw enum names;
-- page displays availability through `displayVisitAvailability`;
-- page displays capacity or fallback text;
-- page displays signup instruction or fallback text;
+- page contains the stub text saying the list will appear soon and pointing to the cat volunteer
+  chat and the coordinators;
+- page contains no visit cards, dates or free-place counts;
 - page contains navigation links to:
   - `/ru/cats`
   - `/ru/visits`
   - `/ru/visits/archive`
 
-Example expected content for the current test data:
-
-```text
-Volunteer visits
-Cat shelter visit
-2026-06-12
-11:00
-Europe/Belgrade
-Open
-Free places: 2
-```
-
 Acceptance criteria:
 
 - application does not crash;
-- upcoming visits are loaded from `data/visits.json`;
-- completed visits are excluded;
-- nullable visit fields are handled safely;
+- no data file is required for this page;
 - HTML response is returned with `ContentType.Text.Html`.
 
-## Visit archive endpoint
+## Visit archive endpoint (stub)
 
 Open in a browser:
 
@@ -337,37 +332,17 @@ Expected result:
 - response is returned successfully;
 - response is an HTML page;
 - page contains the `Visit archive` heading;
-- page contains completed visits from `data/visits.json`;
-- visits without `COMPLETED` status are not shown on this page;
-- page displays visit title;
-- page displays date, time, and timezone;
-- page displays direction and status as translated labels, not raw enum names;
-- page displays availability through `displayVisitAvailability`;
-- page displays public summary if present;
+- page contains the stub text saying the archive will appear soon;
+- page contains no visit cards;
 - page contains navigation links to:
   - `/ru/cats`
   - `/ru/visits`
   - `/ru/visits/archive`
 
-Example expected content for the current test data:
-
-```text
-Visit archive
-Cat shelter visit
-2026-05-10
-11:00
-Europe/Belgrade
-Completed
-Visit completed
-Visit completed. Volunteers helped with cleaning, feeding and cat socialization.
-```
-
 Acceptance criteria:
 
 - application does not crash;
-- archived visits are loaded from `data/visits.json`;
-- only completed visits are shown;
-- nullable visit fields are handled safely;
+- no data file is required for this page;
 - HTML response is returned with `ContentType.Text.Html`.
 
 ## Volunteer guide endpoint
@@ -400,7 +375,7 @@ Repeat the cat list, cat details, visits, visit archive, and guide checks above 
 `/sr`.
 
 - `/ru` now has real translations for UI strings (`messages_ru.properties`), JSON content
-  (`data/cats.json`, `data/visits.json`) and the guide (`content/volunteer-guide.ru.md`) — expect
+  (`data/cats.json`) and the guide (`content/volunteer-guide.ru.md`) — expect
   Russian text there, not an English fallback.
 - `/sr` has real translations too (Serbian, Latin script, ekavian) for UI strings
   (`messages_sr.properties`), JSON content and the guide (`content/volunteer-guide.sr.md`) — expect
@@ -525,7 +500,8 @@ Current automated coverage includes:
 
 - repository tests;
 - service tests;
-- route tests for visit pages (targeting `/ru/visits` and `/ru/visits/archive`);
+- route tests for the visit stub pages (targeting `/ru/visits` and `/ru/visits/archive`);
+- route tests for the home page next-visit card (Wednesday/Saturday choice with a fixed clock);
 - route tests for guide page (targeting `/ru/guide`):
   - `GET /ru/guide` returns `200 OK`;
   - response contains the main guide sections;
@@ -534,9 +510,9 @@ Current automated coverage includes:
 Acceptance criteria:
 
 - all automated tests pass;
-- route tests confirm that `/ru/visits` returns upcoming visits;
-- route tests confirm that `/ru/visits/archive` returns completed visits;
-- visit pages do not mix upcoming and archived visit data.
+- route tests confirm that `/ru/visits` and `/ru/visits/archive` return stub pages in every locale;
+- route tests confirm that the home page shows the nearest Wednesday or Saturday, mentions the chat
+  and coordinators, and shows no free-place count.
 
 ## Regression checks after route, view, service, repository, static resource, or JSON changes
 
@@ -613,8 +589,7 @@ Current implemented pages:
 - `/{lang}/cats/{slug}` returns HTML for an existing cat; the slug is derived from the cat's
   English name (see `catSlug()` in `service/DisplayHelpers.kt`), the numeric `id` is internal only.
 - `/{lang}/cats/{slug}` returns plain text for a slug that matches no cat.
-- `/{lang}/visits` returns HTML with upcoming visits.
-- `/{lang}/visits/archive` returns HTML with completed visits.
+- `/{lang}/visits` and `/{lang}/visits/archive` return stub HTML pages (no visit data yet).
 - `/{lang}/guide` — volunteer guide page; `ru`, `en` and `sr` body content is real
   (see "Other locales" above).
 - static image resources are served from `/images/...`, unprefixed (real directory on disk).
@@ -624,7 +599,7 @@ Current implemented pages:
 
 Current known limitations:
 
-- `data/cats.json` and `data/visits.json` have `ru`, `en` and `sr` translations filled in.
+- `data/cats.json` has `ru`, `en` and `sr` translations filled in.
 - UI strings have `messages_ru.properties` and `messages_sr.properties` alongside the English
   default `messages.properties`.
 - The volunteer guide has `content/volunteer-guide.ru.md` and `content/volunteer-guide.sr.md`
@@ -635,9 +610,9 @@ Current known limitations:
 - The Serbian translations have not been reviewed by a native speaker yet.
 - `cat.age.years`/`cat.age.months` in the `sr` bundle use `MessageFormat` `choice` to get the
   2-4 vs. 5+ plural forms right (2 godine / 5 godina / 22 godine).
-- Styling is intentionally minimal (container width, nav, cat-list preview cards, visit-card
-  look, responsive nav wrap) — no design system.
-- There are no route tests for `/` or `/{lang}/cats` (only visits and guide routes are covered).
+- Styling is intentionally minimal (container width, nav, cat-list preview cards,
+  responsive nav wrap) — no design system.
+- There are no route tests for `/` or `/{lang}/cats` (only visits, home and guide routes are covered).
 - Error states for cat pages (`Cat not found`, `Invalid cat id`) still return plain text, not a
   styled HTML page.
 

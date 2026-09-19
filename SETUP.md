@@ -282,8 +282,6 @@ Current planned data files:
 ```text
 data/
   cats.json
-  visits.json
-  visit-participants.json
 
 content/
   volunteer-guide.md
@@ -294,8 +292,6 @@ Purpose:
 
 ```text
 data/cats.json                public cat catalogue data (per-field ru/en/sr text)
-data/visits.json              public volunteer visit data (per-field ru/en/sr text)
-data/visit-participants.json  internal participant history, not public in MVP
 content/volunteer-guide.md    volunteer instruction content, English (fallback for missing translations)
 content/volunteer-guide.ru.md volunteer instruction content, Russian
 content/volunteer-guide.sr.md volunteer instruction content, Serbian (Latin)
@@ -313,8 +309,6 @@ If Python is available, JSON files can also be validated with:
 
 ```powershell
 python -m json.tool data/cats.json
-python -m json.tool data/visits.json
-python -m json.tool data/visit-participants.json
 ```
 
 If Python is not available, IDE validation is enough for now.

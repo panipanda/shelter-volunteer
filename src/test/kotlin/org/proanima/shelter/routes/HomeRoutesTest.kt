@@ -10,16 +10,14 @@ import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.model.CatLocation
 import org.proanima.shelter.model.LocalizedText
-import org.proanima.shelter.model.VisitStatus
-import org.proanima.shelter.model.VolunteerDirection
-import org.proanima.shelter.model.VolunteerVisit
 import org.proanima.shelter.repository.CatRepository
 import org.proanima.shelter.repository.GuideContent
 import org.proanima.shelter.repository.GuideRepository
-import org.proanima.shelter.repository.VisitRepository
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.service.GuideService
-import org.proanima.shelter.service.VisitService
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneId
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -42,31 +40,13 @@ class HomeRoutesTest {
         updatedAt = "2026-01-01T00:00:00+01:00"
     )
 
-    private fun visit(id: Int, date: String, status: VisitStatus, title: String) = VolunteerVisit(
-        id = id,
-        direction = VolunteerDirection.CATS,
-        date = date,
-        time = "11:00",
-        timezone = "Europe/Belgrade",
-        title = LocalizedText(en = title),
-        capacity = 5,
-        freePlaces = 2,
-        status = status,
-        signupInstruction = null,
-        publicSummary = null,
-        lastUpdatedAt = "2026-01-01T00:00:00+01:00",
-        createdAt = "2026-01-01T00:00:00+01:00",
-        updatedAt = "2026-01-01T00:00:00+01:00"
-    )
+    // Часы стоят на UTC, чтобы тест не зависел от часового пояса машины; 2026-09-16 — среда.
+    private fun clockAt(dateTime: String): Clock =
+        Clock.fixed(Instant.parse("${dateTime}Z"), ZoneId.of("UTC"))
 
     private fun catRepository(cats: List<Cat>) = object : CatRepository {
         override fun findAll(): List<Cat> = cats
         override fun findById(id: Int): Cat? = cats.firstOrNull { it.id == id }
-    }
-
-    private fun visitRepository(visits: List<VolunteerVisit>) = object : VisitRepository {
-        override fun findAll(): List<VolunteerVisit> = visits
-        override fun findById(id: Int): VolunteerVisit? = visits.firstOrNull { it.id == id }
     }
 
     private val guideRepository = object : GuideRepository {
@@ -79,7 +59,6 @@ class HomeRoutesTest {
         application {
             configureRoutes(
                 catService = CatService(catRepository(emptyList())),
-                visitService = VisitService(visitRepository(emptyList())),
                 guideService = GuideService(guideRepository)
             )
         }
@@ -102,7 +81,6 @@ class HomeRoutesTest {
         application {
             configureRoutes(
                 catService = CatService(catRepository(emptyList())),
-                visitService = VisitService(visitRepository(emptyList())),
                 guideService = GuideService(guideRepository)
             )
         }
@@ -119,43 +97,54 @@ class HomeRoutesTest {
         }
     }
 
-    @Test
-    fun `GET home shows the nearest open cat visit and skips completed and cancelled ones`() = testApplication {
-        val visits = listOf(
-            visit(1, "2026-05-10", VisitStatus.COMPLETED, "Completed visit"),
-            visit(2, "2026-06-01", VisitStatus.CANCELLED, "Cancelled visit"),
-            visit(3, "2026-07-20", VisitStatus.OPEN, "Later visit"),
-            visit(4, "2026-07-15", VisitStatus.OPEN, "Nearest visit")
-        )
-        application {
-            configureRoutes(
-                catService = CatService(catRepository(emptyList())),
-                visitService = VisitService(visitRepository(visits)),
-                guideService = GuideService(guideRepository)
-            )
+    private fun homeAt(dateTime: String, path: String = "/ru") = run {
+        var body = ""
+        testApplication {
+            application {
+                configureRoutes(
+                    catService = CatService(catRepository(emptyList())),
+                    guideService = GuideService(guideRepository),
+                    clock = clockAt(dateTime)
+                )
+            }
+            body = client.get(path).bodyAsText()
         }
-
-        val body = client.get("/en").bodyAsText()
-
-        assertTrue(body.contains("Nearest visit"))
-        assertFalse(body.contains("Later visit"))
-        assertFalse(body.contains("Completed visit"))
-        assertFalse(body.contains("Cancelled visit"))
+        body
     }
 
     @Test
-    fun `GET home falls back to the chat hint when there are no visits`() = testApplication {
-        application {
-            configureRoutes(
-                catService = CatService(catRepository(emptyList())),
-                visitService = VisitService(visitRepository(emptyList())),
-                guideService = GuideService(guideRepository)
-            )
-        }
+    fun `GET home shows Wednesday when it is the nearest visit`() {
+        // Понедельник 14 сентября 2026: ближайшая среда — 16-е, выезд в 9:00.
+        val body = homeAt("2026-09-14T10:00:00")
 
-        val body = client.get("/ru").bodyAsText()
+        assertTrue(body.contains("<strong>16</strong>"))
+        assertTrue(body.contains("Среда"))
+        assertTrue(body.contains("Выезд из Врачара (Белград) в 9:00."))
+    }
 
-        assertTrue(body.contains("Актуальное расписание визитов смотрите в чате котоволонтёров."))
+    @Test
+    fun `GET home shows Saturday when it is the nearest visit`() {
+        // Четверг 17 сентября 2026: после среды ближайшая — суббота 19-го, выезд в 10:00.
+        val body = homeAt("2026-09-17T12:00:00")
+
+        assertTrue(body.contains("<strong>19</strong>"))
+        assertTrue(body.contains("Суббота"))
+        assertTrue(body.contains("Выезд из Врачара (Белград) в 10:00."))
+    }
+
+    @Test
+    fun `GET home switches to the next visit once today's departure has passed`() {
+        assertTrue(homeAt("2026-09-16T08:59:00").contains("<strong>16</strong>"))
+        assertTrue(homeAt("2026-09-16T09:01:00").contains("<strong>19</strong>"))
+        assertTrue(homeAt("2026-09-19T10:01:00").contains("<strong>23</strong>"))
+    }
+
+    @Test
+    fun `GET home mentions the chat and coordinators but no free places`() {
+        val body = homeAt("2026-09-14T10:00:00")
+
+        assertTrue(body.contains("Запись и свободные места — в чате котоволонтёров. Если есть вопросы, пишите координаторам."))
+        assertFalse(body.contains("Свободных мест:"))
     }
 
     @Test
@@ -170,7 +159,6 @@ class HomeRoutesTest {
         application {
             configureRoutes(
                 catService = CatService(catRepository(cats)),
-                visitService = VisitService(visitRepository(emptyList())),
                 guideService = GuideService(guideRepository)
             )
         }
