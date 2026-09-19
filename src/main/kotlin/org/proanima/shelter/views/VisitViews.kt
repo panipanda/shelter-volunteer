@@ -45,7 +45,7 @@ private fun FlowContent.visitList(visits: List<VolunteerVisit>, locale: AppLocal
     visits.forEach { visit -> visitCard(visit, locale) }
 }
 
-private fun FlowContent.visitCard(visit: VolunteerVisit, locale: AppLocale) {
+internal fun FlowContent.visitCard(visit: VolunteerVisit, locale: AppLocale) {
     val messages = messagesFor(locale)
     val title = visit.title.forLocale(locale)
     val direction = displayVisitDirection(visit.direction, locale)

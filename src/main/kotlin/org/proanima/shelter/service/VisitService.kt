@@ -23,6 +23,13 @@ class VisitService(private val repository: VisitRepository) {
         return repository.findAll().filter { it.status != VisitStatus.COMPLETED }
     }
 
+    // Дата и время — ISO-строки, поэтому лексикографическая сортировка совпадает с хронологической.
+    fun getNextCatVisit(): VolunteerVisit? {
+        return getCatVisits()
+            .filter { it.status != VisitStatus.COMPLETED && it.status != VisitStatus.CANCELLED }
+            .minWithOrNull(compareBy({ it.date }, { it.time }))
+    }
+
     fun getVisitById(id: Int): VolunteerVisit? {
         return repository.findById(id)
     }   

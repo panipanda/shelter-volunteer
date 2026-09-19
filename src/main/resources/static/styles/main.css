@@ -195,6 +195,80 @@ img {
     right: 0.5rem;
 }
 
+main section {
+    margin-bottom: 2rem;
+}
+
+.hero .lead {
+    font-size: 1.15rem;
+    color: var(--color-muted);
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: var(--spacing);
+}
+
+.button {
+    display: inline-block;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius);
+    background: var(--color-accent);
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.button:hover {
+    background: var(--color-accent-dark);
+}
+
+.button-secondary {
+    background: transparent;
+    color: var(--color-accent-dark);
+    border: 1px solid var(--color-accent);
+}
+
+.button-secondary:hover {
+    background: var(--color-surface);
+    color: var(--color-accent-dark);
+}
+
+.hero-photo {
+    width: 100%;
+}
+
+blockquote {
+    margin: var(--spacing) 0;
+    padding: 0.25rem var(--spacing);
+    border-left: 4px solid var(--color-accent);
+    font-style: italic;
+}
+
+.quote-author {
+    font-style: normal;
+    color: var(--color-muted);
+}
+
+.join-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing);
+    align-items: flex-start;
+}
+
+.join-text {
+    flex: 1 1 320px;
+}
+
+.join-photo {
+    flex: 0 1 220px;
+    max-height: 420px;
+    object-fit: cover;
+}
+
 footer {
     border-top: 1px solid var(--color-border);
     color: var(--color-muted);

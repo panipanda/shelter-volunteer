@@ -59,7 +59,7 @@ fun Application.configureRoutes(
 
         AppLocale.entries.forEach { locale ->
             route("/${locale.code}") {
-                homeRoutes(locale)
+                homeRoutes(catService, visitService, locale)
                 catRoutes(catService, locale)
                 visitRoutes(visitService, locale)
                 guideRoutes(guideService, locale)

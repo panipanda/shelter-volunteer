@@ -1,5 +1,6 @@
 package org.proanima.shelter.views
 
+import kotlinx.html.FlowContent
 import kotlinx.html.HTML
 import kotlinx.html.a
 import kotlinx.html.div
@@ -23,18 +24,23 @@ import org.proanima.shelter.service.displayCatName
 import org.proanima.shelter.service.displayPhotoUrls
 
 fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String) {
-    val prefix = "/${locale.code}"
     val messages = messagesFor(locale)
 
     pageLayout(locale, pageTitle = messages.t("cat.page.title"), currentPath = currentPath) {
         h1 { +messages.t("cat.page.title") }
-        div(classes = "cat-list") {
-            cats.forEach { cat ->
-                val name = displayCatName(cat.name, locale)
-                a(href = "$prefix/cats/${catSlug(cat.name, cat.id)}", classes = "cat-card") {
-                    img(src = displayPhotoUrls(cat.photoUrls).first(), alt = name, classes = "cat-card-photo")
-                    span { +name }
-                }
+        catList(cats, locale)
+    }
+}
+
+internal fun FlowContent.catList(cats: List<Cat>, locale: AppLocale) {
+    val prefix = "/${locale.code}"
+
+    div(classes = "cat-list") {
+        cats.forEach { cat ->
+            val name = displayCatName(cat.name, locale)
+            a(href = "$prefix/cats/${catSlug(cat.name, cat.id)}", classes = "cat-card") {
+                img(src = displayPhotoUrls(cat.photoUrls).first(), alt = name, classes = "cat-card-photo")
+                span { +name }
             }
         }
     }
