@@ -29,7 +29,7 @@ class HomeRoutesTest {
 
     private fun cat(id: Int, name: String, stage: AdoptionStage) = Cat(
         id = id,
-        name = name,
+        name = LocalizedText(en = name),
         birthYear = 2025,
         birthMonth = 3,
         description = LocalizedText(en = "Friendly cat"),

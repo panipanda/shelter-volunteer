@@ -38,7 +38,7 @@ internal fun FlowContent.catList(cats: List<Cat>, locale: AppLocale) {
     div(classes = "cat-list") {
         cats.forEach { cat ->
             val name = displayCatName(cat.name, locale)
-            a(href = "$prefix/cats/${catSlug(cat.name, cat.id)}", classes = "cat-card") {
+            a(href = "$prefix/cats/${catSlug(cat.name?.en, cat.id)}", classes = "cat-card") {
                 img(src = displayPhotoUrls(cat.photoUrls).first(), alt = name, classes = "cat-card-photo")
                 span { +name }
             }

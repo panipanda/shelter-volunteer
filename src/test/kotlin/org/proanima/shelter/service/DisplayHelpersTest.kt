@@ -1,6 +1,7 @@
 package org.proanima.shelter.service
 
 import org.proanima.shelter.model.AppLocale
+import org.proanima.shelter.model.LocalizedText
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -70,6 +71,25 @@ class DisplayHelpersTest {
         assertEquals("1 mesec", displayCatAge(2026, 8, AppLocale.SR, today))
         assertEquals("2 meseca", displayCatAge(2026, 7, AppLocale.SR, today))
         assertEquals("8 meseci", displayCatAge(2026, 1, AppLocale.SR, today))
+    }
+
+    @Test
+    fun `displayCatName returns the name in the requested locale`() {
+        val name = LocalizedText(ru = "Феликс", en = "Felix", sr = "Feliks")
+
+        assertEquals("Феликс", displayCatName(name, AppLocale.RU))
+        assertEquals("Felix", displayCatName(name, AppLocale.EN))
+        assertEquals("Feliks", displayCatName(name, AppLocale.SR))
+    }
+
+    @Test
+    fun `displayCatName falls back to another locale when the requested one is missing`() {
+        assertEquals("Felix", displayCatName(LocalizedText(en = "Felix"), AppLocale.SR))
+    }
+
+    @Test
+    fun `displayCatName shows the unnamed placeholder when name is missing`() {
+        assertEquals("Unnamed", displayCatName(null, AppLocale.EN))
     }
 
     @Test

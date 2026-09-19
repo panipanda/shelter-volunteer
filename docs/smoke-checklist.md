@@ -144,12 +144,14 @@ Expected result:
 - response is returned successfully;
 - response is an HTML page;
 - page contains the `Cats` heading;
-- page contains cat names from `data/cats.json`;
+- page contains cat names from `data/cats.json`, in the page language (`name` is a
+  `ru`/`en`/`sr` object like `description`, e.g. `Феликс` / `Felix` / `Feliks`);
 - each cat is displayed as a preview card with a photo and its name;
 - the card photo is the cat's first `photoUrls` entry, or the default cat image if
   `photoUrls` is empty (same fallback as the cat details gallery, via `displayPhotoUrls`);
-- each cat card links to `/ru/cats/{slug}`, where `slug` is the cat's name lowercased
-  (e.g. `Nami` → `nami`; a cat without a name falls back to its numeric `id`);
+- each cat card links to `/ru/cats/{slug}`, where `slug` is the cat's English name lowercased,
+  the same in every language (e.g. `Nami` → `nami`; a cat without an English name falls back
+  to its numeric `id`);
 - cats with missing names are displayed as `Unnamed`.
 
 Example expected HTML content:
@@ -609,7 +611,7 @@ Current implemented pages:
 - `/{lang}` (`ru`, `en`, `sr`) returns the homepage HTML.
 - `/{lang}/cats` returns HTML.
 - `/{lang}/cats/{slug}` returns HTML for an existing cat; the slug is derived from the cat's
-  name (see `catSlug()` in `service/DisplayHelpers.kt`), the numeric `id` is internal only.
+  English name (see `catSlug()` in `service/DisplayHelpers.kt`), the numeric `id` is internal only.
 - `/{lang}/cats/{slug}` returns plain text for a slug that matches no cat.
 - `/{lang}/visits` returns HTML with upcoming visits.
 - `/{lang}/visits/archive` returns HTML with completed visits.

@@ -14,7 +14,7 @@ class CatServiceTest {
     private val cats = listOf(
         Cat(
             id = 1,
-            name = "Zoka",
+            name = LocalizedText(en = "Zoka"),
             birthYear = 2023,
             description = LocalizedText(en = "Calm and friendly cat."),
             photoUrls = listOf("/images/cats/zoka.jpg"),
@@ -25,7 +25,7 @@ class CatServiceTest {
         ),
         Cat(
             id = 2,
-            name = "Marta",
+            name = LocalizedText(en = "Marta"),
             birthYear = null,
             description = LocalizedText(en = "Shy but sweet cat."),
             location = CatLocation.IN_SHELTER,
@@ -59,14 +59,14 @@ class CatServiceTest {
         val result = service.getAvailableCats()
 
         assertEquals(1, result.size)
-        assertEquals("Zoka", result.first().name)
+        assertEquals("Zoka", result.first().name?.en)
     }
 
     @Test
     fun `getCatById returns cat when cat exists`() {
         val result = service.getCatById(1)
 
-        assertEquals("Zoka", result?.name)
+        assertEquals("Zoka", result?.name?.en)
     }
 
     @Test

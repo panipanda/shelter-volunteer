@@ -5,22 +5,23 @@ import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AdoptionStage
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.CatLocation
+import org.proanima.shelter.model.LocalizedText
 import org.proanima.shelter.model.VisitStatus
 import org.proanima.shelter.model.VolunteerDirection
 import java.time.LocalDate
 
-fun displayCatName(name: String?, locale: AppLocale): String {
-    return name ?: messagesFor(locale).t("cat.name.unnamed")
+fun displayCatName(name: LocalizedText?, locale: AppLocale): String {
+    return name?.forLocale(locale)?.ifBlank { null } ?: messagesFor(locale).t("cat.name.unnamed")
 }
 
 fun displayPhotoUrls(photoUrls: List<String>): List<String> {
     return photoUrls.ifEmpty { listOf("/images/default-cat.jpg") }
 }
 
-// Урл кошки строится из имени, а не из id, чтобы он был человекочитаемым. Предполагает,
-// что name уже латиницей (как сейчас у всех кошек) — транслитерация кириллицы не сделана.
-// Если имя не задано или после чистки не осталось символов, откатываемся на голый id — как
-// адресовалась кошка до этого изменения.
+// Урл кошки строится из имени, а не из id, чтобы он был человекочитаемым. Вызывающий
+// передаёт английский вариант имени (Cat.name.en): он латиницей и не зависит от языка
+// страницы — транслитерация кириллицы не сделана. Если имя не задано или после чистки
+// не осталось символов, откатываемся на голый id — как адресовалась кошка до этого изменения.
 fun catSlug(name: String?, id: Int): String {
     val slug = name.orEmpty()
         .lowercase()

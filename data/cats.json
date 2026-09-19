@@ -1,7 +1,7 @@
 [
   {
     "id": 3,
-    "name": "Nami",
+    "name": { "ru": "Нами", "en": "Nami", "sr": "Nami" },
     "birthYear": 2026,
     "birthMonth": 1,
     "description": {
@@ -24,5 +24,57 @@
     },
     "createdAt": "2026-09-17T16:30:00+02:00",
     "updatedAt": "2026-09-17T16:30:00+02:00"
+  },
+  {
+    "id": 4,
+    "name": { "ru": "Феликс", "en": "Felix", "sr": "Feliks" },
+    "birthYear": 2026,
+    "birthMonth": 2,
+    "description": {
+      "ru": "Любопытная и дружелюбная кошка. Немного осторожничает из-за жизни в приюте, но, если заслужить её доверие, с удовольствием устроится на коленях и будет выпрашивать вкусняшки.",
+      "en": "A curious and friendly cat. She is a little cautious because of life in the shelter, but once you earn her trust, she will happily settle on your lap and beg for treats.",
+      "sr": "Radoznala i prijateljska mačka. Pomalo je oprezna zbog života u azilu, ali kada joj zaslužite poverenje, rado će se smestiti u krilo i moliti za poslastice."
+    },
+    "medicalStatus": {
+      "ru": "Привита, стерилизована, обработана от паразитов.",
+      "en": "Vaccinated, spayed, treated for parasites.",
+      "sr": "Vakcinisana, sterilisana, tretirana protiv parazita."
+    },
+    "photoUrls": ["/images/felix.jpg", "/images/felix-2.jpg", "/images/felix-3.jpg"],
+    "location": "IN_SHELTER",
+    "adoptionStage": "FOR_ADOPTION",
+    "adoptionInstruction": {
+      "ru": "Пишите координатору по пристройству в Telegram: @Nata_Rogava",
+      "en": "Contact the adoption coordinator on Telegram: @Nata_Rogava",
+      "sr": "Obratite se koordinatoru za udomljavanje na Telegramu: @Nata_Rogava"
+    },
+    "createdAt": "2026-09-19T18:10:00+02:00",
+    "updatedAt": "2026-09-19T18:10:00+02:00"
+  },
+  {
+    "id": 5,
+    "name": { "ru": "Фокс", "en": "Fox", "sr": "Foks" },
+    "birthYear": 2025,
+    "birthMonth": 9,
+    "description": {
+      "ru": "Котика спасли после того, как было разрушено поселение бездомных котов у гостиницы «Москва» в центре Белграда. Теперь он вместе со своими приятелями живёт в отдельном домике приюта. Фокс радуется каждому визиту волонтёров: ему нужны не столько лакомства, сколько чтобы человек посидел рядом и почесал ему щёчки и ушки. Очень ласковый кот, ждёт своего персонального хумана и тёплый дом.",
+      "en": "Fox was rescued after the colony of stray cats near the Hotel Moskva in central Belgrade was destroyed. Now he lives with his buddies in a separate little house at the shelter. Fox is happy about every volunteer visit: what he wants is less treats and more a person sitting beside him and scratching his cheeks and ears. A very affectionate cat, he is waiting for his very own human and a warm home.",
+      "sr": "Fox je spasen nakon što je uništeno naselje uličnih mačaka kod hotela „Moskva” u centru Beograda. Sada sa svojim drugarima živi u posebnoj kućici azila. Fox se raduje svakoj poseti volontera: ne traži toliko poslastice koliko da neko sedne pored njega i počeše ga po obrazima i ušima. Veoma umiljat mačak, čeka svog ličnog čoveka i topao dom."
+    },
+    "medicalStatus": {
+      "ru": "Привит, кастрирован, обработан от паразитов.",
+      "en": "Vaccinated, neutered, treated for parasites.",
+      "sr": "Vakcinisan, kastriran, tretiran protiv parazita."
+    },
+    "photoUrls": ["/images/fox.jpg", "/images/fox-2.jpg"],
+    "location": "IN_SHELTER",
+    "adoptionStage": "FOR_ADOPTION",
+    "adoptionInstruction": {
+      "ru": "Пишите координатору по пристройству в Telegram: @Nata_Rogava",
+      "en": "Contact the adoption coordinator on Telegram: @Nata_Rogava",
+      "sr": "Obratite se koordinatoru za udomljavanje na Telegramu: @Nata_Rogava"
+    },
+    "createdAt": "2026-09-19T18:15:00+02:00",
+    "updatedAt": "2026-09-19T18:15:00+02:00"
   }
 ]
