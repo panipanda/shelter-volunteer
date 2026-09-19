@@ -33,6 +33,7 @@ body > * {
 nav {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.25rem 0.75rem;
     padding-top: var(--spacing);
     padding-bottom: var(--spacing);
@@ -47,6 +48,21 @@ nav a {
 
 nav a:hover {
     text-decoration: underline;
+}
+
+nav a.logo {
+    display: inline-flex;
+    margin-right: 0.25rem;
+}
+
+nav a.logo:hover {
+    text-decoration: none;
+}
+
+.logo-image {
+    width: 40px;
+    height: 40px;
+    display: block;
 }
 
 .lang-switch {
@@ -280,6 +296,7 @@ footer {
 @media (max-width: 480px) {
     nav {
         flex-direction: column;
+        align-items: flex-start;
         gap: 0.25rem;
     }
 }

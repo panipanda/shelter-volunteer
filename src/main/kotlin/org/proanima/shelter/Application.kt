@@ -54,6 +54,7 @@ fun Application.configureRoutes(
 
         healthRoutes()
         staticFiles("/images", File("data/images"))
+        staticResources("/icons", "static/icons")
         staticResources("/styles", "static/styles")
         staticResources("/scripts", "static/scripts")
 

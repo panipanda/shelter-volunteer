@@ -98,6 +98,28 @@ class HomeRoutesTest {
     }
 
     @Test
+    fun `every page has a logo linking to its locale home and serves the icons`() = testApplication {
+        application {
+            configureRoutes(
+                catService = CatService(catRepository(emptyList())),
+                visitService = VisitService(visitRepository(emptyList())),
+                guideService = GuideService(guideRepository)
+            )
+        }
+
+        listOf("ru", "en", "sr").forEach { code ->
+            listOf("/$code/cats", "/$code/guide", "/$code/visits").forEach { path ->
+                val body = client.get(path).bodyAsText()
+                assertTrue(body.contains("<a href=\"/$code\" class=\"logo\">"), path)
+                assertTrue(body.contains("/icons/favicon-32.png"), path)
+            }
+        }
+        listOf("logo.png", "favicon-32.png", "favicon-192.png", "apple-touch-icon.png").forEach { icon ->
+            assertEquals(HttpStatusCode.OK, client.get("/icons/$icon").status, icon)
+        }
+    }
+
+    @Test
     fun `GET home shows the nearest open cat visit and skips completed and cancelled ones`() = testApplication {
         val visits = listOf(
             visit(1, "2026-05-10", VisitStatus.COMPLETED, "Completed visit"),

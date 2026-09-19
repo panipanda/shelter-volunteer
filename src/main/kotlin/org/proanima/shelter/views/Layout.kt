@@ -31,7 +31,13 @@ fun HTML.pageLayout(
     head {
         meta(charset = "UTF-8")
         title { +pageTitle }
-        link(rel = "icon", href = "/images/default-cat.jpg", type = "image/jpeg")
+        link(rel = "icon", href = "/icons/favicon-32.png", type = "image/png") {
+            attributes["sizes"] = "32x32"
+        }
+        link(rel = "icon", href = "/icons/favicon-192.png", type = "image/png") {
+            attributes["sizes"] = "192x192"
+        }
+        link(rel = "apple-touch-icon", href = "/icons/apple-touch-icon.png")
         link(rel = "stylesheet", href = "/styles/main.css", type = "text/css")
     }
     body {

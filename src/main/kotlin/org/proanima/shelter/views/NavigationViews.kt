@@ -2,6 +2,7 @@ package org.proanima.shelter.views
 
 import kotlinx.html.FlowContent
 import kotlinx.html.a
+import kotlinx.html.img
 import kotlinx.html.nav
 import kotlinx.html.span
 import org.proanima.shelter.i18n.messagesFor
@@ -13,6 +14,9 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
 
     nav {
+        a(href = prefix, classes = "logo") {
+            img(src = "/icons/logo.png", alt = messages.t("nav.home"), classes = "logo-image")
+        }
         a(href = "$prefix/cats") { +messages.t("nav.cats") }
         +" | "
         a(href = "$prefix/guide") { +messages.t("nav.guide") }
