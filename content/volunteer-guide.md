@@ -25,7 +25,9 @@ This page is a short guide for volunteers who want to help with cats at Pro Anim
 - Ask questions if you're unsure about something, coordinators are there to help you.
 - Have fun and enjoy your time with the cats!
 
-The shelter has three cat enclosures: the Lower one ("Moscow", airlock system, 14 cats), the Middle one ("small", airlock system, 12 cats) and the Upper one ("big", entrance without an airlock, 15 cats). Enter the enclosures as carefully as possible so that no cat gets out. Each enclosure has its own cleaning equipment: litter scoops, scrapers, brushes, sponges, a mop, and a broom with a dustpan. Never use the equipment of one enclosure to clean another. If an enclosure is short on equipment, write to the cat volunteers' chat.
+## Cleaning the enclosures
+
+> The shelter has three cat enclosures: the Lower one ("Moscow", airlock system, 14 cats), the Middle one ("small", airlock system, 12 cats) and the Upper one ("big", entrance without an airlock, 15 cats). Enter the enclosures as carefully as possible so that no cat gets out. Each enclosure has its own cleaning equipment: litter scoops, scrapers, brushes, sponges, a mop, and a broom with a dustpan. Never use the equipment of one enclosure to clean another. If an enclosure is short on equipment, write to the cat volunteers' chat.
 
 - First, assess each litter tray by how dirty it is. If more than half of the litter is still clean, just scoop out the waste and leave the tray. If the tray is dirty, empty it into the cart, wash it with the long-handled brush and add fresh litter. Don't add much litter: it swells a lot, and the bottom of the tray should just barely show through.
 - Only organic waste can go into the cart.

@@ -78,4 +78,26 @@ class GuideContentTest {
             blocks
         )
     }
+
+    @Test
+    fun `parses a callout and joins its lines`() {
+        val blocks = parseGuideMarkdown(
+            """
+            Intro text
+            > first line
+            > second line
+
+            - item one
+            """.trimIndent()
+        )
+
+        assertEquals(
+            listOf(
+                GuideBlock.Paragraph("Intro text"),
+                GuideBlock.Callout("first line second line"),
+                GuideBlock.BulletList(listOf("item one"))
+            ),
+            blocks
+        )
+    }
 }

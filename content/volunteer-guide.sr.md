@@ -25,7 +25,9 @@ Ova stranica je kratak vodič za volontere koji pomažu oko mačaka u azilu Pro 
 - Ako vam nešto nije jasno, pitajte — koordinatori uvek rado pomažu.
 - Uživajte u druženju sa mačkama!
 
-U azilu postoje tri boksa za mačke: Donji („moskovski", sa prolaznom komorom, 14 mačaka), Srednji („mali", sa prolaznom komorom, 12 mačaka) i Gornji („veliki", ulaz bez prolazne komore, 15 mačaka). U boksove ulazimo što je moguće pažljivije da nijedna mačka ne izađe. Svaki boks ima svoj pribor za čišćenje: lopatice za posude sa peskom, strugače, četke, sunđere, mop, metlu i đubrovnik. Pribor iz jednog boksa zabranjeno je koristiti za čišćenje drugog. Ako u boksu nedostaje pribor, pišite u čet mačjih volontera.
+## Čišćenje boksova
+
+> U azilu postoje tri boksa za mačke: Donji („moskovski", sa prolaznom komorom, 14 mačaka), Srednji („mali", sa prolaznom komorom, 12 mačaka) i Gornji („veliki", ulaz bez prolazne komore, 15 mačaka). U boksove ulazimo što je moguće pažljivije da nijedna mačka ne izađe. Svaki boks ima svoj pribor za čišćenje: lopatice za posude sa peskom, strugače, četke, sunđere, mop, metlu i đubrovnik. Pribor iz jednog boksa zabranjeno je koristiti za čišćenje drugog. Ako u boksu nedostaje pribor, pišite u čet mačjih volontera.
 
 - Posude sa peskom prvo procenimo po zaprljanosti. Ako je čistog peska više od polovine, lopaticom samo uklonimo izmet i ostavimo posudu. Ako je posuda prljava, sadržaj istresemo u kolica, posudu operemo četkom sa drškom i sipamo svež pesak. Peska sipamo malo: jako nabubri, pa dno posude treba da se blago nazire.
 - U kolica se sme bacati samo organski otpad.

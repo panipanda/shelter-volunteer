@@ -801,6 +801,43 @@ main.home > section.next-visit {
     text-transform: uppercase;
 }
 
+/* Гайд волонтёра: текст слева, врезка справа */
+
+.guide {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    column-gap: 3rem;
+}
+
+.guide > * {
+    grid-column: 1;
+}
+
+.guide > h2 {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line);
+}
+
+.guide > .guide-callout {
+    grid-column: 2;
+    grid-row: 1 / span 40;
+    align-self: start;
+    position: sticky;
+    top: 24px;
+    margin-top: 1rem;
+    padding: 1.25rem 1.5rem;
+    border: 2px solid var(--color-line);
+    border-left: 6px solid var(--color-coral);
+    border-radius: 22px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow);
+}
+
+.guide-callout p {
+    margin: 0;
+}
+
 /* О приюте и цитата */
 
 .about-layout {
@@ -859,6 +896,15 @@ footer p {
 }
 
 @media (max-width: 860px) {
+    .guide {
+        display: block;
+    }
+
+    .guide > .guide-callout {
+        position: static;
+        margin-block: 1.5rem;
+    }
+
     .hero-grid,
     .help-layout,
     .about-layout,

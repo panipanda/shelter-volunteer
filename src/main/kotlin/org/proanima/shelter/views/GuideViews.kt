@@ -1,6 +1,8 @@
 package org.proanima.shelter.views
 
 import kotlinx.html.HTML
+import kotlinx.html.aside
+import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.h2
 import kotlinx.html.li
@@ -16,17 +18,26 @@ import org.proanima.shelter.service.GuideBlock
 // язык контента — en, и lang должен отражать это — см. docs/decisions.md
 fun HTML.guidePage(locale: AppLocale, blocks: List<GuideBlock>, contentLang: String, currentPath: String) {
     val messages = messagesFor(locale)
-    pageLayout(locale, pageTitle = messages.t("nav.guide"), currentPath = currentPath, contentLang = contentLang) {
-        blocks.forEach { block ->
-            when (block) {
-                is GuideBlock.Heading -> if (block.level == 1) {
-                    h1 { +block.text }
-                } else {
-                    h2 { +block.text }
-                }
-                is GuideBlock.Paragraph -> p { +block.text }
-                is GuideBlock.BulletList -> ul {
-                    block.items.forEach { item -> li { +item } }
+    pageLayout(
+        locale,
+        pageTitle = messages.t("nav.guide"),
+        currentPath = currentPath,
+        contentLang = contentLang,
+        mainClass = "page page-wide"
+    ) {
+        div(classes = "guide") {
+            blocks.forEach { block ->
+                when (block) {
+                    is GuideBlock.Heading -> if (block.level == 1) {
+                        h1 { +block.text }
+                    } else {
+                        h2 { +block.text }
+                    }
+                    is GuideBlock.Paragraph -> p { +block.text }
+                    is GuideBlock.BulletList -> ul {
+                        block.items.forEach { item -> li { +item } }
+                    }
+                    is GuideBlock.Callout -> aside(classes = "guide-callout") { p { +block.text } }
                 }
             }
         }
