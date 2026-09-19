@@ -3,6 +3,7 @@ package org.proanima.shelter.views
 import kotlinx.html.HTML
 import kotlinx.html.MAIN
 import kotlinx.html.body
+import kotlinx.html.div
 import kotlinx.html.footer
 import kotlinx.html.head
 import kotlinx.html.lang
@@ -18,11 +19,15 @@ import org.proanima.shelter.model.AppLocale
 // Общий skeleton для всех страниц: <head>/nav/<main>/footer/CSS-link в одном месте,
 // чтобы не повторять его в каждом Views-файле. contentLang отдельно от locale —
 // нужен GuideViews, у которой контент ещё не переведён, а роут уже локализован.
+// mainClass задаёт ширину контента: "page" — узкая читаемая колонка для внутренних
+// страниц, "home" — без ограничений, главная сама кладёт секции в .wrap и растягивает
+// цветную полосу на всю ширину.
 fun HTML.pageLayout(
     locale: AppLocale,
     pageTitle: String,
     currentPath: String,
     contentLang: String = locale.code,
+    mainClass: String = "page",
     content: MAIN.() -> Unit
 ) {
     val messages = messagesFor(locale)
@@ -30,6 +35,8 @@ fun HTML.pageLayout(
     lang = contentLang
     head {
         meta(charset = "UTF-8")
+        meta(name = "viewport", content = "width=device-width, initial-scale=1")
+        meta(name = "color-scheme", content = "light dark")
         title { +pageTitle }
         link(rel = "icon", href = "/icons/favicon-32.png", type = "image/png") {
             attributes["sizes"] = "32x32"
@@ -38,15 +45,21 @@ fun HTML.pageLayout(
             attributes["sizes"] = "192x192"
         }
         link(rel = "apple-touch-icon", href = "/icons/apple-touch-icon.png")
+        link(rel = "preload", href = "/fonts/ubuntu-mono-400-latin.woff2", type = "font/woff2") {
+            attributes["as"] = "font"
+            attributes["crossorigin"] = "anonymous"
+        }
         link(rel = "stylesheet", href = "/styles/main.css", type = "text/css")
     }
     body {
         navigation(locale, currentPath)
-        main {
+        main(classes = mainClass) {
             content()
         }
         footer {
-            p { +messages.t("footer.text") }
+            div(classes = "wrap") {
+                p { +messages.t("footer.text") }
+            }
         }
     }
 }

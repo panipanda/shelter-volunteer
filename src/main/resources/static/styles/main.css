@@ -1,13 +1,108 @@
+@font-face {
+    font-family: "Ubuntu Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/ubuntu-mono-400-cyrillic-ext.woff2") format("woff2");
+    unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+@font-face {
+    font-family: "Ubuntu Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/ubuntu-mono-400-cyrillic.woff2") format("woff2");
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+    font-family: "Ubuntu Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/ubuntu-mono-400-latin-ext.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: "Ubuntu Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/ubuntu-mono-400-latin.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: "Ubuntu Mono";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/fonts/ubuntu-mono-700-cyrillic-ext.woff2") format("woff2");
+    unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+@font-face {
+    font-family: "Ubuntu Mono";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/fonts/ubuntu-mono-700-cyrillic.woff2") format("woff2");
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+    font-family: "Ubuntu Mono";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/fonts/ubuntu-mono-700-latin-ext.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: "Ubuntu Mono";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("/fonts/ubuntu-mono-700-latin.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
-    --color-bg: #faf7f2;
+    --color-bg: #f3f7f5;
     --color-surface: #ffffff;
-    --color-border: #e2ddd3;
-    --color-text: #2b2620;
-    --color-muted: #6b6257;
-    --color-accent: #c76b3c;
-    --color-accent-dark: #a4562f;
-    --radius: 8px;
-    --spacing: 1rem;
+    --color-ink: #14232b;
+    --color-muted: #52646b;
+    --color-line: #d9e5e0;
+    --color-mint: #dcefe6;
+    --color-teal: #0e5a57;
+    --color-on-teal: #ffffff;
+    --color-link: #0b6b66;
+    --color-sun: #ffc940;
+    --color-sun-hover: #ffd766;
+    --color-on-sun: #14232b;
+    --color-coral: #ef5b3b;
+    --color-placeholder: #cfe6db;
+    --shadow: 0 1px 2px rgba(20, 35, 43, 0.06), 0 8px 24px rgba(20, 35, 43, 0.08);
+    --font: "Ubuntu Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --wrap-width: 1120px;
+    --gutter: 24px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-bg: #0d1a1f;
+        --color-surface: #15262d;
+        --color-ink: #e9f1ed;
+        --color-muted: #a2b4ba;
+        --color-line: #25393f;
+        --color-mint: #16303a;
+        --color-link: #6fd3c4;
+        --color-placeholder: #1c3a40;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
 }
 
 * {
@@ -16,145 +111,272 @@
 
 body {
     margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--font);
+    font-size: 18px;
+    line-height: 1.6;
     background: var(--color-bg);
-    color: var(--color-text);
-    line-height: 1.5;
+    color: var(--color-ink);
 }
 
-body > * {
-    max-width: 760px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: var(--spacing);
-    padding-right: var(--spacing);
+a {
+    color: var(--color-link);
 }
 
-nav {
+:focus-visible {
+    outline: 3px solid var(--color-coral);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 16px;
+}
+
+h1, h2, h3 {
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+}
+
+h1 {
+    font-size: clamp(2rem, 4.4vw, 3.4rem);
+    margin: 1rem 0 1.25rem;
+}
+
+h2 {
+    font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+    margin: 0.5rem 0 0.75rem;
+}
+
+h3 {
+    font-size: 1.4rem;
+    margin: 0 0 0.4rem;
+}
+
+.wrap {
+    width: 100%;
+    max-width: var(--wrap-width);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+}
+
+/* Шапка */
+
+.site-header-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.25rem 0.75rem;
-    padding-top: var(--spacing);
-    padding-bottom: var(--spacing);
-    border-bottom: 1px solid var(--color-border);
+    gap: 1rem 2rem;
+    padding-block: 18px;
 }
 
-nav a {
-    color: var(--color-accent-dark);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-nav a:hover {
-    text-decoration: underline;
-}
-
-nav a.logo {
+a.logo {
     display: inline-flex;
-    margin-right: 0.25rem;
-}
-
-nav a.logo:hover {
+    align-items: center;
+    gap: 0.6rem;
     text-decoration: none;
+    color: var(--color-ink);
 }
 
 .logo-image {
     width: 40px;
     height: 40px;
     display: block;
+    border-radius: 0;
+}
+
+.logo-text {
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
+}
+
+.main-nav {
+    display: flex;
+    gap: 0.25rem;
+    margin-inline-start: auto;
+}
+
+.main-nav a {
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    color: var(--color-ink);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.main-nav a:hover,
+.main-nav a[aria-current="page"] {
+    background: var(--color-mint);
 }
 
 .lang-switch {
-    padding-top: 0;
-    border-bottom: none;
-    font-size: 0.85rem;
-}
-
-.lang-switch a {
-    font-weight: 600;
-}
-
-.lang-switch-current {
-    color: var(--color-muted);
+    display: inline-flex;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    padding: 2px;
     font-weight: 700;
 }
 
-main {
-    padding-top: var(--spacing);
-    padding-bottom: 2rem;
+.lang-switch a,
+.lang-switch-current {
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    text-decoration: none;
+    color: var(--color-muted);
 }
 
-h1, h2 {
-    color: var(--color-text);
+.lang-switch a:hover {
+    color: var(--color-ink);
 }
 
-main ul {
+.lang-switch-current {
+    background: var(--color-ink);
+    color: var(--color-bg);
+}
+
+/* Кнопки */
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0.85rem 1.5rem;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: var(--color-sun);
+    color: var(--color-on-sun);
+    font-weight: 700;
+    font-size: 1.1rem;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+}
+
+.button:hover {
+    background: var(--color-sun-hover);
+}
+
+.button-secondary {
+    background: transparent;
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+}
+
+.button-secondary:hover {
+    background: var(--color-ink);
+    color: var(--color-bg);
+}
+
+.button-light {
+    background: var(--color-on-teal);
+    color: var(--color-teal);
+}
+
+.button-light:hover {
+    background: var(--color-mint);
+}
+
+/* Внутренние страницы: гайд, кошки, визиты */
+
+main.page {
+    max-width: 46rem;
+    margin-inline: auto;
+    padding: 24px var(--gutter) 0;
+}
+
+main.page.page-wide {
+    max-width: var(--wrap-width);
+}
+
+main.page ul {
     padding-left: 1.25rem;
 }
 
-main li {
+main.page li {
     margin-bottom: 0.35rem;
 }
 
-a {
-    color: var(--color-accent-dark);
+article {
+    background: var(--color-surface);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
 }
 
+article h2 {
+    margin-top: 0;
+    font-size: 1.6rem;
+}
+
+article p {
+    margin: 0.35rem 0;
+}
+
+/* Кошки: карточки используются и на главной, и в каталоге */
+
 .cat-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
 }
 
 .cat-card {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    width: 140px;
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    padding: 0.75rem;
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
     text-decoration: none;
-    color: var(--color-text);
+    color: var(--color-ink);
+    transition: transform 0.2s ease;
+}
+
+.cat-card:hover {
+    transform: translateY(-4px);
 }
 
 .cat-card-photo {
-    width: 120px;
-    height: 120px;
+    width: 100%;
+    aspect-ratio: 1;
     object-fit: cover;
-    margin-bottom: 0.5rem;
+    border-radius: 0;
 }
 
-.cat-card span {
-    font-weight: 600;
-    text-align: center;
+.cat-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    padding: 1rem 1.15rem 1.25rem;
 }
 
-article {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    padding: var(--spacing);
-    margin-bottom: var(--spacing);
+.cat-card-name {
+    font-weight: 700;
+    font-size: 1.4rem;
 }
 
-article h2 {
-    margin-top: 0;
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: var(--radius);
+.tag {
+    display: inline-block;
+    padding: 0.05rem 0.65rem;
+    border-radius: 999px;
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font-size: 0.95rem;
+    font-weight: 700;
 }
 
 .cat-gallery {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: var(--spacing);
+    margin-bottom: 1rem;
 }
 
 .cat-gallery-thumb {
@@ -211,12 +433,58 @@ img {
     right: 0.5rem;
 }
 
-main section {
+/* Главная */
+
+main.home > section {
+    padding-block: 72px 0;
+}
+
+main.home > section.hero {
+    padding-block: 32px 56px;
+}
+
+.head {
+    max-width: 40rem;
     margin-bottom: 2rem;
 }
 
-.hero .lead {
+.head p {
+    margin: 0;
+    color: var(--color-muted);
     font-size: 1.15rem;
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+}
+
+.eyebrow::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-coral);
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.hero .lead {
+    max-width: 34rem;
+    margin: 0 0 2rem;
+    font-size: 1.25rem;
     color: var(--color-muted);
 }
 
@@ -224,79 +492,439 @@ main section {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
-    margin-bottom: var(--spacing);
 }
 
-.button {
-    display: inline-block;
-    padding: 0.6rem 1.1rem;
-    border-radius: var(--radius);
-    background: var(--color-accent);
-    color: #ffffff;
-    font-weight: 600;
-    text-decoration: none;
+.facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.75rem;
+    margin: 2.25rem 0 0;
+    padding: 0;
+    list-style: none;
 }
 
-.button:hover {
-    background: var(--color-accent-dark);
+.facts li {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
 }
 
-.button-secondary {
-    background: transparent;
-    color: var(--color-accent-dark);
-    border: 1px solid var(--color-accent);
+.facts strong {
+    font-size: 2rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
 }
 
-.button-secondary:hover {
-    background: var(--color-surface);
-    color: var(--color-accent-dark);
+.facts span {
+    color: var(--color-muted);
 }
 
 .hero-photo {
     width: 100%;
+    aspect-ratio: 5 / 4.4;
+    object-fit: cover;
+    border-radius: 28px 28px 120px 28px;
+    background: var(--color-placeholder);
+}
+
+/* Ближайший визит: карточка чуть заходит на hero, чтобы главное действие было на первом экране */
+
+main.home > section.next-visit {
+    position: relative;
+    padding-top: 0;
+    margin-top: -24px;
+}
+
+.visit-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-surface);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+}
+
+.visit-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 76px;
+    border-radius: 16px;
+    background: var(--color-coral);
+    color: #14232b;
+    line-height: 1;
+}
+
+.visit-date strong {
+    font-size: 2.4rem;
+}
+
+.visit-date span {
+    margin-top: 4px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.visit-body {
+    flex: 1 1 260px;
+}
+
+.visit-body h2 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+.visit-body p {
+    margin: 0.2rem 0 0;
+    color: var(--color-muted);
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.35rem;
+    padding: 0.1rem 0.7rem;
+    border-radius: 999px;
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font-weight: 700;
+}
+
+.visit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+}
+
+/* Чем занимаются волонтёры */
+
+.tasks {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.task {
+    padding: 1.75rem;
+    border-radius: 24px;
+    background: var(--color-mint);
+}
+
+.task p {
+    margin: 0;
+    color: var(--color-muted);
+}
+
+.task-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 1.25rem;
+    border-radius: 16px;
+    background: var(--color-surface);
+}
+
+.task-icon svg {
+    width: 28px;
+    height: 28px;
+    fill: none;
+    stroke: var(--color-link);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.more {
+    margin-top: 1.25rem;
+    font-weight: 700;
+}
+
+/* Как присоединиться: цветная полоса на всю ширину */
+
+.band {
+    margin-top: 72px;
+    padding-block: 64px;
+    background: var(--color-teal);
+    color: var(--color-on-teal);
+}
+
+.band h2 {
+    margin-top: 0;
+}
+
+.band .head p {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.band a {
+    color: var(--color-on-teal);
+}
+
+.band a.button-light {
+    color: var(--color-teal);
+}
+
+.band-top {
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 320px);
+    gap: 32px;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.band-top .head {
+    margin-bottom: 0;
+}
+
+.band-photo {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 24px;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+}
+
+.steps li {
+    counter-increment: step;
+    padding-top: 1rem;
+    border-top: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.steps li::before {
+    content: counter(step);
+    display: block;
+    margin-bottom: 0.75rem;
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-sun);
+}
+
+.steps p {
+    margin: 0 0 0.9rem;
+}
+
+.inline-link {
+    font-weight: 700;
+}
+
+.step-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.schedule {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 2.5rem;
+}
+
+.schedule p {
+    flex: 1 1 280px;
+    margin: 0;
+    padding: 0.9rem 1.25rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.section-foot {
+    margin: 1.75rem 0 0;
+}
+
+/* Как ещё помочь */
+
+.help-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 48px;
+    align-items: start;
+}
+
+.help-intro p {
+    margin: 0 0 0.75rem;
+    color: var(--color-muted);
+}
+
+.contact-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.help-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--color-line);
+}
+
+.help-list li {
+    position: relative;
+    margin: 0;
+    padding: 1rem 0 1rem 1.5rem;
+    border-bottom: 1px solid var(--color-line);
+}
+
+.help-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1.55rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-coral);
+}
+
+.help-list li::first-letter {
+    text-transform: uppercase;
+}
+
+/* О приюте и цитата */
+
+.about-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+}
+
+.about-text p {
+    color: var(--color-muted);
 }
 
 blockquote {
-    margin: var(--spacing) 0;
-    padding: 0.25rem var(--spacing);
-    border-left: 4px solid var(--color-accent);
-    font-style: italic;
+    margin: 0;
+    padding: 2rem;
+    border-radius: 28px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow);
 }
 
-.quote-author {
-    font-style: normal;
+blockquote p {
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    text-wrap: pretty;
+}
+
+blockquote .quote-author {
+    margin: 0;
+    font-size: 1.1rem;
     color: var(--color-muted);
 }
 
-.join-layout {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing);
-    align-items: flex-start;
-}
-
-.join-text {
-    flex: 1 1 320px;
-}
-
-.join-photo {
-    flex: 0 1 220px;
-    max-height: 420px;
-    object-fit: cover;
-}
+/* Подвал */
 
 footer {
-    border-top: 1px solid var(--color-border);
+    margin-top: 80px;
+    padding-block: 32px 40px;
+    border-top: 1px solid var(--color-line);
     color: var(--color-muted);
-    padding-top: var(--spacing);
-    padding-bottom: var(--spacing);
-    font-size: 0.9rem;
 }
 
-@media (max-width: 480px) {
-    nav {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
+footer p {
+    margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cat-card {
+        transition: none;
+    }
+
+    .cat-card:hover {
+        transform: none;
+    }
+}
+
+@media (max-width: 860px) {
+    .hero-grid,
+    .help-layout,
+    .about-layout,
+    .band-top {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .hero-photo {
+        border-radius: 24px 24px 80px 24px;
+    }
+
+    .tasks,
+    .steps {
+        grid-template-columns: 1fr;
+    }
+
+    main.home > section.hero {
+        padding-block: 16px 40px;
+    }
+}
+
+@media (max-width: 520px) {
+    :root {
+        --gutter: 16px;
+    }
+
+    .main-nav {
+        order: 3;
+        width: 100%;
+        margin: 0;
+        overflow-x: auto;
+    }
+
+    .main-nav a {
+        white-space: nowrap;
+    }
+
+    .lang-switch {
+        margin-inline-start: auto;
+    }
+
+    .hero-actions .button,
+    .visit-actions .button,
+    .contact-buttons .button {
+        width: 100%;
+    }
+
+    .facts {
+        gap: 1.25rem;
+    }
+
+    main.home > section {
+        padding-block: 56px 0;
+    }
+
+    .band {
+        margin-top: 56px;
+        padding-block: 48px;
+    }
+
+    blockquote {
+        padding: 1.5rem;
+    }
+
+    .cat-list {
+        gap: 12px;
     }
 }

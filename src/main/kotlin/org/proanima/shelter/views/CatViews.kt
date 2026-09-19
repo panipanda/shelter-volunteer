@@ -26,7 +26,7 @@ import org.proanima.shelter.service.displayPhotoUrls
 fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
 
-    pageLayout(locale, pageTitle = messages.t("cat.page.title"), currentPath = currentPath) {
+    pageLayout(locale, pageTitle = messages.t("cat.page.title"), currentPath = currentPath, mainClass = "page page-wide") {
         h1 { +messages.t("cat.page.title") }
         catList(cats, locale)
     }
@@ -40,7 +40,12 @@ internal fun FlowContent.catList(cats: List<Cat>, locale: AppLocale) {
             val name = displayCatName(cat.name, locale)
             a(href = "$prefix/cats/${catSlug(cat.name?.en, cat.id)}", classes = "cat-card") {
                 img(src = displayPhotoUrls(cat.photoUrls).first(), alt = name, classes = "cat-card-photo")
-                span { +name }
+                div(classes = "cat-card-body") {
+                    span(classes = "cat-card-name") { +name }
+                    if (cat.birthYear != null) {
+                        span(classes = "tag") { +displayCatAge(cat.birthYear, cat.birthMonth, locale) }
+                    }
+                }
             }
         }
     }
