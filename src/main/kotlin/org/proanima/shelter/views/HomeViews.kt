@@ -232,6 +232,10 @@ private fun FlowContent.aboutSection(messages: ResourceBundle) {
                     +"${messages.t("home.about.instagram")} "
                     a(href = INSTAGRAM_URL) { +"@proanima_beograd" }
                 }
+                p {
+                    +"${messages.t("home.about.telegram")} "
+                    a(href = TELEGRAM_CHANNEL_URL) { +"@proanima_belgrade" }
+                }
             }
             blockQuote {
                 p { +messages.t("home.about.quote") }

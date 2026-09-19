@@ -2,6 +2,7 @@ package org.proanima.shelter.views
 
 import kotlinx.html.HTML
 import kotlinx.html.MAIN
+import kotlinx.html.a
 import kotlinx.html.body
 import kotlinx.html.div
 import kotlinx.html.footer
@@ -15,6 +16,8 @@ import kotlinx.html.title
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
+
+const val TELEGRAM_CHANNEL_URL = "https://t.me/proanima_belgrade"
 
 // Общий skeleton для всех страниц: <head>/nav/<main>/footer/CSS-link в одном месте,
 // чтобы не повторять его в каждом Views-файле. contentLang отдельно от locale —
@@ -58,7 +61,10 @@ fun HTML.pageLayout(
         }
         footer {
             div(classes = "wrap") {
-                p { +messages.t("footer.text") }
+                p {
+                    +"${messages.t("footer.text")} · "
+                    a(href = TELEGRAM_CHANNEL_URL) { +messages.t("footer.telegram") }
+                }
             }
         }
     }

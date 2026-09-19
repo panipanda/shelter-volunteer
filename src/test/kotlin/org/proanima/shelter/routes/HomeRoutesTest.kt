@@ -69,6 +69,7 @@ class HomeRoutesTest {
 
             assertEquals(HttpStatusCode.OK, response.status, code)
             assertTrue(body.contains("https://www.instagram.com/proanima_beograd"), code)
+            assertTrue(body.contains("https://t.me/proanima_belgrade"), code)
             assertTrue(body.contains("https://t.me/Nata_Rogava"), code)
             assertTrue(body.contains("https://t.me/Trikcsy"), code)
             assertTrue(body.contains("Mirica Toma") || body.contains("Мирица Тома"), code)
