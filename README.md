@@ -32,7 +32,7 @@ Planned MVP features:
 - Read-only volunteer visit calendar
 - Visit archive with public summaries
 - Manually updated visit availability
-- Multi-locale UI: `ru` (default) and `en` have real translated content; `sr` falls back to `en`
+- Multi-locale UI: `ru` (default), `en` and `sr` (Latin script) all have real translated content
 
 ## Out of scope for MVP
 
@@ -237,12 +237,14 @@ data/
   visit-participants.json
 
 content/
-  volunteer-guide.md      English, also the fallback for sr
+  volunteer-guide.md      English, also the fallback for missing translations
   volunteer-guide.ru.md
+  volunteer-guide.sr.md
 
 src/main/resources/i18n/
-  messages.properties     English, also the fallback for sr
+  messages.properties     English, also the fallback for missing translations
   messages_ru.properties
+  messages_sr.properties
 
 docs/
   decisions.md

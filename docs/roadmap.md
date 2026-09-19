@@ -2,8 +2,8 @@
 ## Phase 1 — MVP with JSON/Markdown storage
 
 Goal: publish a small volunteer website for Pro Anima cat shelter volunteers. `ru` is the
-default locale and now has real content alongside `en`; `sr` still falls back to `en` (see
-`docs/decisions.md` "Language" and `docs/smoke-checklist.md`). The site is live, deployed to
+default locale and has real content alongside `en` and `sr` (Latin script; `sr` awaits a
+native-speaker review; see `docs/decisions.md` "Language" and `docs/smoke-checklist.md`). The site is live, deployed to
 Render (see `docs/deploy.md`).
 
 Storage:

@@ -10,9 +10,11 @@ translations for JSON content (`data/cats.json`, `data/visits.json`), UI strings
 (`messages_ru.properties`), and the volunteer guide (`content/volunteer-guide.ru.md`) were filled
 in soon after, since `ru` was the locale most volunteers would actually see by default.
 
-`sr` has no translations yet and falls back to `en` everywhere, through the same convention as
-`LocalizedText.forLocale()`, the JVM `ResourceBundle` lookup for `messages.properties`, and
-`MarkdownGuideRepository`'s file-existence check. See `docs/smoke-checklist.md` for the current
+`sr` now has real translations too, written in Latin script (ekavian) — the everyday script in
+Serbia: `messages_sr.properties`, `sr` fields in the JSON content and
+`content/volunteer-guide.sr.md`. A missing translation still falls back to `en` through the same
+convention as `LocalizedText.forLocale()`, the JVM `ResourceBundle` lookup for
+`messages.properties`, and `MarkdownGuideRepository`'s file-existence check. See `docs/smoke-checklist.md` for the current
 per-locale coverage, and a RU/EN/SR switcher in the page nav lets visitors change locale without
 editing the URL by hand.
 
@@ -133,9 +135,8 @@ and the subset actually used is tiny enough that a full parser would be more dep
 
 `MarkdownGuideRepository` looks for `content/volunteer-guide.{locale}.md` first and falls back to
 the unsuffixed `content/volunteer-guide.md` (English) — the same fallback convention as
-`messages.properties` and `LocalizedText`. No `ru`/`sr` translations exist yet, so `GuideViews.kt`'s
-`<html lang>` is intentionally left as `"en"` regardless of the route's locale until real translated
-files are added.
+`messages.properties` and `LocalizedText`. `GuideViews.kt`'s `<html lang>` reflects the file that was
+actually resolved (`ru`, `sr`, or `en` on fallback), not the route's locale.
 
 ## Client-side JavaScript
 

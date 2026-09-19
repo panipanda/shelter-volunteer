@@ -296,13 +296,14 @@ Purpose:
 data/cats.json                public cat catalogue data (per-field ru/en/sr text)
 data/visits.json              public volunteer visit data (per-field ru/en/sr text)
 data/visit-participants.json  internal participant history, not public in MVP
-content/volunteer-guide.md    volunteer instruction content, English (fallback for sr too)
+content/volunteer-guide.md    volunteer instruction content, English (fallback for missing translations)
 content/volunteer-guide.ru.md volunteer instruction content, Russian
+content/volunteer-guide.sr.md volunteer instruction content, Serbian (Latin)
 ```
 
 UI strings follow the same per-locale-file convention under
-`src/main/resources/i18n/`: `messages.properties` (English, also the `sr` fallback) and
-`messages_ru.properties`.
+`src/main/resources/i18n/`: `messages.properties` (English, also the fallback for missing translations),
+`messages_ru.properties` and `messages_sr.properties`.
 
 ## JSON validation
 

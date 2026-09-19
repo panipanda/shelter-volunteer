@@ -1,51 +1,26 @@
 [
   {
-    "id": 1,
-    "name": "Mila",
-    "birthYear": 2024,
-    "description": {
-      "ru": "Спокойная и дружелюбная кошка.",
-      "en": "Calm and friendly cat."
-    },
-    "photoUrls": [],
-    "location": "IN_SHELTER",
-    "adoptionStage": "FOR_ADOPTION",
-    "createdAt": "2026-05-20T20:30:00+02:00",
-    "updatedAt": "2026-05-20T20:30:00+02:00"
-  },
-  {
-    "id": 2,
-    "name": "Marta",
-    "birthYear": null,
-    "description": {
-      "ru": "Стеснительная, но ласковая кошка.",
-      "en": "Shy but sweet cat."
-    },
-    "photoUrls": [],
-    "location": "IN_SHELTER",
-    "adoptionStage": "FOR_ADOPTION",
-    "createdAt": "2026-05-20T20:30:00+02:00",
-    "updatedAt": "2026-05-20T20:30:00+02:00"
-  },
-  {
     "id": 3,
     "name": "Nami",
     "birthYear": 2026,
     "birthMonth": 1,
     "description": {
       "ru": "Весной 2026 мы забрали из приюта эту весёлую малышку на передержку для пристройства. И с тех пор она засиделась в ожидании своего человека. Нами активная, очень любит играть и отлично ладит с другими кошками. Очень социальная, обожает сидеть на ручках, обниматься и вычёсываться.",
-      "en": "In spring 2026 we took this cheerful kitten from the shelter into foster care for adoption. She's still waiting for her person. Nami is active, loves to play and gets along great with other cats. Very social, loves being held, cuddling and being brushed."
+      "en": "In spring 2026 we took this cheerful kitten from the shelter into foster care for adoption. She's still waiting for her person. Nami is active, loves to play and gets along great with other cats. Very social, loves being held, cuddling and being brushed.",
+      "sr": "U proleće 2026. uzeli smo ovu veselu bebu iz azila na privremeni smeštaj radi udomljavanja. Od tada čeka svog čoveka. Nami je aktivna, voli da se igra i odlično se slaže sa drugim mačkama. Vrlo je društvena, obožava da bude u naručju, da se mazi i da je češljaju."
     },
     "medicalStatus": {
       "ru": "Полностью здорова: дважды проверена на FIV/FeLV/FCoV — отрицательно, привита, стерилизована, обработана от паразитов, приучена к лотку.",
-      "en": "Fully healthy: tested twice for FIV/FeLV/FCoV — negative both times, vaccinated, spayed, treated for parasites, litter-trained."
+      "en": "Fully healthy: tested twice for FIV/FeLV/FCoV — negative both times, vaccinated, spayed, treated for parasites, litter-trained.",
+      "sr": "Potpuno zdrava: dvaput testirana na FIV/FeLV/FCoV — oba puta negativna, vakcinisana, sterilisana, tretirana protiv parazita, navikla na kutiju za pesak."
     },
     "photoUrls": ["/images/nami.jpg", "/images/nami-2.jpg", "/images/nami-3.jpg", "/images/nami-4.jpg"],
     "location": "IN_FOSTERHOME",
     "adoptionStage": "FOR_ADOPTION",
     "adoptionInstruction": {
       "ru": "Пишите координатору по пристройству в Telegram: @Nata_Rogava",
-      "en": "Contact the adoption coordinator on Telegram: @Nata_Rogava"
+      "en": "Contact the adoption coordinator on Telegram: @Nata_Rogava",
+      "sr": "Obratite se koordinatoru za udomljavanje na Telegramu: @Nata_Rogava"
     },
     "createdAt": "2026-09-17T16:30:00+02:00",
     "updatedAt": "2026-09-17T16:30:00+02:00"

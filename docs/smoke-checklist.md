@@ -149,7 +149,7 @@ Expected result:
 - the card photo is the cat's first `photoUrls` entry, or the default cat image if
   `photoUrls` is empty (same fallback as the cat details gallery, via `displayPhotoUrls`);
 - each cat card links to `/ru/cats/{slug}`, where `slug` is the cat's name lowercased
-  (e.g. `Mila` → `mila`; a cat without a name falls back to its numeric `id`);
+  (e.g. `Nami` → `nami`; a cat without a name falls back to its numeric `id`);
 - cats with missing names are displayed as `Unnamed`.
 
 Example expected HTML content:
@@ -157,9 +157,9 @@ Example expected HTML content:
 ```html
 <h1>Cats</h1>
 <div class="cat-list">
-    <a href="/ru/cats/mila" class="cat-card">
-        <img src="/images/default-cat.jpg" alt="Mila" class="cat-card-photo">
-        <span>Mila</span>
+    <a href="/ru/cats/nami" class="cat-card">
+        <img src="/images/nami.jpg" alt="Nami" class="cat-card-photo">
+        <span>Nami</span>
     </a>
 </div>
 ```
@@ -171,7 +171,7 @@ The exact names and slugs depend on the current contents of `data/cats.json`.
 Open an existing cat page, for example:
 
 ```text
-http://localhost:8080/ru/cats/mila
+http://localhost:8080/ru/cats/nami
 ```
 
 Or check from terminal.
@@ -179,20 +179,20 @@ Or check from terminal.
 ### Windows PowerShell
 
 ```powershell
-Invoke-WebRequest http://localhost:8080/ru/cats/mila
+Invoke-WebRequest http://localhost:8080/ru/cats/nami
 ```
 
 ### Linux/macOS
 
 ```bash
-curl http://localhost:8080/ru/cats/mila
+curl http://localhost:8080/ru/cats/nami
 ```
 
 Expected result:
 
 - response is returned successfully;
 - response is an HTML page;
-- page contains the display name of the cat with slug `mila`;
+- page contains the display name of the cat with slug `nami`;
 - if the cat name is missing in JSON, page contains `Unnamed`;
 - page displays cat age using the configured age fallback;
 - page displays cat location (shelter/foster home);
@@ -389,8 +389,8 @@ Note: guide body content is now read from `content/volunteer-guide.md` (or the l
 `content/volunteer-guide.{locale}.md`, when present) at request time via `GuideRepository`, and
 rendered as real DSL tags, not hardcoded in `GuideViews.kt`. `content/volunteer-guide.ru.md` now
 exists with real Russian content — `/ru/guide` renders it instead of falling back to English.
-`content/volunteer-guide.sr.md` still doesn't exist, so `/sr/guide` still falls back to the
-unsuffixed English file.
+`content/volunteer-guide.sr.md` exists with real Serbian (Latin script) content, so `/sr/guide`
+renders it too.
 
 ## Other locales
 
@@ -400,11 +400,12 @@ Repeat the cat list, cat details, visits, visit archive, and guide checks above 
 - `/ru` now has real translations for UI strings (`messages_ru.properties`), JSON content
   (`data/cats.json`, `data/visits.json`) and the guide (`content/volunteer-guide.ru.md`) — expect
   Russian text there, not an English fallback.
-- `/sr` still has no translations at all, so it falls back to English everywhere — this remains
-  the intended fallback behavior, not a bug.
-- On `/ru/guide`, the page's `<html lang>` should be `ru`; on `/sr/guide`, it should still be `en`
-  (falls back to the unsuffixed `content/volunteer-guide.md`), since `lang` reflects which file was
-  actually resolved, not the route locale.
+- `/sr` has real translations too (Serbian, Latin script, ekavian) for UI strings
+  (`messages_sr.properties`), JSON content and the guide (`content/volunteer-guide.sr.md`) — expect
+  Serbian text there, not an English fallback. A locale/field with no translation still falls back
+  to English through the same conventions as before.
+- On `/ru/guide`, the page's `<html lang>` should be `ru`, on `/sr/guide` — `sr`; `lang` reflects
+  which file was actually resolved, so a locale without its own guide file would report `en`.
 
 ## Language switcher
 
@@ -420,8 +421,8 @@ Expected result:
 
 - the current locale (`RU`) is shown as plain text, not a link;
 - `EN` and `SR` are links;
-- clicking `EN` opens `http://localhost:8080/en/cats/mila` — same page, only the locale prefix
-  changes, the rest of the path (`/cats/mila`) is preserved;
+- clicking `EN` opens `http://localhost:8080/en/cats/nami` — same page, only the locale prefix
+  changes, the rest of the path (`/cats/nami`) is preserved;
 - this also holds on `/{lang}/guide`, `/{lang}/visits`, `/{lang}/visits/archive`, and the home
   page (`/{lang}`).
 
@@ -568,7 +569,7 @@ Then manually re-check:
 - `GET /images/default-cat.jpg`
 - `GET /styles/main.css`
 - `GET /ru/cats`
-- `GET /ru/cats/mila`
+- `GET /ru/cats/nami`
 - `GET /ru/cats/no-such-cat`
 - `GET /ru/visits`
 - `GET /ru/visits/archive`
@@ -612,8 +613,8 @@ Current implemented pages:
 - `/{lang}/cats/{slug}` returns plain text for a slug that matches no cat.
 - `/{lang}/visits` returns HTML with upcoming visits.
 - `/{lang}/visits/archive` returns HTML with completed visits.
-- `/{lang}/guide` — volunteer guide page; `ru` and `en` body content is real, `sr` falls back to
-  the English file (see "Other locales" above).
+- `/{lang}/guide` — volunteer guide page; `ru`, `en` and `sr` body content is real
+  (see "Other locales" above).
 - static image resources are served from `/images/...`, unprefixed (real directory on disk).
 - CSS is served from `/styles/main.css`, unprefixed (classpath resource, bundled with the build).
 - every page shares one skeleton via `pageLayout()` in `views/Layout.kt`: `<head>`/nav/language
@@ -621,17 +622,17 @@ Current implemented pages:
 
 Current known limitations:
 
-- `data/cats.json` and `data/visits.json` now have both `ru` and `en` translations filled in — only
-  `sr` still falls back to `en` through `LocalizedText.forLocale()`.
-- UI strings now have `src/main/resources/i18n/messages_ru.properties` alongside the English
-  default `messages.properties` — only `sr` still falls back to the English default through the
-  JVM's `ResourceBundle` lookup.
-- `content/volunteer-guide.ru.md` now exists — only `sr` still falls back to the unsuffixed English
-  `content/volunteer-guide.md` through `MarkdownGuideRepository`.
-- `cat.age.years={0} лет` is a single generic plural form for the `ru` bundle — it reads correctly
-  for 0/5+ but is grammatically off for 2-4 (e.g. "2 лет" instead of "2 года"), since
-  `displayCatAge` only branches on "exactly 1 year" vs. everything else; full Russian plural rules
-  would need a code change, not just a translation.
+- `data/cats.json` and `data/visits.json` have `ru`, `en` and `sr` translations filled in.
+- UI strings have `messages_ru.properties` and `messages_sr.properties` alongside the English
+  default `messages.properties`.
+- The volunteer guide has `content/volunteer-guide.ru.md` and `content/volunteer-guide.sr.md`
+  alongside the English `content/volunteer-guide.md`; all three have the same sections, including
+  the enclosure/cleaning one (`ru` is the original, `en` and `sr` were translated from it).
+- `cat.age.years`/`cat.age.months` in the `ru` bundle use the same `choice` approach (1 год /
+  2 года / 5 лет / 21 год / 22 года; 1 месяц / 2 месяца / 5 месяцев).
+- The Serbian translations have not been reviewed by a native speaker yet.
+- `cat.age.years`/`cat.age.months` in the `sr` bundle use `MessageFormat` `choice` to get the
+  2-4 vs. 5+ plural forms right (2 godine / 5 godina / 22 godine).
 - Styling is intentionally minimal (container width, nav, cat-list preview cards, visit-card
   look, responsive nav wrap) — no design system.
 - There are no route tests for `/` or `/{lang}/cats` (only visits and guide routes are covered).
@@ -640,8 +641,6 @@ Current known limitations:
 
 Future improvements:
 
-- Real `sr` translations for JSON content, UI strings, and `content/volunteer-guide.md`, matching
-  what `ru` now has.
-- Proper Russian plural handling for `cat.age.years` (2-4 vs. 5+ vs. 11-14).
+- Native-speaker review of the `sr` translations.
 - Route tests for `/` and `/{lang}/cats`.
 - HTML pages for error states.

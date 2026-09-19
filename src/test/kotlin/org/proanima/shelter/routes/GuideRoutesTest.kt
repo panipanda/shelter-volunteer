@@ -35,7 +35,7 @@ class GuideRoutesTest {
     }
 
     @Test
-    fun `GET guide for sr locale falls back to English content`() = testApplication {
+    fun `GET guide for sr locale returns Serbian content`() = testApplication {
         application {
             module()
         }
@@ -45,7 +45,11 @@ class GuideRoutesTest {
 
         assertEquals(HttpStatusCode.OK, response.status)
 
-        assertTrue(body.contains("Before the visit"))
-        assertTrue(body.contains("""lang="en""""))
+        assertTrue(body.contains("Vodič za volontere"))
+        assertTrue(body.contains("Pre posete"))
+        assertTrue(body.contains("Šta poneti"))
+        assertTrue(body.contains("""lang="sr""""))
+
+        assertTrue(body.contains("""href="/sr/cats""""))
     }
 }
