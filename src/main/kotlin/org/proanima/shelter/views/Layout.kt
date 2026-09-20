@@ -25,6 +25,19 @@ const val TELEGRAM_CHANNEL_URL = "https://t.me/proanima_belgrade"
 // mainClass задаёт ширину контента: "page" — узкая читаемая колонка для внутренних
 // страниц, "home" — без ограничений, главная сама кладёт секции в .wrap и растягивает
 // цветную полосу на всю ширину.
+// Fonts needed from the first paint: regular and bold latin (nav, headings) plus the subset
+// for the locale's alphabet: cyrillic for ru, latin-ext (č, š, ž, đ, ć) for sr. Without the
+// preload the browser finds them only after parsing the CSS and re-renders the text on
+// font-display: swap, shifting the layout on every language switch.
+private fun preloadedFonts(locale: AppLocale): List<String> {
+    val subsets = when (locale) {
+        AppLocale.RU -> listOf("latin", "cyrillic")
+        AppLocale.SR -> listOf("latin", "latin-ext")
+        AppLocale.EN -> listOf("latin")
+    }
+    return listOf(400, 700).flatMap { weight -> subsets.map { "ubuntu-mono-$weight-$it" } }
+}
+
 fun HTML.pageLayout(
     locale: AppLocale,
     pageTitle: String,
@@ -48,9 +61,11 @@ fun HTML.pageLayout(
             attributes["sizes"] = "192x192"
         }
         link(rel = "apple-touch-icon", href = "/icons/apple-touch-icon.png")
-        link(rel = "preload", href = "/fonts/ubuntu-mono-400-latin.woff2", type = "font/woff2") {
-            attributes["as"] = "font"
-            attributes["crossorigin"] = "anonymous"
+        preloadedFonts(locale).forEach { font ->
+            link(rel = "preload", href = "/fonts/$font.woff2", type = "font/woff2") {
+                attributes["as"] = "font"
+                attributes["crossorigin"] = "anonymous"
+            }
         }
         link(rel = "stylesheet", href = "/styles/main.css", type = "text/css")
     }
