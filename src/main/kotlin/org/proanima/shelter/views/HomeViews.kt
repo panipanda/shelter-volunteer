@@ -34,7 +34,7 @@ private const val NATA_TELEGRAM = "Nata_Rogava"
 private const val ALINA_TELEGRAM = "Trikcsy"
 
 // Иконки плиток «Чем занимаются волонтёры»: только контур, цвет задаёт CSS (.task-icon svg).
-private const val ICON_CLEANING = """<path d="M14 3l7 7"/><path d="M12.5 8.5L4 17l3 3 8.5-8.5"/><path d="M6 15l3 3"/>"""
+private const val ICON_CLEANING = """<path d="M7 8a5 5 0 0 1 10 0"/><path d="M5 8l1.5 11.5A1.5 1.5 0 0 0 8 21h8a1.5 1.5 0 0 0 1.5-1.5L19 8z"/><path d="M4 8h16"/>"""
 private const val ICON_FEEDING = """<path d="M3 11h18a8 8 0 0 1-8 8h-2a8 8 0 0 1-8-8z"/><path d="M8 7c0-1.5 1.5-1.5 1.5-3M13 7c0-1.5 1.5-1.5 1.5-3"/>"""
 private const val ICON_SOCIALIZATION = """<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>"""
 
