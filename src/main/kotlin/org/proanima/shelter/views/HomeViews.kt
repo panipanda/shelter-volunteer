@@ -206,7 +206,7 @@ private fun FlowContent.helpSection(messages: ResourceBundle) {
             div(classes = "help-intro") {
                 h2 { +messages.t("home.help.title") }
                 p { +messages.t("home.help.intro") }
-                p { +messages.t("home.help.contact") }
+                p(classes = "help-contact") { +messages.t("home.help.contact") }
                 div(classes = "contact-buttons") {
                     coordinatorButtons(messages, "button", "button button-secondary")
                 }

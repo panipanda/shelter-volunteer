@@ -906,11 +906,33 @@ footer p {
     }
 
     .hero-grid,
-    .help-layout,
     .about-layout,
     .band-top {
         grid-template-columns: 1fr;
         gap: 28px;
+    }
+
+    /* List right under the intro line ending with a colon, contacts after it */
+    .help-layout {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .help-intro {
+        display: contents;
+    }
+
+    .help-list {
+        order: 1;
+    }
+
+    .help-intro .help-contact {
+        order: 2;
+        margin-top: 1.5rem;
+    }
+
+    .help-intro .contact-buttons {
+        order: 2;
     }
 
     .hero-photo {
