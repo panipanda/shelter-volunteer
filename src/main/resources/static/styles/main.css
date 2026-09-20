@@ -489,8 +489,11 @@ main.home > section.hero {
 }
 
 .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
+    /* Equal-width buttons side by side; stacked on narrow screens (see 640px query) */
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    justify-content: start;
     gap: 0.75rem;
 }
 
@@ -727,8 +730,9 @@ main.home > section.next-visit {
 }
 
 .step-actions {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: fit-content(100%);
+    justify-content: start;
     gap: 0.5rem;
 }
 
@@ -766,8 +770,10 @@ main.home > section.next-visit {
 }
 
 .contact-buttons {
-    display: flex;
-    flex-wrap: wrap;
+    /* One column sized to the widest button, so both contacts get the same width */
+    display: grid;
+    grid-template-columns: fit-content(100%);
+    justify-content: start;
     gap: 0.75rem;
     margin-top: 1.25rem;
 }
@@ -949,6 +955,13 @@ footer p {
     }
 }
 
+@media (max-width: 640px) {
+    .hero-actions {
+        grid-auto-flow: row;
+        grid-auto-columns: fit-content(100%);
+    }
+}
+
 @media (max-width: 520px) {
     :root {
         --gutter: 16px;
@@ -973,6 +986,14 @@ footer p {
     .visit-actions .button,
     .contact-buttons .button {
         width: 100%;
+    }
+
+    .contact-buttons {
+        grid-template-columns: 100%;
+    }
+
+    .hero-actions {
+        grid-auto-columns: 100%;
     }
 
     .facts {
