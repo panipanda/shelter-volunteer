@@ -58,6 +58,7 @@ fun displayCatLocation(location: CatLocation, locale: AppLocale): String {
     val key = when (location) {
         CatLocation.IN_SHELTER -> "cat.location.inShelter"
         CatLocation.IN_FOSTERHOME -> "cat.location.inFosterhome"
+        CatLocation.AT_HOME -> "cat.location.atHome"
     }
     return messagesFor(locale).t(key)
 }

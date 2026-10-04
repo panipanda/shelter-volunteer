@@ -5,6 +5,7 @@ import kotlinx.html.HTML
 import kotlinx.html.a
 import kotlinx.html.div
 import kotlinx.html.h1
+import kotlinx.html.h2
 import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.p
@@ -28,7 +29,15 @@ fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String) {
 
     pageLayout(locale, pageTitle = messages.t("cat.page.title"), currentPath = currentPath, mainClass = "page page-wide") {
         h1 { +messages.t("cat.page.title") }
-        catList(cats, locale)
+
+        val (adopted, others) = cats.partition { it.adoptionStage == AdoptionStage.ADOPTED }
+        catList(others, locale)
+
+        if (adopted.isNotEmpty()) {
+            h2 { +messages.t("cat.adopted.title") }
+            p { +messages.t("cat.adopted.intro") }
+            catList(adopted, locale)
+        }
     }
 }
 
