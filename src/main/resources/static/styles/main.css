@@ -898,10 +898,6 @@ main.home > section.next-visit {
     gap: 0.5rem;
 }
 
-.join-dogs {
-    margin: 1.5rem 0 0;
-}
-
 .schedule {
     display: flex;
     flex-wrap: wrap;

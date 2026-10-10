@@ -37,7 +37,6 @@ class DogRoutesTest {
         assertTrue(body.contains("Волонтёрский центр Pro Anima · Svora.Volunteers"))
         assertTrue(body.contains("""href="/ru/dogs""""))
         assertTrue(body.contains("https://www.instagram.com/svora.volunteers/"))
-        assertTrue(body.contains("https://t.me/dashafirman"))
     }
 
     @Test
