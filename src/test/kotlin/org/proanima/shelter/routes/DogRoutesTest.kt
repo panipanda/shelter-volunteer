@@ -72,7 +72,7 @@ class DogRoutesTest {
         val ruBody = ru.bodyAsText()
         assertEquals(HttpStatusCode.OK, ru.status)
         assertTrue(ruBody.contains("<h1>Сава</h1>"))
-        assertTrue(ruBody.contains("Около трёх лет"))
+        assertTrue(ruBody.contains("Около 3 лет"))
         assertTrue(ruBody.contains("Дружелюбный и ласковый пёс."))
         assertTrue(ruBody.contains("В приюте"))
         assertTrue(ruBody.contains("""href="/ru/dogs""""))

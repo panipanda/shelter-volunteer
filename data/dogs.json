@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": { "ru": "Сава", "en": "Sava", "sr": "Sava" },
-    "age": { "ru": "Около трёх лет", "en": "About three years", "sr": "Oko tri godine" },
+    "age": { "ru": "Около 3 лет", "en": "About 3 years", "sr": "Oko 3 godine" },
     "description": {
       "ru": "Дружелюбный и ласковый пёс.",
       "en": "A friendly and affectionate dog.",
@@ -13,7 +13,7 @@
   {
     "id": 2,
     "name": { "ru": "Мила", "en": "Mila", "sr": "Mila" },
-    "age": { "ru": "Около трёх лет", "en": "About three years", "sr": "Oko tri godine" },
+    "age": { "ru": "Около 3 лет", "en": "About 3 years", "sr": "Oko 3 godine" },
     "description": {
       "ru": "Добрая и ориентированная на человека собака.",
       "en": "A kind, people-oriented dog.",
