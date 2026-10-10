@@ -1051,6 +1051,7 @@ footer p {
     }
 
     .cat-list {
+        grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
         gap: 12px;
     }
 }
