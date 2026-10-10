@@ -37,4 +37,19 @@ class DogRoutesTest {
         assertTrue(body.contains("""href="/ru/dogs""""))
         assertTrue(body.contains("https://www.instagram.com/svora.volunteers/"))
     }
+
+    @Test
+    fun `dogs page shows dog cards with localized names and photos`() = testApplication {
+        application { module() }
+
+        val ru = client.get("/ru/dogs").bodyAsText()
+        assertTrue(ru.contains("Сава"))
+        assertTrue(ru.contains("Мила"))
+        assertTrue(ru.contains("/images/sava.jpg"))
+        assertTrue(ru.contains("/images/mila.jpg"))
+
+        val en = client.get("/en/dogs").bodyAsText()
+        assertTrue(en.contains("Sava"))
+        assertTrue(en.contains("Mila"))
+    }
 }

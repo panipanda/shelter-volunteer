@@ -500,6 +500,20 @@ article p {
     transform: translateY(-4px);
 }
 
+.cat-list + h2 {
+    margin-top: 2.5rem;
+}
+
+.dog-card:hover {
+    transform: none;
+}
+
+.dog-card p {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.95rem;
+}
+
 .cat-card-photo {
     width: 100%;
     aspect-ratio: 1;

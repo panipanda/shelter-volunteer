@@ -1,30 +1,43 @@
 package org.proanima.shelter.views
 
+import kotlinx.html.FlowContent
 import kotlinx.html.HTML
 import kotlinx.html.a
 import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.h2
+import kotlinx.html.img
 import kotlinx.html.li
 import kotlinx.html.p
+import kotlinx.html.span
 import kotlinx.html.ul
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
+import org.proanima.shelter.model.Dog
+
+private const val DEFAULT_PHOTO = "/images/default-cat.jpg"
 
 // A text-only page for now: there is no dog catalogue yet, the dog volunteering is run by Svora.Volunteers.
-fun HTML.dogsPage(locale: AppLocale, currentPath: String) {
+fun HTML.dogsPage(dogs: List<Dog>, locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
 
     pageLayout(
         locale,
         pageTitle = messages.t("dogs.page.title"),
         currentPath = currentPath,
+        mainClass = "page page-wide",
         description = messages.t("dogs.page.description")
     ) {
         h1 { +messages.t("nav.dogs") }
         p { +messages.t("dogs.intro") }
         p { +messages.t("dogs.shelter") }
+
+        if (dogs.isNotEmpty()) {
+            h2 { +messages.t("dogs.list.title") }
+            p { +messages.t("dogs.list.intro") }
+            dogList(dogs, locale)
+        }
 
         h2 { +messages.t("dogs.svora.title") }
         p { +messages.t("dogs.svora.text") }
@@ -44,6 +57,22 @@ fun HTML.dogsPage(locale: AppLocale, currentPath: String) {
         p(classes = "more") {
             +"${messages.t("dogs.guide.more")} "
             a(href = "/${locale.code}/guide#general") { +messages.t("dogs.guide.link") }
+        }
+    }
+}
+
+// Same card look as the cats, but not a link: there are no dog profile pages yet.
+private fun FlowContent.dogList(dogs: List<Dog>, locale: AppLocale) {
+    div(classes = "cat-list") {
+        dogs.forEach { dog ->
+            val name = dog.name.forLocale(locale)
+            div(classes = "cat-card dog-card") {
+                img(src = dog.photoUrls.firstOrNull() ?: DEFAULT_PHOTO, alt = name, classes = "cat-card-photo")
+                div(classes = "cat-card-body") {
+                    span(classes = "cat-card-name") { +name }
+                    p { +dog.description.forLocale(locale) }
+                }
+            }
         }
     }
 }
