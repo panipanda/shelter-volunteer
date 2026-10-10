@@ -17,7 +17,7 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String) {
 
     header(classes = "site-header") {
         div(classes = "wrap site-header-row") {
-            // Текст логотипа скрыт от скринридеров: имя ссылки уже задаёт alt картинки.
+            // The logo text is hidden from screen readers: the link name is already given by the image alt.
             a(href = prefix, classes = "logo") {
                 img(src = "/icons/logo.png", alt = messages.t("nav.home"), classes = "logo-image")
                 span(classes = "logo-text") {
@@ -38,8 +38,8 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String) {
     }
 }
 
-// /visits — префикс /visits/archive, поэтому дочерние пути считаем «текущими» только там,
-// где это осмысленно (карточка кошки внутри /cats), а не для всех ссылок подряд.
+// /visits is a prefix of /visits/archive, so child paths count as "current" only where
+// it makes sense (a cat card inside /cats), not for every link.
 private fun FlowContent.navLink(href: String, label: String, currentPath: String, matchChildren: Boolean = false) {
     val isCurrent = currentPath == href || (matchChildren && currentPath.startsWith("$href/"))
 
@@ -51,8 +51,8 @@ private fun FlowContent.navLink(href: String, label: String, currentPath: String
     }
 }
 
-// Меняем только языковой префикс, оставляя остальной путь как есть (/ru/cats/1 -> /en/cats/1) —
-// структура путей одинаковая во всех локалях, так что достаточно снять текущий префикс.
+// We change only the language prefix and keep the rest of the path as is (/ru/cats/1 -> /en/cats/1) —
+// the path structure is the same in all locales, so stripping the current prefix is enough.
 private fun FlowContent.localeSwitcher(locale: AppLocale, currentPath: String) {
     val pathSuffix = currentPath.removePrefix("/${locale.code}")
 

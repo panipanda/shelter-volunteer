@@ -16,10 +16,10 @@ fun displayPhotoUrls(photoUrls: List<String>): List<String> {
     return photoUrls.ifEmpty { listOf("/images/default-cat.jpg") }
 }
 
-// Урл кошки строится из имени, а не из id, чтобы он был человекочитаемым. Вызывающий
-// передаёт английский вариант имени (Cat.name.en): он латиницей и не зависит от языка
-// страницы — транслитерация кириллицы не сделана. Если имя не задано или после чистки
-// не осталось символов, откатываемся на голый id — как адресовалась кошка до этого изменения.
+// The cat's URL is built from the name, not the id, so that it is human-readable. The caller
+// passes the English name variant (Cat.name.en): it is in Latin script and does not depend on the page
+// language — Cyrillic transliteration is not implemented. If the name is not set or nothing remains
+// after cleaning, we fall back to the bare id — how the cat was addressed before this change.
 fun catSlug(name: String?, id: Int): String {
     val slug = name.orEmpty()
         .lowercase()
@@ -28,9 +28,9 @@ fun catSlug(name: String?, id: Int): String {
     return slug.ifBlank { id.toString() }
 }
 
-// У приютских кошек редко известна точная дата рождения — обычно только год,
-// иногда месяц. Возраст считаем с той точностью, что есть: без месяца — по годам,
-// с месяцем — по месяцам, пока не наберётся полный год.
+// Shelter cats rarely have an exact birth date known — usually only the year,
+// sometimes the month. We compute age with whatever precision is available: without a month — in years,
+// with a month — in months, until a full year is reached.
 fun displayCatAge(birthYear: Int?, birthMonth: Int?, locale: AppLocale, today: LocalDate = LocalDate.now()): String {
     val messages = messagesFor(locale)
     if (birthYear == null) {

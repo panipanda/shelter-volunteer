@@ -7,9 +7,9 @@ sealed interface GuideBlock {
     data class Callout(val text: String) : GuideBlock
 }
 
-// Минимальный парсер markdown под ровно то, что реально используется в volunteer-guide.md:
-// заголовки # и ##, абзацы через пустую строку, списки через "- ", врезка через "> ". Полноценный markdown
-// (жирный текст, ссылки, вложенные списки) не поддерживается — не нужен, гайд простой.
+// A minimal markdown parser for exactly what volunteer-guide.md actually uses:
+// headings # and ##, paragraphs separated by a blank line, lists via "- ", a callout via "> ". Full markdown
+// (bold text, links, nested lists) is not supported — not needed, the guide is simple.
 fun parseGuideMarkdown(markdown: String): List<GuideBlock> {
     val blocks = mutableListOf<GuideBlock>()
     val paragraphLines = mutableListOf<String>()

@@ -33,7 +33,7 @@ private const val INSTAGRAM_URL = "https://www.instagram.com/proanima_beograd"
 private const val NATA_TELEGRAM = "Nata_Rogava"
 private const val ALINA_TELEGRAM = "Trikcsy"
 
-// Иконки плиток «Чем занимаются волонтёры»: только контур, цвет задаёт CSS (.task-icon svg).
+// Icons for the "What volunteers do" tiles: outline only, the color is set by CSS (.task-icon svg).
 private const val ICON_CLEANING = """<path d="M7 8a5 5 0 0 1 10 0"/><path d="M5 8l1.5 11.5A1.5 1.5 0 0 0 8 21h8a1.5 1.5 0 0 0 1.5-1.5L19 8z"/><path d="M4 8h16"/>"""
 private const val ICON_FEEDING = """<path d="M3 11h18a8 8 0 0 1-8 8h-2a8 8 0 0 1-8-8z"/><path d="M8 7c0-1.5 1.5-1.5 1.5-3M13 7c0-1.5 1.5-1.5 1.5-3"/>"""
 private const val ICON_SOCIALIZATION = """<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>"""
@@ -84,7 +84,7 @@ private fun UL.fact(value: String, label: String) {
 }
 
 private fun FlowContent.nextVisitSection(visit: NextVisit, locale: AppLocale, messages: ResourceBundle) {
-    // Для sr берём латиницу, иначе Java отдаст названия дней и месяцев кириллицей.
+    // For sr we use Latin script, otherwise Java returns day and month names in Cyrillic.
     val javaLocale = Locale.forLanguageTag(if (locale == AppLocale.SR) "sr-Latn" else locale.code)
     val weekday = visit.date.dayOfWeek.getDisplayName(TextStyle.FULL_STANDALONE, javaLocale)
         .replaceFirstChar { it.titlecase(javaLocale) }
@@ -149,7 +149,7 @@ private fun FlowContent.task(iconPaths: String, title: String, text: String) {
 private fun FlowContent.joinSection(locale: AppLocale, messages: ResourceBundle) {
     val prefix = "/${locale.code}"
 
-    // Шаги — настоящая последовательность, поэтому нумерация честная (счётчик в CSS).
+    // The steps are a real sequence, so the numbering is honest (counter in CSS).
     div(classes = "band") {
         id = "join"
         div(classes = "wrap") {

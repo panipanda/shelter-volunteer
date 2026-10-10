@@ -8,7 +8,7 @@ import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 
-// Заглушки: список визитов появится вместе с синхронизацией с чатом котоволонтёров.
+// Placeholders: the visit list will appear together with the sync with the cat volunteers' chat.
 fun HTML.visitsPage(locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
 

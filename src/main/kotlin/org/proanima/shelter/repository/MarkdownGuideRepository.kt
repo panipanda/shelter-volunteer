@@ -13,8 +13,8 @@ class MarkdownGuideRepository(
             return GuideContent(localized.readText(), locale.code)
         }
 
-        // Если перевода для локали нет — намеренно падаем на English-версию без суффикса,
-        // а не на выдуманный перевод
+        // If there is no translation for the locale, we deliberately fall back to the English version without a suffix,
+        // rather than to an invented translation
         return GuideContent(File("$basePath.md").readText(), AppLocale.EN.code)
     }
 }

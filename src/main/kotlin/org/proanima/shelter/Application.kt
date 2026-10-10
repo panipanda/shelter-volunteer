@@ -24,7 +24,7 @@ import java.io.File
 import java.time.Clock
 import java.time.ZoneId
 
-// Расписание визитов привязано к времени Белграда, а не к часовому поясу сервера.
+// The visit schedule follows Belgrade time, not the server's time zone.
 private val SHELTER_ZONE = ZoneId.of("Europe/Belgrade")
 
 fun main() {

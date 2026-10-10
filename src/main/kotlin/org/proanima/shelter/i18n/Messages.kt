@@ -10,8 +10,8 @@ fun messagesFor(locale: AppLocale): ResourceBundle =
 
 fun ResourceBundle.t(key: String, vararg args: Any): String {
     val pattern = getString(key)
-    // MessageFormat.format(pattern, args) статик-метод форматирует числа по locale JVM по умолчанию,
-    // а не по locale бандла — здесь берём locale бандла явно, иначе "1000" в ru-контексте
-    // отформатируется как попало на хостовой машине
+    // The static MessageFormat.format(pattern, args) formats numbers using the JVM default locale,
+    // not the bundle's locale, so we pass the bundle's locale explicitly; otherwise "1000" in a ru context
+    // would be formatted arbitrarily depending on the host machine
     return if (args.isEmpty()) pattern else MessageFormat(pattern, locale).format(args)
 }

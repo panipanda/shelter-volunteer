@@ -8,7 +8,7 @@ data class LocalizedText(
     val en: String? = null,
     val sr: String? = null
 ) {
-    // ru в приоритете, но на старте полнее всего заполнен en — фолбэк идёт через него
+    // ru takes priority, but en is the most complete at launch, so the fallback goes through it
     fun forLocale(locale: AppLocale): String =
         valueFor(locale) ?: en ?: ru ?: sr ?: ""
 

@@ -19,12 +19,12 @@ import org.proanima.shelter.model.AppLocale
 
 const val TELEGRAM_CHANNEL_URL = "https://t.me/proanima_belgrade"
 
-// Общий skeleton для всех страниц: <head>/nav/<main>/footer/CSS-link в одном месте,
-// чтобы не повторять его в каждом Views-файле. contentLang отдельно от locale —
-// нужен GuideViews, у которой контент ещё не переведён, а роут уже локализован.
-// mainClass задаёт ширину контента: "page" — узкая читаемая колонка для внутренних
-// страниц, "home" — без ограничений, главная сама кладёт секции в .wrap и растягивает
-// цветную полосу на всю ширину.
+// Common skeleton for all pages: <head>/nav/<main>/footer/CSS link in one place,
+// so it is not repeated in every Views file. contentLang is separate from locale —
+// it is needed by GuideViews, whose content is not yet translated while the route is already localized.
+// mainClass sets the content width: "page" is a narrow readable column for inner
+// pages, "home" is unrestricted — the home page puts sections into .wrap itself and stretches
+// the colored strip to full width.
 // Fonts needed from the first paint: regular and bold latin (nav, headings) plus the subset
 // for the locale's alphabet: cyrillic for ru, latin-ext (č, š, ž, đ, ć) for sr. Without the
 // preload the browser finds them only after parsing the CSS and re-renders the text on

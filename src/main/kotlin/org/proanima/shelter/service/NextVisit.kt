@@ -6,8 +6,8 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.temporal.TemporalAdjusters
 
-// Регулярное расписание выездов из Врачара. Пока нет синхронизации с чатом, «ближайший визит»
-// считаем по нему, а не по данным о конкретных визитах.
+// Regular schedule of trips from Vracar. Until there is a chat sync, the "next visit"
+// is computed from it rather than from data about specific visits.
 private val DEPARTURES = listOf(
     DayOfWeek.WEDNESDAY to LocalTime.of(9, 0),
     DayOfWeek.SATURDAY to LocalTime.of(10, 0)
@@ -15,7 +15,7 @@ private val DEPARTURES = listOf(
 
 data class NextVisit(val date: LocalDate, val departure: LocalTime)
 
-// Ближайший выезд — не раньше now: если время сегодняшнего выезда уже прошло, берём следующий.
+// The next trip is not earlier than now: if today's trip time has already passed, we take the next one.
 fun nextScheduledVisit(now: LocalDateTime): NextVisit {
     return DEPARTURES
         .map { (day, time) ->

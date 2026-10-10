@@ -40,7 +40,7 @@ class HomeRoutesTest {
         updatedAt = "2026-01-01T00:00:00+01:00"
     )
 
-    // Часы стоят на UTC, чтобы тест не зависел от часового пояса машины; 2026-09-16 — среда.
+    // The clock is set to UTC so the test does not depend on the machine's time zone; 2026-09-16 is a Wednesday.
     private fun clockAt(dateTime: String): Clock =
         Clock.fixed(Instant.parse("${dateTime}Z"), ZoneId.of("UTC"))
 
@@ -115,7 +115,7 @@ class HomeRoutesTest {
 
     @Test
     fun `GET home shows Wednesday when it is the nearest visit`() {
-        // Понедельник 14 сентября 2026: ближайшая среда — 16-е, выезд в 9:00.
+        // Monday, September 14, 2026: the next Wednesday is the 16th, trip at 9:00.
         val body = homeAt("2026-09-14T10:00:00")
 
         assertTrue(body.contains("<strong>16</strong>"))
@@ -125,7 +125,7 @@ class HomeRoutesTest {
 
     @Test
     fun `GET home shows Saturday when it is the nearest visit`() {
-        // Четверг 17 сентября 2026: после среды ближайшая — суббота 19-го, выезд в 10:00.
+        // Thursday, September 17, 2026: after Wednesday the next one is Saturday the 19th, trip at 10:00.
         val body = homeAt("2026-09-17T12:00:00")
 
         assertTrue(body.contains("<strong>19</strong>"))

@@ -13,9 +13,9 @@ import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.service.GuideBlock
 
-// contentLang приходит из GuideService/GuideRepository, а не из locale роута:
-// пока sr-перевод content/volunteer-guide.md не существует, для /sr/guide реальный
-// язык контента — en, и lang должен отражать это — см. docs/decisions.md
+// contentLang comes from GuideService/GuideRepository, not from the route's locale:
+// until an sr translation of content/volunteer-guide.md exists, the real content language
+// for /sr/guide is en, and lang must reflect that — see docs/decisions.md
 fun HTML.guidePage(locale: AppLocale, blocks: List<GuideBlock>, contentLang: String, currentPath: String) {
     val messages = messagesFor(locale)
     pageLayout(

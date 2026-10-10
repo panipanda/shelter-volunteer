@@ -199,7 +199,7 @@ h3 {
     padding-inline: var(--gutter);
 }
 
-/* Шапка */
+/* Header */
 
 .site-header-row {
     display: flex;
@@ -275,7 +275,7 @@ a.logo {
     color: var(--color-bg);
 }
 
-/* Кнопки */
+/* Buttons */
 
 .button {
     display: inline-flex;
@@ -318,7 +318,7 @@ a.logo {
     background: var(--color-mint);
 }
 
-/* Внутренние страницы: гайд, кошки, визиты */
+/* Inner pages: guide, cats, visits */
 
 main.page {
     max-width: 46rem;
@@ -355,7 +355,7 @@ article p {
     margin: 0.35rem 0;
 }
 
-/* Кошки: карточки используются и на главной, и в каталоге */
+/* Cats: cards are used on both the home page and the catalog */
 
 .cat-list {
     display: grid;
@@ -470,7 +470,7 @@ article p {
     right: 0.5rem;
 }
 
-/* Главная */
+/* Home */
 
 main.home > section {
     padding-block: 72px 0;
@@ -567,7 +567,7 @@ main.home > section.hero {
     background: var(--color-placeholder);
 }
 
-/* Ближайший визит: карточка чуть заходит на hero, чтобы главное действие было на первом экране */
+/* Next visit: the card slightly overlaps the hero so the main action is on the first screen */
 
 main.home > section.next-visit {
     position: relative;
@@ -644,7 +644,7 @@ main.home > section.next-visit {
     gap: 0.75rem 1.25rem;
 }
 
-/* Чем занимаются волонтёры */
+/* What volunteers do */
 
 .tasks {
     display: grid;
@@ -688,7 +688,7 @@ main.home > section.next-visit {
     font-weight: 700;
 }
 
-/* Как присоединиться: цветная полоса на всю ширину */
+/* How to join: a full-width colored strip */
 
 .band {
     margin-top: 72px;
@@ -792,7 +792,7 @@ main.home > section.next-visit {
     margin: 1.75rem 0 0;
 }
 
-/* Как ещё помочь */
+/* Other ways to help */
 
 .help-layout {
     display: grid;
@@ -844,7 +844,7 @@ main.home > section.next-visit {
     text-transform: uppercase;
 }
 
-/* Гайд волонтёра: текст слева, врезка справа */
+/* Volunteer guide: text on the left, callout on the right */
 
 .guide {
     display: grid;
@@ -881,7 +881,7 @@ main.home > section.next-visit {
     margin: 0;
 }
 
-/* О приюте и цитата */
+/* About the shelter and the quote */
 
 .about-layout {
     display: grid;
@@ -915,7 +915,7 @@ blockquote .quote-author {
     color: var(--color-muted);
 }
 
-/* Подвал */
+/* Footer */
 
 footer {
     margin-top: 80px;
