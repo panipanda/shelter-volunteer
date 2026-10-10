@@ -29,7 +29,7 @@ This page is a guide for volunteers at the Pro Anima shelter. First the part tha
 
 ### How signup works
 
-Signup for cat visits is coordinated manually. Check the volunteer visits page, then follow the signup instructions shown for the selected visit. Trips to the dogs are organized by the Svora.Volunteers group, and signup for them goes through the group.
+All trips to the shelter are organized by the Svora.Volunteers group. Signup is coordinated manually: check the volunteer visits page, then follow the signup instructions shown for the selected visit.
 
 If a visit is full or closed, feel free to check back later or contact a coordinator.
 
@@ -51,4 +51,4 @@ The cats live in enclosures on the shelter grounds. A coordinator can add you to
 
 ## Working with dogs {#dogs}
 
-This part is still being written. Volunteers visit the dogs together with the [Svora.Volunteers](https://www.instagram.com/svora.volunteers/) group: they organize the trips and the signup. More details are on the [dogs page](/en/dogs).
+This part is still being written. Trips to the dogs, like all trips to the shelter, are organized by the [Svora.Volunteers](https://www.instagram.com/svora.volunteers/) group. More details are on the [dogs page](/en/dogs).

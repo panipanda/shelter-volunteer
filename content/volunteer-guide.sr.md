@@ -29,7 +29,7 @@ Ova stranica je vodič za volontere azila Pro Anima. Prvo ide ono što važi za 
 
 ### Kako funkcioniše prijava
 
-Prijava za posete mačkama koordinira se ručno. Proverite stranicu predstojećih poseta, a zatim pratite uputstva za prijavu navedena uz izabranu posetu. Posete psima organizuje grupa Svora.Volunteers, a prijava za njih ide preko nje.
+Sve posete azilu organizuje grupa Svora.Volunteers. Prijava se koordinira ručno: proverite stranicu predstojećih poseta, a zatim pratite uputstva za prijavu navedena uz izabranu posetu.
 
 Ako je poseta popunjena ili zatvorena, pokušajte ponovo kasnije ili se obratite koordinatoru.
 
@@ -51,4 +51,4 @@ Mačke borave u boksovima na teritoriji azila. Koordinator vas može dodati u č
 
 ## Rad sa psima {#dogs}
 
-Ovaj deo je u izradi. Volonteri idu kod pasa zajedno sa grupom [Svora.Volunteers](https://www.instagram.com/svora.volunteers/): ona organizuje posete i prijavu. Više informacija je na [stranici o psima](/sr/dogs).
+Ovaj deo je u izradi. Posete psima, kao i sve posete azilu, organizuje grupa [Svora.Volunteers](https://www.instagram.com/svora.volunteers/). Više informacija je na [stranici o psima](/sr/dogs).
