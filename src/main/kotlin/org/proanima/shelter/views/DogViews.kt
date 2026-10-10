@@ -53,7 +53,10 @@ fun HTML.dogsPage(dogs: List<Dog>, locale: AppLocale, currentPath: String) {
         h2 { +messages.t("dogs.join.title") }
         p { +messages.t("dogs.join.text") }
         div(classes = "contact-buttons") {
-            a(href = SVORA_INSTAGRAM_URL, classes = "button") { +messages.t("dogs.link.instagram") }
+            a(href = "https://t.me/$DASHA_TELEGRAM", classes = "button") {
+                +"${messages.t("home.contact.dasha")} (@$DASHA_TELEGRAM)"
+            }
+            a(href = SVORA_INSTAGRAM_URL, classes = "button button-secondary") { +messages.t("dogs.link.instagram") }
             a(href = SVORA_LINKTREE_URL, classes = "button button-secondary") { +messages.t("dogs.link.linktree") }
         }
         p(classes = "more") {

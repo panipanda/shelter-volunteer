@@ -23,6 +23,7 @@ class DogRoutesTest {
             assertTrue(body.contains("https://www.instagram.com/svora.volunteers/"), code)
             assertTrue(body.contains("https://linktr.ee/svora.volunteers"), code)
             assertTrue(body.contains("Svora.Volunteers"), code)
+            assertTrue(body.contains("https://t.me/dashafirman"), code)
             assertTrue(body.contains("""href="/$code/dogs""""), code)
         }
     }
@@ -36,6 +37,7 @@ class DogRoutesTest {
         assertTrue(body.contains("Волонтёрский центр Pro Anima · Svora.Volunteers"))
         assertTrue(body.contains("""href="/ru/dogs""""))
         assertTrue(body.contains("https://www.instagram.com/svora.volunteers/"))
+        assertTrue(body.contains("https://t.me/dashafirman"))
     }
 
     @Test

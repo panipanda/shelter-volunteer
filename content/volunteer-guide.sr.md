@@ -29,7 +29,7 @@ Ova stranica je vodič za volontere grupe Svora.Volunteers koji pomažu azilu Pr
 
 ### Kako funkcioniše prijava
 
-Sve posete azilu organizuje grupa Svora.Volunteers. Prijava se koordinira ručno: proverite stranicu predstojećih poseta, a zatim pratite uputstva za prijavu navedena uz izabranu posetu.
+Sve posete azilu organizuje grupa Svora.Volunteers. Postoje dva čata: mačji i čet grupe Svora.Volunteers. U čet grupe Svora.Volunteers dodaje [Daša](https://t.me/dashafirman), a u mačji koordinatori. Prijava se koordinira ručno: proverite stranicu predstojećih poseta, a zatim pratite uputstva za prijavu navedena uz izabranu posetu.
 
 Ako je poseta popunjena ili zatvorena, pokušajte ponovo kasnije ili se obratite koordinatoru.
 
@@ -51,4 +51,4 @@ Mačke borave u boksovima na teritoriji azila. Koordinator vas može dodati u č
 
 ## Rad sa psima {#dogs}
 
-Ovaj deo je u izradi. Posete psima, kao i sve posete azilu, organizuje grupa [Svora.Volunteers](https://www.instagram.com/svora.volunteers/). Više informacija je na [stranici o psima](/sr/dogs).
+Ovaj deo je u izradi. Posete psima, kao i sve posete azilu, organizuje grupa [Svora.Volunteers](https://www.instagram.com/svora.volunteers/). Da biste ušli u njihov čet, pišite [Daši](https://t.me/dashafirman). Više informacija je na [stranici o psima](/sr/dogs).

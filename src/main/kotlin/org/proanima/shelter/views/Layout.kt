@@ -20,6 +20,7 @@ import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 
 const val TELEGRAM_CHANNEL_URL = "https://t.me/proanima_belgrade"
+const val DASHA_TELEGRAM = "dashafirman"
 const val SVORA_INSTAGRAM_URL = "https://www.instagram.com/svora.volunteers/"
 const val SVORA_LINKTREE_URL = "https://linktr.ee/svora.volunteers"
 

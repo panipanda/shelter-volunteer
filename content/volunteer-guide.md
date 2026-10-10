@@ -29,7 +29,7 @@ This page is a guide for Svora.Volunteers who help the Pro Anima shelter. First 
 
 ### How signup works
 
-All trips to the shelter are organized by the Svora.Volunteers group. Signup is coordinated manually: check the volunteer visits page, then follow the signup instructions shown for the selected visit.
+All trips to the shelter are organized by the Svora.Volunteers group. There are two chats: the cat chat and the Svora.Volunteers chat. [Dasha](https://t.me/dashafirman) adds people to the Svora.Volunteers chat, and the coordinators add them to the cat chat. Signup is coordinated manually: check the volunteer visits page, then follow the signup instructions shown for the selected visit.
 
 If a visit is full or closed, feel free to check back later or contact a coordinator.
 
@@ -51,4 +51,4 @@ The cats live in enclosures on the shelter grounds. A coordinator can add you to
 
 ## Working with dogs {#dogs}
 
-This part is still being written. Trips to the dogs, like all trips to the shelter, are organized by the [Svora.Volunteers](https://www.instagram.com/svora.volunteers/) group. More details are on the [dogs page](/en/dogs).
+This part is still being written. Trips to the dogs, like all trips to the shelter, are organized by the [Svora.Volunteers](https://www.instagram.com/svora.volunteers/) group. To get into their chat, message [Dasha](https://t.me/dashafirman). More details are on the [dogs page](/en/dogs).

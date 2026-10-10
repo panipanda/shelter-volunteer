@@ -184,7 +184,9 @@ private fun FlowContent.joinSection(locale: AppLocale, messages: ResourceBundle)
             }
             p(classes = "join-dogs") {
                 +"${messages.t("home.join.dogs")} "
-                a(href = "$prefix/dogs", classes = "inline-link") { +messages.t("home.join.dogs.link") }
+                a(href = "https://t.me/$DASHA_TELEGRAM", classes = "inline-link") {
+                    +"${messages.t("home.contact.dasha")} (@$DASHA_TELEGRAM)"
+                }
             }
             div(classes = "schedule") {
                 p { +messages.t("home.join.schedule") }
