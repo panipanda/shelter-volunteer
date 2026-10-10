@@ -1009,7 +1009,7 @@ main.home > section.next-visit {
 
 .guide > .guide-callout {
     grid-column: 2;
-    grid-row: 1 / span 40;
+    grid-row: span 40;
     align-self: start;
     position: sticky;
     top: 24px;
