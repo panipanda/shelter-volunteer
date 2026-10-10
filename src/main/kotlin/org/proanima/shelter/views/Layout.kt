@@ -12,12 +12,24 @@ import kotlinx.html.link
 import kotlinx.html.main
 import kotlinx.html.meta
 import kotlinx.html.p
+import kotlinx.html.script
 import kotlinx.html.title
+import kotlinx.html.unsafe
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 
 const val TELEGRAM_CHANNEL_URL = "https://t.me/proanima_belgrade"
+
+// Applies the saved theme, or the system one if nothing is saved, to <html data-theme>.
+// Storage access is wrapped in try/catch: it throws when site data is blocked.
+private const val THEME_INIT_SCRIPT = """
+try {
+    var saved = localStorage.getItem("theme");
+    var dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+} catch (e) {}
+"""
 
 // Common skeleton for all pages: <head>/nav/<main>/footer/CSS link in one place,
 // so it is not repeated in every Views file. contentLang is separate from locale —
@@ -68,6 +80,11 @@ fun HTML.pageLayout(
             }
         }
         link(rel = "stylesheet", href = "/styles/main.css", type = "text/css")
+        // Inline and blocking on purpose: the theme must be set before the first paint,
+        // otherwise a dark-theme user sees a light flash on every page load.
+        script {
+            unsafe { +THEME_INIT_SCRIPT }
+        }
     }
     body {
         navigation(locale, currentPath)
@@ -81,6 +98,9 @@ fun HTML.pageLayout(
                     a(href = TELEGRAM_CHANNEL_URL) { +messages.t("footer.telegram") }
                 }
             }
+        }
+        script(src = "/scripts/theme-toggle.js") {
+            attributes["defer"] = "defer"
         }
     }
 }

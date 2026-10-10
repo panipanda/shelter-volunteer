@@ -122,8 +122,27 @@
     --gutter: 24px;
 }
 
+/* Dark palette. The head script always sets data-theme, so the explicit selector is the
+   main path; the media query is only the no-JS fallback. */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --color-bg: #0d1a1f;
+    --color-surface: #15262d;
+    --color-ink: #e9f1ed;
+    --color-muted: #a2b4ba;
+    --color-line: #25393f;
+    --color-mint: #16303a;
+    --color-link: #6fd3c4;
+    --color-placeholder: #1c3a40;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+}
+
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme]) {
         --color-bg: #0d1a1f;
         --color-surface: #15262d;
         --color-ink: #e9f1ed;
@@ -273,6 +292,47 @@ a.logo {
 .lang-switch-current {
     background: var(--color-ink);
     color: var(--color-bg);
+}
+
+/* Theme toggle: hidden until JS has set data-theme. The icon is a CSS mask, so it takes the
+   text color; the sun is shown in the dark theme (switch to light), the moon in the light one. */
+
+.theme-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-muted);
+    cursor: pointer;
+}
+
+:root[data-theme] .theme-toggle {
+    display: inline-flex;
+}
+
+.theme-toggle:hover {
+    color: var(--color-ink);
+    background: var(--color-mint);
+}
+
+.theme-icon {
+    width: 20px;
+    height: 20px;
+    background: currentColor;
+    -webkit-mask: var(--icon-moon) center / contain no-repeat;
+    mask: var(--icon-moon) center / contain no-repeat;
+    --icon-moon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z'/%3E%3C/svg%3E");
+    --icon-sun: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4.5'/%3E%3Cpath d='M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+:root[data-theme="dark"] .theme-icon {
+    -webkit-mask-image: var(--icon-sun);
+    mask-image: var(--icon-sun);
 }
 
 /* Buttons */
@@ -1002,6 +1062,11 @@ footer p {
 @media (max-width: 520px) {
     :root {
         --gutter: 16px;
+    }
+
+    /* Narrower column gap so logo, language switch and theme toggle fit in one row. */
+    .site-header-row {
+        column-gap: 0.75rem;
     }
 
     .main-nav {

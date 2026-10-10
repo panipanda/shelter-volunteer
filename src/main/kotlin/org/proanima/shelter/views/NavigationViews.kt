@@ -1,7 +1,9 @@
 package org.proanima.shelter.views
 
+import kotlinx.html.ButtonType
 import kotlinx.html.FlowContent
 import kotlinx.html.a
+import kotlinx.html.button
 import kotlinx.html.div
 import kotlinx.html.header
 import kotlinx.html.img
@@ -34,6 +36,20 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String) {
             }
 
             localeSwitcher(locale, currentPath)
+            themeToggle(messages.t("nav.theme"))
+        }
+    }
+}
+
+// Icon-only button; the tooltip (title) and the accessible name share one label.
+// Hidden by CSS until the head script sets data-theme, so it never shows up without JS.
+// The icons are drawn in CSS and swapped by the current theme.
+private fun FlowContent.themeToggle(label: String) {
+    button(type = ButtonType.button, classes = "theme-toggle") {
+        attributes["title"] = label
+        attributes["aria-label"] = label
+        span(classes = "theme-icon") {
+            attributes["aria-hidden"] = "true"
         }
     }
 }
