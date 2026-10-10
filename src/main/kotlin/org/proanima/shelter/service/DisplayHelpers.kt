@@ -16,11 +16,11 @@ fun displayPhotoUrls(photoUrls: List<String>): List<String> {
     return photoUrls.ifEmpty { listOf("/images/default-cat.jpg") }
 }
 
-// The cat's URL is built from the name, not the id, so that it is human-readable. The caller
+// A cat's or dog's URL is built from the name, not the id, so that it is human-readable. The caller
 // passes the English name variant (Cat.name.en): it is in Latin script and does not depend on the page
 // language — Cyrillic transliteration is not implemented. If the name is not set or nothing remains
 // after cleaning, we fall back to the bare id — how the cat was addressed before this change.
-fun catSlug(name: String?, id: Int): String {
+fun petSlug(name: String?, id: Int): String {
     val slug = name.orEmpty()
         .lowercase()
         .replace(Regex("[^a-z0-9]+"), "-")

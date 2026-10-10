@@ -1,6 +1,6 @@
 # Volunteer guide
 
-This page is a guide for volunteers at the Pro Anima shelter. First the part that applies to everyone, then separate parts for working with cats and with dogs.
+This page is a guide for Svora.Volunteers who help the Pro Anima shelter. First the part that applies to everyone, then separate parts for working with cats and with dogs.
 
 ## General {#general}
 

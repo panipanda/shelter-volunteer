@@ -93,22 +93,22 @@ class DisplayHelpersTest {
     }
 
     @Test
-    fun `catSlug lowercases the cat name`() {
-        assertEquals("nami", catSlug("Nami", 3))
+    fun `petSlug lowercases the cat name`() {
+        assertEquals("nami", petSlug("Nami", 3))
     }
 
     @Test
-    fun `catSlug replaces non-alphanumeric characters and trims edge hyphens`() {
-        assertEquals("mama-cat", catSlug(" Mama Cat! ", 1))
+    fun `petSlug replaces non-alphanumeric characters and trims edge hyphens`() {
+        assertEquals("mama-cat", petSlug(" Mama Cat! ", 1))
     }
 
     @Test
-    fun `catSlug falls back to the numeric id when name is missing`() {
-        assertEquals("5", catSlug(null, 5))
+    fun `petSlug falls back to the numeric id when name is missing`() {
+        assertEquals("5", petSlug(null, 5))
     }
 
     @Test
-    fun `catSlug falls back to the numeric id when name has no usable characters`() {
-        assertEquals("5", catSlug("!!!", 5))
+    fun `petSlug falls back to the numeric id when name has no usable characters`() {
+        assertEquals("5", petSlug("!!!", 5))
     }
 }

@@ -33,7 +33,7 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String) {
 
             nav(classes = "main-nav") {
                 navLink("$prefix/cats", messages.t("nav.cats"), currentPath, matchChildren = true)
-                navLink("$prefix/dogs", messages.t("nav.dogs"), currentPath)
+                navLink("$prefix/dogs", messages.t("nav.dogs"), currentPath, matchChildren = true)
                 navLink("$prefix/guide", messages.t("nav.guide"), currentPath)
                 visitsMenu(prefix, messages, currentPath)
             }

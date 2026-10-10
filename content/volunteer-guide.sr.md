@@ -1,6 +1,6 @@
 # Vodič za volontere
 
-Ova stranica je vodič za volontere azila Pro Anima. Prvo ide ono što važi za sve, a zatim posebno: rad sa mačkama i rad sa psima.
+Ova stranica je vodič za volontere grupe Svora.Volunteers koji pomažu azilu Pro Anima. Prvo ide ono što važi za sve, a zatim posebno: rad sa mačkama i rad sa psima.
 
 ## Opšte {#general}
 

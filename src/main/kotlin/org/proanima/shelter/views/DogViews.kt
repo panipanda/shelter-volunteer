@@ -10,15 +10,17 @@ import kotlinx.html.img
 import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.span
+import kotlinx.html.strong
 import kotlinx.html.ul
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Dog
+import org.proanima.shelter.service.displayCatLocation
+import org.proanima.shelter.service.petSlug
 
 private const val DEFAULT_PHOTO = "/images/default-cat.jpg"
 
-// A text-only page for now: there is no dog catalogue yet, the dog volunteering is run by Svora.Volunteers.
 fun HTML.dogsPage(dogs: List<Dog>, locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
 
@@ -61,18 +63,35 @@ fun HTML.dogsPage(dogs: List<Dog>, locale: AppLocale, currentPath: String) {
     }
 }
 
-// Same card look as the cats, but not a link: there are no dog profile pages yet.
+// Same card look as the cats: the whole card links to the dog's page.
 private fun FlowContent.dogList(dogs: List<Dog>, locale: AppLocale) {
     div(classes = "cat-list") {
         dogs.forEach { dog ->
             val name = dog.name.forLocale(locale)
-            div(classes = "cat-card dog-card") {
+            a(href = "/${locale.code}/dogs/${petSlug(dog.name.en, dog.id)}", classes = "cat-card") {
                 img(src = dog.photoUrls.firstOrNull() ?: DEFAULT_PHOTO, alt = name, classes = "cat-card-photo")
                 div(classes = "cat-card-body") {
                     span(classes = "cat-card-name") { +name }
-                    p { +dog.description.forLocale(locale) }
+                    dog.age?.let { age -> span(classes = "tag") { +age.forLocale(locale) } }
                 }
             }
         }
+    }
+}
+
+fun HTML.dogDetailsPage(dog: Dog, locale: AppLocale, currentPath: String) {
+    val messages = messagesFor(locale)
+    val name = dog.name.forLocale(locale)
+
+    pageLayout(locale, pageTitle = "$name — ${messages.t("nav.dogs")}", currentPath = currentPath) {
+        p { a(href = "/${locale.code}/dogs") { +messages.t("dog.backToDogs") } }
+
+        h1 { +name }
+
+        photoGallery(dog.photoUrls.ifEmpty { listOf(DEFAULT_PHOTO) }, name, messages)
+
+        dog.age?.let { age -> p { strong { +messages.t("cat.label.age") }; +" ${age.forLocale(locale)}" } }
+        p { strong { +messages.t("cat.label.location") }; +" ${displayCatLocation(dog.location, locale)}" }
+        p { strong { +messages.t("cat.label.description") }; +" ${dog.description.forLocale(locale)}" }
     }
 }

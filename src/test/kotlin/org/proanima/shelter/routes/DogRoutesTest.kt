@@ -52,4 +52,39 @@ class DogRoutesTest {
         assertTrue(en.contains("Sava"))
         assertTrue(en.contains("Mila"))
     }
+
+    @Test
+    fun `dog cards link to dog pages`() = testApplication {
+        application { module() }
+
+        val body = client.get("/ru/dogs").bodyAsText()
+
+        assertTrue(body.contains("""href="/ru/dogs/sava""""))
+        assertTrue(body.contains("""href="/ru/dogs/mila""""))
+    }
+
+    @Test
+    fun `GET dog page shows the dog in every locale`() = testApplication {
+        application { module() }
+
+        val ru = client.get("/ru/dogs/sava")
+        val ruBody = ru.bodyAsText()
+        assertEquals(HttpStatusCode.OK, ru.status)
+        assertTrue(ruBody.contains("<h1>Сава</h1>"))
+        assertTrue(ruBody.contains("Около трёх лет"))
+        assertTrue(ruBody.contains("Дружелюбный и ласковый пёс."))
+        assertTrue(ruBody.contains("В приюте"))
+        assertTrue(ruBody.contains("""href="/ru/dogs""""))
+        assertTrue(ruBody.contains("/images/sava.jpg"))
+
+        assertTrue(client.get("/en/dogs/mila").bodyAsText().contains("A kind, people-oriented dog."))
+        assertTrue(client.get("/sr/dogs/sava").bodyAsText().contains("Prijateljski i umiljat pas."))
+    }
+
+    @Test
+    fun `GET unknown dog returns 404`() = testApplication {
+        application { module() }
+
+        assertEquals(HttpStatusCode.NotFound, client.get("/ru/dogs/nobody").status)
+    }
 }

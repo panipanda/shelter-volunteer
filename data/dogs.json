@@ -2,20 +2,22 @@
   {
     "id": 1,
     "name": { "ru": "Сава", "en": "Sava", "sr": "Sava" },
+    "age": { "ru": "Около трёх лет", "en": "About three years", "sr": "Oko tri godine" },
     "description": {
-      "ru": "Около трёх лет, живёт в приюте. Дружелюбный и ласковый пёс.",
-      "en": "About three years old, lives at the shelter. A friendly and affectionate dog.",
-      "sr": "Ima oko tri godine, živi u azilu. Prijateljski i umiljat pas."
+      "ru": "Дружелюбный и ласковый пёс.",
+      "en": "A friendly and affectionate dog.",
+      "sr": "Prijateljski i umiljat pas."
     },
     "photoUrls": ["/images/sava.jpg"]
   },
   {
     "id": 2,
     "name": { "ru": "Мила", "en": "Mila", "sr": "Mila" },
+    "age": { "ru": "Около трёх лет", "en": "About three years", "sr": "Oko tri godine" },
     "description": {
-      "ru": "Около трёх лет, живёт в приюте. Добрая и ориентированная на человека собака.",
-      "en": "About three years old, lives at the shelter. A kind, people-oriented dog.",
-      "sr": "Ima oko tri godine, živi u azilu. Dobra kuja okrenuta ljudima."
+      "ru": "Добрая и ориентированная на человека собака.",
+      "en": "A kind, people-oriented dog.",
+      "sr": "Dobra kuja okrenuta ljudima."
     },
     "photoUrls": ["/images/mila.jpg"]
   }
