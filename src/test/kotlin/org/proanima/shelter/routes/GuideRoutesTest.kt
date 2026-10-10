@@ -29,6 +29,13 @@ class GuideRoutesTest {
         assertTrue(body.contains("Как работает запись"))
         assertTrue(body.contains("""lang="ru""""))
 
+        assertTrue(body.contains("Работа с кошками"))
+        assertTrue(body.contains("Работа с собаками"))
+        assertTrue(body.contains("""href="#general""""))
+        assertTrue(body.contains("""id="cats""""))
+        assertTrue(body.contains("""id="dogs""""))
+        assertTrue(body.contains("""<a href="/ru/dogs">"""))
+
         assertTrue(body.contains("""href="/ru/cats""""))
         assertTrue(body.contains("""href="/ru/visits""""))
         assertTrue(body.contains("""href="/ru/visits/archive""""))

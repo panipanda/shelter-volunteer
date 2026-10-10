@@ -58,7 +58,7 @@
 
 ## Out of scope for MVP
 
-- Dog volunteering UI
+- Dog catalogue and dog volunteer signup (a text-only /dogs page about Svora.Volunteers is in; the guide has a placeholder part for dogs)
 - Telegram integration
 - User accounts
 - Roles and permissions

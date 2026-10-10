@@ -269,6 +269,67 @@ a.logo {
     background: var(--color-mint);
 }
 
+/* "Visits" drop-down: a native <details>, the list floats under the summary */
+
+.nav-menu {
+    position: relative;
+}
+
+.nav-menu summary {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.nav-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.nav-menu summary::after {
+    content: "";
+    width: 0.4em;
+    height: 0.4em;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-0.12em) rotate(45deg);
+}
+
+.nav-menu[open] summary::after {
+    transform: translateY(0.1em) rotate(225deg);
+}
+
+.nav-menu summary:hover,
+.nav-menu[open] summary,
+.nav-menu[data-current] summary {
+    background: var(--color-mint);
+}
+
+.nav-menu-list {
+    position: absolute;
+    inset-inline-end: 0;
+    top: 100%;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-top: 0.35rem;
+    padding: 0.35rem;
+    border: 1px solid var(--color-line);
+    border-radius: 18px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow);
+}
+
+.nav-menu-list a {
+    white-space: nowrap;
+}
+
 .lang-switch {
     display: inline-flex;
     border: 1px solid var(--color-line);
@@ -833,6 +894,10 @@ main.home > section.next-visit {
     gap: 0.5rem;
 }
 
+.join-dogs {
+    margin: 1.5rem 0 0;
+}
+
 .schedule {
     display: flex;
     flex-wrap: wrap;
@@ -914,6 +979,26 @@ main.home > section.next-visit {
 
 .guide > * {
     grid-column: 1;
+}
+
+.guide-toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block: 1rem;
+}
+
+.guide-toc a {
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    background: var(--color-mint);
+    color: var(--color-ink);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.guide > h3 {
+    margin-top: 1.75rem;
 }
 
 .guide > h2 {
@@ -1073,7 +1158,12 @@ footer p {
         order: 3;
         width: 100%;
         margin: 0;
-        overflow-x: auto;
+        flex-wrap: wrap;
+    }
+
+    .nav-menu-list {
+        inset-inline-end: auto;
+        inset-inline-start: 0;
     }
 
     .main-nav a {

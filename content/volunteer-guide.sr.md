@@ -1,31 +1,43 @@
 # Vodič za volontere
 
-Ova stranica je kratak vodič za volontere koji pomažu oko mačaka u azilu Pro Anima. Ovde piše kako da se pripremite za posetu, šta da ponesete i kako funkcioniše prijava.
+Ova stranica je vodič za volontere azila Pro Anima. Prvo ide ono što važi za sve, a zatim posebno: rad sa mačkama i rad sa psima.
 
-## Pre posete
+## Opšte {#general}
+
+### Pre posete
 
 - Proverite trenutnu dostupnost posete pre nego što planirate put.
 - Uverite se da znate datum, vreme i mesto okupljanja.
 - Ako se ne osećate dobro, bolje je da ostanete kod kuće i pridružite nam se drugi put.
 - Obucite odeću koju ne žalite da isprljate ili ponesite odeću za presvlačenje.
 
-## Šta poneti
+### Šta poneti
 
 - Udobnu odeću i zatvorenu obuću.
 - Vodu za sebe.
 - Radne rukavice, ako ih imate.
 - Poslastice za mačke i pse.
 
-## Tokom posete
+### Tokom posete
 
 - Pratite uputstva koordinatora.
 - Pridržavajte se pravila pri otvaranju vrata da nijedna životinja ne pobegne.
 - Budite nežni i strpljivi prema životinjama — mogu biti uplašene ili pod stresom.
 - Prijavite sve neobično: povrede, znakove bolesti, stres, agresiju ili životinju koja je pobegla.
 - Ako vam nešto nije jasno, pitajte — koordinatori uvek rado pomažu.
-- Uživajte u druženju sa mačkama!
+- Uživajte u druženju sa životinjama!
 
-## Čišćenje boksova
+### Kako funkcioniše prijava
+
+Prijava za posete mačkama koordinira se ručno. Proverite stranicu predstojećih poseta, a zatim pratite uputstva za prijavu navedena uz izabranu posetu. Posete psima organizuje grupa Svora.Volunteers, a prijava za njih ide preko nje.
+
+Ako je poseta popunjena ili zatvorena, pokušajte ponovo kasnije ili se obratite koordinatoru.
+
+## Rad sa mačkama {#cats}
+
+Mačke borave u boksovima na teritoriji azila. Koordinator vas može dodati u čet mačjih volontera, u kome se objavljuje raspored poseta i vrši prijava.
+
+### Čišćenje boksova
 
 > U azilu postoje tri boksa za mačke: Donji („moskovski", sa prolaznom komorom, 14 mačaka), Srednji („mali", sa prolaznom komorom, 12 mačaka) i Gornji („veliki", ulaz bez prolazne komore, 15 mačaka). U boksove ulazimo što je moguće pažljivije da nijedna mačka ne izađe. Svaki boks ima svoj pribor za čišćenje: lopatice za posude sa peskom, strugače, četke, sunđere, mop, metlu i đubrovnik. Pribor iz jednog boksa zabranjeno je koristiti za čišćenje drugog. Ako u boksu nedostaje pribor, pišite u čet mačjih volontera.
 
@@ -37,8 +49,6 @@ Ova stranica je kratak vodič za volontere koji pomažu oko mačaka u azilu Pro 
 - Ako ima malo vremena ili volontera, podove ne moramo prati: minimum je očistiti posude sa peskom, oprati činije i pomesti pod u kućici. Maksimum je isto to, ali uz pranje podova.
 - Poseban program „maksimum+": ako ima vremena, može se pomesti unutrašnje dvorište kod mačaka.
 
-## Kako funkcioniše prijava
+## Rad sa psima {#dogs}
 
-Prijava za posetu koordinira se ručno. Proverite stranicu predstojećih poseta, a zatim pratite uputstva za prijavu navedena uz izabranu posetu.
-
-Ako je poseta popunjena ili zatvorena, pokušajte ponovo kasnije ili se obratite koordinatoru.
+Ovaj deo je u izradi. Volonteri idu kod pasa zajedno sa grupom [Svora.Volunteers](https://www.instagram.com/svora.volunteers/): ona organizuje posete i prijavu. Više informacija je na [stranici o psima](/sr/dogs).

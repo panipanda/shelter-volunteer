@@ -1,31 +1,43 @@
 # Volunteer guide
 
-This page is a short guide for volunteers who want to help with cats at Pro Anima shelter. It explains how to prepare for a visit, what to bring, and how signup works.
+This page is a guide for volunteers at the Pro Anima shelter. First the part that applies to everyone, then separate parts for working with cats and with dogs.
 
-## Before the visit
+## General {#general}
+
+### Before the visit
 
 - Check the current visit availability before planning your trip.
 - Make sure you know the visit date, time, and meeting point.
-- If you're not feeling well, it's better to stay home, join us the other time.
-- Wear clothes that can get dirty or take some that you can change into
+- If you're not feeling well, it's better to stay home and join us another time.
+- Wear clothes that can get dirty or take some that you can change into.
 
-## What to bring
+### What to bring
 
 - Comfortable clothes and closed shoes.
 - Water for yourself.
 - Work gloves, if you have them.
 - Cat and dog treats.
 
-## During the visit
+### During the visit
 
 - Follow coordinator instructions.
 - Follow the rules when opening doors to avoid accidents.
 - Be gentle and patient with the animals, they may be scared or stressed.
 - Report anything unusual: injuries, sickness signs, stress, aggression, or escaped animals.
 - Ask questions if you're unsure about something, coordinators are there to help you.
-- Have fun and enjoy your time with the cats!
+- Have fun and enjoy your time with the animals!
 
-## Cleaning the enclosures
+### How signup works
+
+Signup for cat visits is coordinated manually. Check the volunteer visits page, then follow the signup instructions shown for the selected visit. Trips to the dogs are organized by the Svora.Volunteers group, and signup for them goes through the group.
+
+If a visit is full or closed, feel free to check back later or contact a coordinator.
+
+## Working with cats {#cats}
+
+The cats live in enclosures on the shelter grounds. A coordinator can add you to the cat volunteers' chat, where the visit schedule is posted and signup happens.
+
+### Cleaning the enclosures
 
 > The shelter has three cat enclosures: the Lower one ("Moscow", airlock system, 14 cats), the Middle one ("small", airlock system, 12 cats) and the Upper one ("big", entrance without an airlock, 15 cats). Enter the enclosures as carefully as possible so that no cat gets out. Each enclosure has its own cleaning equipment: litter scoops, scrapers, brushes, sponges, a mop, and a broom with a dustpan. Never use the equipment of one enclosure to clean another. If an enclosure is short on equipment, write to the cat volunteers' chat.
 
@@ -37,8 +49,6 @@ This page is a short guide for volunteers who want to help with cats at Pro Anim
 - If there is little time or few volunteers, the floors can be left unwashed. The minimum is to clean the litter trays, wash the bowls and sweep the floor in the little house. The maximum is the same, plus washing the floors.
 - Bonus "maximum+" program: if there is time, you can sweep the inner yard by the cats.
 
-## How signup works
+## Working with dogs {#dogs}
 
-Visit signup is coordinated manually. Check the volunteer visits page, then follow the signup instructions shown for the selected visit.
-
-If a visit is full or closed, feel free to check back later or contact a coordinator.
+This part is still being written. Volunteers visit the dogs together with the [Svora.Volunteers](https://www.instagram.com/svora.volunteers/) group: they organize the trips and the signup. More details are on the [dogs page](/en/dogs).

@@ -100,4 +100,22 @@ class GuideContentTest {
             blocks
         )
     }
+
+    @Test
+    fun `parses level three headings and anchors`() {
+        val blocks = parseGuideMarkdown(
+            """
+            ## Cats {#cats}
+            ### Cleaning
+            """.trimIndent()
+        )
+
+        assertEquals(
+            listOf(
+                GuideBlock.Heading(level = 2, text = "Cats", id = "cats"),
+                GuideBlock.Heading(level = 3, text = "Cleaning")
+            ),
+            blocks
+        )
+    }
 }

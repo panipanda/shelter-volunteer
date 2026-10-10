@@ -20,6 +20,8 @@ import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 
 const val TELEGRAM_CHANNEL_URL = "https://t.me/proanima_belgrade"
+const val SVORA_INSTAGRAM_URL = "https://www.instagram.com/svora.volunteers/"
+const val SVORA_LINKTREE_URL = "https://linktr.ee/svora.volunteers"
 
 // Applies the saved theme, or the system one if nothing is saved, to <html data-theme>.
 // Storage access is wrapped in try/catch: it throws when site data is blocked.
@@ -56,6 +58,7 @@ fun HTML.pageLayout(
     currentPath: String,
     contentLang: String = locale.code,
     mainClass: String = "page",
+    description: String? = null,
     content: MAIN.() -> Unit
 ) {
     val messages = messagesFor(locale)
@@ -66,6 +69,9 @@ fun HTML.pageLayout(
         meta(name = "viewport", content = "width=device-width, initial-scale=1")
         meta(name = "color-scheme", content = "light dark")
         title { +pageTitle }
+        if (description != null) {
+            meta(name = "description", content = description)
+        }
         link(rel = "icon", href = "/icons/favicon-32.png", type = "image/png") {
             attributes["sizes"] = "32x32"
         }
@@ -96,10 +102,15 @@ fun HTML.pageLayout(
                 p {
                     +"${messages.t("footer.text")} · "
                     a(href = TELEGRAM_CHANNEL_URL) { +messages.t("footer.telegram") }
+                    +" · "
+                    a(href = SVORA_INSTAGRAM_URL) { +"Svora.Volunteers" }
                 }
             }
         }
         script(src = "/scripts/theme-toggle.js") {
+            attributes["defer"] = "defer"
+        }
+        script(src = "/scripts/nav-menu.js") {
             attributes["defer"] = "defer"
         }
     }

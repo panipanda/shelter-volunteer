@@ -41,12 +41,19 @@ private const val ICON_SOCIALIZATION = """<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 
 fun HTML.homePage(cats: List<Cat>, nextVisit: NextVisit, locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
 
-    pageLayout(locale, pageTitle = messages.t("home.title"), currentPath = currentPath, mainClass = "home") {
+    pageLayout(
+        locale,
+        pageTitle = messages.t("home.page.title"),
+        currentPath = currentPath,
+        mainClass = "home",
+        description = messages.t("home.page.description")
+    ) {
         heroSection(locale, messages)
         nextVisitSection(nextVisit, locale, messages)
         volunteersSection(locale, messages)
         joinSection(locale, messages)
         catsSection(cats, locale, messages)
+        dogsSection(locale, messages)
         helpSection(messages)
         aboutSection(messages)
     }
@@ -131,6 +138,8 @@ private fun FlowContent.volunteersSection(locale: AppLocale, messages: ResourceB
             p(classes = "more") {
                 +"${messages.t("home.volunteers.more")} "
                 a(href = "/${locale.code}/guide") { +messages.t("home.link.guide") }
+                +" · "
+                a(href = "/${locale.code}/dogs") { +messages.t("home.volunteers.dogs") }
             }
         }
     }
@@ -173,6 +182,10 @@ private fun FlowContent.joinSection(locale: AppLocale, messages: ResourceBundle)
                 }
                 li { p { +messages.t("home.join.step3") } }
             }
+            p(classes = "join-dogs") {
+                +"${messages.t("home.join.dogs")} "
+                a(href = "$prefix/dogs", classes = "inline-link") { +messages.t("home.join.dogs.link") }
+            }
             div(classes = "schedule") {
                 p { +messages.t("home.join.schedule") }
                 p { +messages.t("home.join.places") }
@@ -195,6 +208,21 @@ private fun FlowContent.catsSection(cats: List<Cat>, locale: AppLocale, messages
             }
             p(classes = "section-foot") {
                 a(href = "/${locale.code}/cats", classes = "button button-secondary") { +messages.t("home.link.cats") }
+            }
+        }
+    }
+}
+
+private fun FlowContent.dogsSection(locale: AppLocale, messages: ResourceBundle) {
+    section {
+        div(classes = "wrap") {
+            div(classes = "head") {
+                h2 { +messages.t("home.dogs.title") }
+                p { +messages.t("home.dogs.text") }
+            }
+            div(classes = "contact-buttons") {
+                a(href = "/${locale.code}/dogs", classes = "button") { +messages.t("home.dogs.cta.page") }
+                a(href = SVORA_INSTAGRAM_URL, classes = "button button-secondary") { +messages.t("dogs.link.instagram") }
             }
         }
     }
