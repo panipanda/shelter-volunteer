@@ -4,7 +4,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.html.respondHtml
 import io.ktor.server.request.path
-import io.ktor.server.response.respondText
+import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import org.proanima.shelter.model.AppLocale
@@ -23,7 +23,7 @@ fun Route.dogRoutes(dogService: DogService, locale: AppLocale) {
         val dog = dogService.getDogBySlug(call.parameters["slug"]!!)
 
         if (dog == null) {
-            call.respondText("Dog not found", status = HttpStatusCode.NotFound)
+            call.respond(HttpStatusCode.NotFound)
         } else {
             call.respondHtml {
                 dogDetailsPage(dog, locale, call.request.path())

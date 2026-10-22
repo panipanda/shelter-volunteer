@@ -1,12 +1,21 @@
 package org.proanima.shelter
 
+import io.ktor.http.ContentType
+import io.ktor.http.content.CachingOptions
+import io.ktor.http.CacheControl
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
+import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.http.content.staticFiles
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.cachingheaders.CachingHeaders
+import io.ktor.server.plugins.compression.Compression
+import io.ktor.server.plugins.compression.gzip
+import io.ktor.server.plugins.compression.matchContentType
 import io.ktor.server.response.respondRedirect
+import io.ktor.server.routing.IgnoreTrailingSlash
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
@@ -32,6 +41,8 @@ import java.time.ZoneId
 private val SHELTER_ZONE = ZoneId.of("Europe/Belgrade")
 
 private val IMAGES_DIR = File("data/images")
+private const val ONE_HOUR_SECONDS = 3600
+private const val ONE_DAY_SECONDS = 24 * 3600
 
 fun main() {
     val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -63,6 +74,30 @@ fun Application.configureRoutes(
     clock: Clock = Clock.system(SHELTER_ZONE),
     dogService: DogService = DogService(JsonDogRepository())
 ) {
+    configureErrorPages()
+    // "/ru/cats/" works the same as "/ru/cats".
+    install(IgnoreTrailingSlash)
+    // Text only: images and fonts are already compressed.
+    install(Compression) {
+        gzip {
+            matchContentType(ContentType.Text.Any, ContentType.Application.JavaScript)
+        }
+    }
+    install(CachingHeaders) {
+        options { _, content ->
+            when (content.contentType?.withoutParameters()?.contentType) {
+                // Files are served under fixed names, so a replaced photo or stylesheet
+                // shows up for visitors only after the cache expires: keep the lifetime short.
+                "image", "font" -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = ONE_DAY_SECONDS))
+                else -> when (content.contentType?.withoutParameters()) {
+                    ContentType.Text.CSS, ContentType.Application.JavaScript ->
+                        CachingOptions(CacheControl.MaxAge(maxAgeSeconds = ONE_HOUR_SECONDS))
+                    else -> null
+                }
+            }
+        }
+    }
+
     routing {
         get("/") {
             call.respondRedirect("/${AppLocale.default.code}")
