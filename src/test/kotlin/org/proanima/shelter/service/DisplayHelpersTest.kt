@@ -26,6 +26,13 @@ class DisplayHelpersTest {
     }
 
     @Test
+    fun `displayCatAge with only year known says under a year when born this year`() {
+        assertEquals("Under 1 year old", displayCatAge(2026, null, AppLocale.EN, today))
+        assertEquals("Младше года", displayCatAge(2026, null, AppLocale.RU, today))
+        assertEquals("Mlađa od godinu dana", displayCatAge(2026, null, AppLocale.SR, today))
+    }
+
+    @Test
     fun `displayCatAge with year and month counts months before the first year`() {
         assertEquals("8 months old", displayCatAge(2026, 1, AppLocale.EN, today))
     }
