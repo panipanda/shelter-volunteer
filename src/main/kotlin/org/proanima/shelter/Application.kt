@@ -23,12 +23,15 @@ import org.proanima.shelter.routes.homeRoutes
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.service.DogService
 import org.proanima.shelter.service.GuideService
+import org.proanima.shelter.service.validatePets
 import java.io.File
 import java.time.Clock
 import java.time.ZoneId
 
 // The visit schedule follows Belgrade time, not the server's time zone.
 private val SHELTER_ZONE = ZoneId.of("Europe/Belgrade")
+
+private val IMAGES_DIR = File("data/images")
 
 fun main() {
     val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -41,9 +44,16 @@ fun main() {
 }
 
 fun Application.module() {
+    val catRepository = JsonCatRepository()
+    val dogRepository = JsonDogRepository()
+    // Fail at startup, not on the first request to the broken page.
+    val problems = validatePets(catRepository.findAll(), dogRepository.findAll(), IMAGES_DIR)
+    check(problems.isEmpty()) { "Invalid content data:\n" + problems.joinToString("\n") { "  - $it" } }
+
     configureRoutes(
-        catService = CatService(JsonCatRepository()),
-        guideService = GuideService(MarkdownGuideRepository())
+        catService = CatService(catRepository),
+        guideService = GuideService(MarkdownGuideRepository()),
+        dogService = DogService(dogRepository)
     )
 }
 
@@ -59,7 +69,7 @@ fun Application.configureRoutes(
         }
 
         healthRoutes()
-        staticFiles("/images", File("data/images"))
+        staticFiles("/images", IMAGES_DIR)
         staticResources("/icons", "static/icons")
         staticResources("/fonts", "static/fonts")
         staticResources("/styles", "static/styles")
