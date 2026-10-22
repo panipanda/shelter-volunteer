@@ -236,16 +236,13 @@ Invoke-WebRequest http://localhost:8080/ru/cats/no-such-cat
 curl http://localhost:8080/ru/cats/no-such-cat
 ```
 
-Expected response body:
-
-```text
-Cat not found
-```
+Expected response: status `404 Not Found` and an HTML page in the site layout with the
+"Page not found" message in the language of the URL (`/ru`, `/en`, `/sr`).
 
 Acceptance criteria:
 
 - application does not crash;
-- response body clearly explains that the cat was not found;
+- response status is `404`, and the body is the styled "Page not found" page;
 - any slug that doesn't match a cat is handled the same way — there is no separate
   "invalid slug" case, since any string is a syntactically valid slug.
 
@@ -613,8 +610,8 @@ Current known limitations:
 - Styling is intentionally minimal (container width, nav, cat-list preview cards,
   responsive nav wrap) — no design system.
 - There are no route tests for `/` or `/{lang}/cats` (only visits, home and guide routes are covered).
-- Error states for cat pages (`Cat not found`, `Invalid cat id`) still return plain text, not a
-  styled HTML page.
+- Unknown URLs, unknown cats and dogs, and unexpected failures now return a styled, localized HTML
+  404/500 page (`ErrorPages.kt`) instead of plain text.
 
 Future improvements:
 

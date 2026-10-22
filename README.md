@@ -233,6 +233,7 @@ content/
 
 src/main/resources/i18n/
   messages.properties     English, also the fallback for missing translations
+  messages_en.properties  empty on purpose: pins "en" to the base bundle (see the file)
   messages_ru.properties
   messages_sr.properties
 

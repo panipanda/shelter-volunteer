@@ -299,7 +299,8 @@ content/volunteer-guide.sr.md volunteer instruction content, Serbian (Latin)
 
 UI strings follow the same per-locale-file convention under
 `src/main/resources/i18n/`: `messages.properties` (English, also the fallback for missing translations),
-`messages_ru.properties` and `messages_sr.properties`.
+`messages_ru.properties` and `messages_sr.properties`. `messages_en.properties` is empty on purpose:
+it makes `en` resolve to the base bundle instead of the JVM's default locale.
 
 ## JSON validation
 
@@ -313,7 +314,9 @@ python -m json.tool data/cats.json
 
 If Python is not available, IDE validation is enough for now.
 
-Later, the project should include automated tests that parse JSON into Kotlin models.
+The application also checks the content at startup (`validatePets`): duplicate ids or slugs, a birth
+month outside 1..12 and photo files missing from `data/images/` stop the server with a message that lists
+every problem. `DataValidationTest` runs the same check against the real `data/` files.
 
 ## Scratch files
 

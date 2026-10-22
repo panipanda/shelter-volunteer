@@ -4,7 +4,8 @@ The MVP deploys to [Render](https://render.com) as a Docker web service, using t
 
 ## How it works
 
-- `Dockerfile` builds the app with `./gradlew installDist` and copies `data/` and `content/`
+- `Dockerfile` builds the app with `./gradlew test installDist` (a failing test fails the build, so
+  the previous version stays live) and runs it as a non-root user. It copies `data/` and `content/`
   into the image, so cat/visit JSON, the volunteer guide, and `data/images/` all ship inside
   the container. There is no runtime write to these files, so the free plan's ephemeral
   filesystem is not a problem.
