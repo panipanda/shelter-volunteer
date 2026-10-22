@@ -11,7 +11,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import org.proanima.shelter.model.AppLocale
-import org.proanima.shelter.repository.DogRepository
 import org.proanima.shelter.repository.JsonCatRepository
 import org.proanima.shelter.repository.JsonDogRepository
 import org.proanima.shelter.repository.MarkdownGuideRepository
@@ -22,6 +21,7 @@ import org.proanima.shelter.routes.visitRoutes
 import org.proanima.shelter.routes.guideRoutes
 import org.proanima.shelter.routes.homeRoutes
 import org.proanima.shelter.service.CatService
+import org.proanima.shelter.service.DogService
 import org.proanima.shelter.service.GuideService
 import java.io.File
 import java.time.Clock
@@ -51,7 +51,7 @@ fun Application.configureRoutes(
     catService: CatService,
     guideService: GuideService,
     clock: Clock = Clock.system(SHELTER_ZONE),
-    dogRepository: DogRepository = JsonDogRepository()
+    dogService: DogService = DogService(JsonDogRepository())
 ) {
     routing {
         get("/") {
@@ -69,7 +69,7 @@ fun Application.configureRoutes(
             route("/${locale.code}") {
                 homeRoutes(catService, locale, clock)
                 catRoutes(catService, locale)
-                dogRoutes(dogRepository, locale)
+                dogRoutes(dogService, locale)
                 visitRoutes(locale)
                 guideRoutes(guideService, locale)
             }
