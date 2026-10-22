@@ -11,8 +11,10 @@ document.addEventListener("keydown", (event) => {
         return;
     }
 
-    const openLightbox = document.querySelector(`${hash}.cat-gallery-lightbox`);
-    if (!openLightbox) {
+    // getElementById, not querySelector: the hash can be any string, and an invalid
+    // CSS selector (e.g. "#1abc") would throw on every key press.
+    const openLightbox = document.getElementById(hash.slice(1));
+    if (!openLightbox || !openLightbox.classList.contains("cat-gallery-lightbox")) {
         return;
     }
 

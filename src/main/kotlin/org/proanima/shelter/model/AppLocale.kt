@@ -7,7 +7,5 @@ enum class AppLocale(val code: String) {
 
     companion object {
         val default = RU
-
-        fun fromCode(code: String?): AppLocale? = entries.firstOrNull { it.code == code }
     }
 }
