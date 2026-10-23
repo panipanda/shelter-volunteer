@@ -141,10 +141,10 @@ class HomeRoutesTest {
     }
 
     @Test
-    fun `GET home mentions the chat and coordinators but no free places`() {
+    fun `GET home mentions the chat but no free places`() {
         val body = homeAt("2026-09-14T10:00:00")
 
-        assertTrue(body.contains("Запись и свободные места — в чате котоволонтёров. Если есть вопросы, пишите координаторам."))
+        assertTrue(body.contains("Запись, свободные места, отмены и переносы — в чате волонтёров."))
         assertFalse(body.contains("Свободных мест:"))
     }
 
@@ -171,5 +171,17 @@ class HomeRoutesTest {
         assertTrue(body.contains("Delta"))
         assertFalse(body.contains("Beta"))
         assertFalse(body.contains("Epsilon"))
+    }
+
+    @Test
+    fun `GET home says each contact and fact once`() {
+        listOf("/ru", "/en", "/sr").forEach { path ->
+            val body = homeAt("2026-09-14T10:00:00", path)
+
+            assertEquals(1, Regex("https://t.me/Nata_Rogava").findAll(body).count(), path)
+            assertEquals(1, Regex("https://t.me/Trikcsy").findAll(body).count(), path)
+            assertEquals(1, Regex("2010").findAll(body).count(), path)
+            assertEquals(5, Regex("<h2>").findAll(body).count(), path)
+        }
     }
 }

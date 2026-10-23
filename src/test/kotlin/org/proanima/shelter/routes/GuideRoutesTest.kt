@@ -38,7 +38,6 @@ class GuideRoutesTest {
 
         assertTrue(body.contains("""href="/ru/cats""""))
         assertTrue(body.contains("""href="/ru/visits""""))
-        assertTrue(body.contains("""href="/ru/visits/archive""""))
     }
 
     @Test

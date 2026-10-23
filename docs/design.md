@@ -95,15 +95,20 @@ per page); headings then use the text cut at display size and look slightly stur
 
 ### Home page order
 
-Heading and lead → two plain links (join, cats) → three facts (2010 / 40+ / 2) → next visit → photo → cats looking for a home →
-how to join → what volunteers do → dogs → how else to help → about with the founder's quote. Every section after the
-photo starts with a 1 px rule. The next visit is the one big accent: the day number in Literata 56 px, the weekday, the
-departure, and the page's single primary button ("Sign up in the chat"). The hero therefore has only links, and the
-coordinator contacts are plain links.
+Heading and lead (no links, no figures) → next visit → photo → cats looking for a home → how to join → how volunteers help
+(cats, dogs) → about the shelter (the figures, news links, how else to help, the founder's quote). Five sections after
+the hero; each one after the photo starts with a 1 px rule. The next visit is the one big accent: the day number in
+Literata 56 px, the weekday, the departure, and the page's single primary button ("How to sign up"), which goes to
+"how to join". The lead explains who organises the trips (Svora.Volunteers), so the page does not use the word without
+saying what it is.
 
-Kept as is (not decided by design): the weekly schedule sentence in "how to join" repeats the departure place that the
-next-visit block also states, and the coordinator links appear in both "how to join" and "how else to help".
-Collapse them later if the texts are edited.
+Each fact is stated once: the founding year and the counts only in "about"; the coordinators' contacts only in
+"how to join" (everywhere else a link to it); the dogs' signup only on the dogs page (the home page points to it).
+A short "next visit" date and the regular schedule in "how to join" are different facts, so both stay.
+
+The next visit is computed from the regular schedule (`NextVisit.kt`) and can be changed by hand in
+`data/visit-overrides.json`; the block says the trips run on schedule and that cancellations are announced in the chat,
+so it never presents the date as a booking. `/visits` shows the same two blocks (next visit, how to join).
 
 ## Colour tokens
 

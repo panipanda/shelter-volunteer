@@ -6,13 +6,19 @@ import io.ktor.server.request.path
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import org.proanima.shelter.model.AppLocale
+import org.proanima.shelter.service.VisitOverrides
+import org.proanima.shelter.service.nextScheduledVisit
 import org.proanima.shelter.views.visitArchivePage
 import org.proanima.shelter.views.visitsPage
+import java.time.Clock
+import java.time.LocalDateTime
 
-fun Route.visitRoutes(locale: AppLocale) {
+fun Route.visitRoutes(locale: AppLocale, clock: Clock, visitOverrides: VisitOverrides) {
     get("/visits") {
+        val nextVisit = nextScheduledVisit(LocalDateTime.now(clock), visitOverrides)
+
         call.respondHtml {
-            visitsPage(locale, call.request.path())
+            visitsPage(nextVisit, locale, call.request.path())
         }
     }
 

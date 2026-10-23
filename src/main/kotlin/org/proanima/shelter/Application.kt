@@ -22,6 +22,7 @@ import io.ktor.server.routing.routing
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.repository.JsonCatRepository
 import org.proanima.shelter.repository.JsonDogRepository
+import org.proanima.shelter.repository.JsonVisitOverridesRepository
 import org.proanima.shelter.repository.MarkdownGuideRepository
 import org.proanima.shelter.routes.catRoutes
 import org.proanima.shelter.routes.dogRoutes
@@ -32,6 +33,7 @@ import org.proanima.shelter.routes.homeRoutes
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.service.DogService
 import org.proanima.shelter.service.GuideService
+import org.proanima.shelter.service.VisitOverrides
 import org.proanima.shelter.service.validatePets
 import java.io.File
 import java.time.Clock
@@ -64,7 +66,8 @@ fun Application.module() {
     configureRoutes(
         catService = CatService(catRepository),
         guideService = GuideService(MarkdownGuideRepository()),
-        dogService = DogService(dogRepository)
+        dogService = DogService(dogRepository),
+        visitOverrides = JsonVisitOverridesRepository().load()
     )
 }
 
@@ -72,7 +75,8 @@ fun Application.configureRoutes(
     catService: CatService,
     guideService: GuideService,
     clock: Clock = Clock.system(SHELTER_ZONE),
-    dogService: DogService = DogService(JsonDogRepository())
+    dogService: DogService = DogService(JsonDogRepository()),
+    visitOverrides: VisitOverrides = VisitOverrides()
 ) {
     configureErrorPages()
     // "/ru/cats/" works the same as "/ru/cats".
@@ -112,10 +116,10 @@ fun Application.configureRoutes(
 
         AppLocale.entries.forEach { locale ->
             route("/${locale.code}") {
-                homeRoutes(catService, locale, clock)
+                homeRoutes(catService, locale, clock, visitOverrides)
                 catRoutes(catService, locale)
                 dogRoutes(dogService, locale)
-                visitRoutes(locale)
+                visitRoutes(locale, clock, visitOverrides)
                 guideRoutes(guideService, locale)
             }
         }

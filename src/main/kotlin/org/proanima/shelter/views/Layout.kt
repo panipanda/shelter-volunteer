@@ -111,8 +111,5 @@ fun HTML.pageLayout(
         script(src = "/scripts/theme-toggle.js") {
             attributes["defer"] = "defer"
         }
-        script(src = "/scripts/nav-menu.js") {
-            attributes["defer"] = "defer"
-        }
     }
 }

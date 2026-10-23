@@ -54,7 +54,8 @@ The following features are intentionally postponed:
 The MVP uses file-based storage:
 
 - `data/cats.json` for cat catalogue data
-- Volunteer visits are not stored yet: the "Upcoming visits" and "Visit archive" pages are stubs until sync with the cat volunteer chat is implemented. The home page computes the next visit from the regular schedule (Wednesday 9:00, Saturday 10:00, Vračar)
+- Volunteer visits are not stored yet: the "Visits" page shows the next trip and how to join it, and the visit archive is a stub, until sync with the cat volunteer chat is implemented. The next visit is computed from the regular schedule (Wednesday 9:00, Saturday 10:00, Vračar)
+- `data/visit-overrides.json` (optional) for changes to that schedule, read at startup: `{"cancelled": ["2026-10-24"], "extra": [{"date": "2026-10-25", "departure": "11:00"}]}`. A moved trip is a cancellation plus an extra trip. A malformed file stops the server on start
 - `content/volunteer-guide.md` for volunteer instructions (plus a `.{locale}.md` variant per translated locale)
 
 Application code should access data through repository interfaces, not directly from routes.

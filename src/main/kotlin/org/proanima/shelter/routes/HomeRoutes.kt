@@ -7,6 +7,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.service.CatService
+import org.proanima.shelter.service.VisitOverrides
 import org.proanima.shelter.service.nextScheduledVisit
 import org.proanima.shelter.views.homePage
 import java.time.Clock
@@ -14,10 +15,10 @@ import java.time.LocalDateTime
 
 private const val HOME_CATS_LIMIT = 3
 
-fun Route.homeRoutes(catService: CatService, locale: AppLocale, clock: Clock) {
+fun Route.homeRoutes(catService: CatService, locale: AppLocale, clock: Clock, visitOverrides: VisitOverrides) {
     get {
         val cats = catService.getAvailableCats().take(HOME_CATS_LIMIT)
-        val nextVisit = nextScheduledVisit(LocalDateTime.now(clock))
+        val nextVisit = nextScheduledVisit(LocalDateTime.now(clock), visitOverrides)
 
         call.respondHtml {
             homePage(cats, nextVisit, locale, call.request.path())

@@ -4,12 +4,10 @@ import kotlinx.html.ButtonType
 import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.button
-import kotlinx.html.details
 import kotlinx.html.div
 import kotlinx.html.header
 import kotlinx.html.nav
 import kotlinx.html.span
-import kotlinx.html.summary
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
@@ -28,29 +26,11 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String) {
                 navLink("$prefix/cats", messages.t("nav.cats"), currentPath, matchChildren = true)
                 navLink("$prefix/dogs", messages.t("nav.dogs"), currentPath, matchChildren = true)
                 navLink("$prefix/guide", messages.t("nav.guide"), currentPath)
-                visitsMenu(prefix, messages, currentPath)
+                navLink("$prefix/visits", messages.t("nav.visits"), currentPath, matchChildren = true)
             }
 
             localeSwitcher(locale, currentPath)
             themeToggle(messages.t("nav.theme"))
-        }
-    }
-}
-
-// Both visit pages are still stubs, so they live in a drop-down to keep the main row short.
-// <details> works without JS; nav-menu.js only closes it on outside click or Escape.
-private fun FlowContent.visitsMenu(prefix: String, messages: ResourceBundle, currentPath: String) {
-    val upcoming = "$prefix/visits"
-    val archive = "$prefix/visits/archive"
-
-    details(classes = "nav-menu") {
-        if (currentPath == upcoming || currentPath == archive) {
-            attributes["data-current"] = "true"
-        }
-        summary { span(classes = "nav-menu-label") { +messages.t("nav.visits.menu") } }
-        div(classes = "nav-menu-list") {
-            navLink(upcoming, messages.t("nav.visits"), currentPath)
-            navLink(archive, messages.t("nav.archive"), currentPath)
         }
     }
 }

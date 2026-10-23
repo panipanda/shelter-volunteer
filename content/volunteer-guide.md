@@ -51,4 +51,4 @@ The cats live in enclosures on the shelter grounds. Volunteers who work with the
 
 ## Working with dogs {#dogs}
 
-This part is still being written. Signup for the dog trips happens in the main Svora chat. To join, message the chat moderator, [Dasha](https://t.me/dashafirman). More details are on the [dogs page](/en/dogs).
+Signup for the dog trips happens in the main Svora chat. To join, message the chat moderator, [Dasha](https://t.me/dashafirman). More details are on the [dogs page](/en/dogs).

@@ -284,8 +284,7 @@ a.logo {
     margin-inline-start: auto;
 }
 
-.main-nav a,
-.nav-menu summary {
+.main-nav a {
     display: flex;
     align-items: center;
     min-height: 44px;
@@ -296,64 +295,16 @@ a.logo {
     cursor: pointer;
 }
 
-.main-nav a:hover,
-.nav-menu summary:hover {
+.main-nav a:hover {
     color: var(--color-accent);
 }
 
 /* The current item is marked by a 2 px accent underline under the text only. */
-.main-nav a[aria-current="page"],
-.nav-menu[data-current] .nav-menu-label {
+.main-nav a[aria-current="page"] {
     text-decoration: underline;
     text-decoration-color: var(--color-accent);
     text-decoration-thickness: 2px;
     text-underline-offset: 6px;
-}
-
-/* "Visits" drop-down: a native <details>, the list floats under the summary */
-
-.nav-menu {
-    position: relative;
-}
-
-.nav-menu summary {
-    gap: 6px;
-    list-style: none;
-}
-
-.nav-menu summary::-webkit-details-marker {
-    display: none;
-}
-
-.nav-menu summary::after {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border-right: 1.5px solid currentColor;
-    border-bottom: 1.5px solid currentColor;
-    transform: translateY(-2px) rotate(45deg);
-}
-
-.nav-menu[open] summary::after {
-    transform: translateY(1px) rotate(225deg);
-}
-
-.nav-menu-list {
-    position: absolute;
-    inset-inline-end: 0;
-    top: 100%;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    padding-block: 4px;
-    border: 1px solid var(--color-line);
-    border-radius: 4px;
-    background: var(--color-bg);
-}
-
-.nav-menu-list a {
-    padding-inline: 16px;
-    white-space: nowrap;
 }
 
 .lang-switch {
@@ -498,6 +449,16 @@ main.page > section.hero {
     margin-top: 0;
     padding-top: 0;
     border-top: 0;
+}
+
+/* A subheading inside a section: space above it, close to the text it introduces */
+
+main.page > section > h2 + h3 {
+    margin-top: 16px;
+}
+
+main.page > section > h3:not(:first-child) {
+    margin-top: 32px;
 }
 
 /* Call-out: a quiet surface, no border */
@@ -740,32 +701,6 @@ main.page > section.hero {
     margin-top: 8px;
 }
 
-main.page .facts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 40px;
-    margin: 24px 0 0;
-    padding: 0;
-    list-style: none;
-}
-
-.facts li {
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-}
-
-.facts strong {
-    color: var(--color-ink);
-    font-size: 24px;
-    line-height: 1.2;
-}
-
-.facts span {
-    color: var(--color-muted);
-    font-size: 15px;
-}
-
 /* Next visit: the one big accent of the page */
 
 main.page > section.next-visit {
@@ -833,18 +768,6 @@ main.page > section.next-visit {
 
 .steps .links {
     margin: 4px 0 0;
-}
-
-.task {
-    margin-bottom: 16px;
-}
-
-.task h3 {
-    margin: 0 0 2px;
-}
-
-.task p {
-    margin: 0;
 }
 
 blockquote {
@@ -927,19 +850,8 @@ footer p {
         margin: 0 -8px;
     }
 
-    .main-nav a,
-    .nav-menu summary {
+    .main-nav a {
         padding-inline: 8px;
-    }
-
-    /* The drop-down hangs under the whole nav row, not under its own item, so it can never
-       leave the screen however the items wrap. */
-    .nav-menu {
-        position: static;
-    }
-
-    .nav-menu-list {
-        inset-inline: 0 auto;
     }
 }
 

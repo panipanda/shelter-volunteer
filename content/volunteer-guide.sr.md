@@ -51,4 +51,4 @@ Mačke borave u boksovima na teritoriji azila. Za volontere koji rade sa mačkam
 
 ## Rad sa psima {#dogs}
 
-Ovaj deo je u izradi. Prijava na posete psima vodi se u glavnom četu grupe Svora. Da biste ušli, pišite moderatoru četa — [Daši](https://t.me/dashafirman). Više informacija je na [stranici o psima](/sr/dogs).
+Prijava na posete psima vodi se u glavnom četu grupe Svora. Da biste ušli, pišite moderatoru četa — [Daši](https://t.me/dashafirman). Više informacija je na [stranici o psima](/sr/dogs).
