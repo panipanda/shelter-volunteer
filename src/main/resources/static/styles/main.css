@@ -1,124 +1,125 @@
 @font-face {
-    font-family: "Ubuntu Mono";
+    font-family: "Literata";
     font-style: normal;
-    font-weight: 400;
+    font-weight: 600;
     font-display: swap;
-    src: url("/fonts/ubuntu-mono-400-cyrillic-ext.woff2") format("woff2");
+    src: url("/fonts/literata-600-cyrillic-ext.woff2") format("woff2");
     unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
 }
 
 @font-face {
-    font-family: "Ubuntu Mono";
+    font-family: "Literata";
     font-style: normal;
-    font-weight: 400;
+    font-weight: 600;
     font-display: swap;
-    src: url("/fonts/ubuntu-mono-400-cyrillic.woff2") format("woff2");
+    src: url("/fonts/literata-600-cyrillic.woff2") format("woff2");
     unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 
 @font-face {
-    font-family: "Ubuntu Mono";
+    font-family: "Literata";
     font-style: normal;
-    font-weight: 400;
+    font-weight: 600;
     font-display: swap;
-    src: url("/fonts/ubuntu-mono-400-latin-ext.woff2") format("woff2");
-    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    src: url("/fonts/literata-600-latin-ext.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
-    font-family: "Ubuntu Mono";
+    font-family: "Literata";
     font-style: normal;
-    font-weight: 400;
+    font-weight: 600;
     font-display: swap;
-    src: url("/fonts/ubuntu-mono-400-latin.woff2") format("woff2");
+    src: url("/fonts/literata-600-latin.woff2") format("woff2");
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-    font-family: "Ubuntu Mono";
+    font-family: "Source Sans 3";
     font-style: normal;
-    font-weight: 700;
+    font-weight: 400 600;
     font-display: swap;
-    src: url("/fonts/ubuntu-mono-700-cyrillic-ext.woff2") format("woff2");
+    src: url("/fonts/source-sans-3-cyrillic-ext.woff2") format("woff2");
     unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
 }
 
 @font-face {
-    font-family: "Ubuntu Mono";
+    font-family: "Source Sans 3";
     font-style: normal;
-    font-weight: 700;
+    font-weight: 400 600;
     font-display: swap;
-    src: url("/fonts/ubuntu-mono-700-cyrillic.woff2") format("woff2");
+    src: url("/fonts/source-sans-3-cyrillic.woff2") format("woff2");
     unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 
 @font-face {
-    font-family: "Ubuntu Mono";
+    font-family: "Source Sans 3";
     font-style: normal;
-    font-weight: 700;
+    font-weight: 400 600;
     font-display: swap;
-    src: url("/fonts/ubuntu-mono-700-latin-ext.woff2") format("woff2");
-    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    src: url("/fonts/source-sans-3-latin-ext.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
-    font-family: "Ubuntu Mono";
+    font-family: "Source Sans 3";
     font-style: normal;
-    font-weight: 700;
+    font-weight: 400 600;
     font-display: swap;
-    src: url("/fonts/ubuntu-mono-700-latin.woff2") format("woff2");
+    src: url("/fonts/source-sans-3-latin.woff2") format("woff2");
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* Metric-matched fallbacks for Ubuntu Mono. Every system monospace font is wider than Ubuntu
-   Mono (advance 0.5em), so text wraps into more lines until the web font arrives, and the
-   swap then makes the page jump. size-adjust scales each fallback to the same 0.5em advance.
-   A family whose local() font is not installed is skipped, so the stack picks the first
-   one that exists. Advances: Cascadia Mono 0.586, Consolas 0.550, Menlo/DejaVu Sans Mono
-   0.602, SF Mono/Liberation Mono/Courier New 0.600. */
+/* Metric-matched fallbacks, so the swap to the web fonts does not move the layout. The numbers come
+   from the real font files (average advance of English letter frequencies against the system font,
+   vertical metrics divided by size-adjust). Source Sans 3 is narrower than Arial and its bold is
+   narrower still, hence two faces. Literata is much wider than Times, hence 124%. A family whose
+   local() font is missing is skipped, so the stack picks the first one that exists. Liberation is
+   metric-compatible with Arial and Times New Roman and covers Linux. */
 @font-face {
-    font-family: "Ubuntu Mono Fallback Cascadia";
-    src: local("Cascadia Mono");
-    size-adjust: 85.33%;
+    font-family: "Source Sans 3 Fallback";
+    font-weight: 400;
+    src: local("Arial"), local("Liberation Sans"), local("Helvetica");
+    size-adjust: 94.72%;
+    ascent-override: 108.1%;
+    descent-override: 42.23%;
+    line-gap-override: 0%;
 }
 
 @font-face {
-    font-family: "Ubuntu Mono Fallback Consolas";
-    src: local("Consolas");
-    size-adjust: 90.94%;
+    font-family: "Source Sans 3 Fallback";
+    font-weight: 600;
+    src: local("Arial Bold"), local("Arial-BoldMT"), local("Liberation Sans Bold"), local("Helvetica Bold");
+    size-adjust: 90.1%;
+    ascent-override: 113.65%;
+    descent-override: 44.39%;
+    line-gap-override: 0%;
 }
 
 @font-face {
-    font-family: "Ubuntu Mono Fallback Menlo";
-    src: local("Menlo"), local("Menlo-Regular"), local("DejaVu Sans Mono");
-    size-adjust: 83.06%;
-}
-
-@font-face {
-    font-family: "Ubuntu Mono Fallback Courier";
-    src: local("SF Mono"), local("SFMono-Regular"), local("Liberation Mono"), local("Courier New");
-    size-adjust: 83.33%;
+    font-family: "Literata Fallback";
+    font-weight: 600;
+    src: local("Times New Roman Bold"), local("TimesNewRomanPS-BoldMT"), local("Liberation Serif Bold"), local("Times Bold");
+    size-adjust: 123.93%;
+    ascent-override: 94.97%;
+    descent-override: 24.85%;
+    line-gap-override: 0%;
 }
 
 :root {
-    --color-bg: #f3f7f5;
-    --color-surface: #ffffff;
-    --color-ink: #14232b;
-    --color-muted: #52646b;
-    --color-line: #d9e5e0;
-    --color-mint: #dcefe6;
-    --color-teal: #0e5a57;
-    --color-on-teal: #ffffff;
-    --color-link: #0b6b66;
-    --color-sun: #ffc940;
-    --color-sun-hover: #ffd766;
-    --color-on-sun: #14232b;
-    --color-coral: #ef5b3b;
-    --color-placeholder: #cfe6db;
-    --shadow: 0 1px 2px rgba(20, 35, 43, 0.06), 0 8px 24px rgba(20, 35, 43, 0.08);
-    --font: "Ubuntu Mono", "Ubuntu Mono Fallback Cascadia", "Ubuntu Mono Fallback Consolas",
-        "Ubuntu Mono Fallback Menlo", "Ubuntu Mono Fallback Courier", monospace;
-    --wrap-width: 1120px;
+    --color-bg: #ffffff;
+    --color-surface: #f4f4f5;
+    --color-line: #e4e4e7;
+    --color-ink: #18181b;
+    --color-body: #3f3f46;
+    --color-muted: #67676f;
+    --color-accent: #1a7f37;
+    --color-accent-hover: #16692e;
+    --color-accent-active: #115524;
+    --color-on-accent: #ffffff;
+    --font-sans: "Source Sans 3", "Source Sans 3 Fallback", system-ui, sans-serif;
+    --font-serif: "Literata", "Literata Fallback", Georgia, serif;
+    --wrap-width: 720px;
     --gutter: 24px;
 }
 
@@ -126,15 +127,16 @@
    main path; the media query is only the no-JS fallback. */
 :root[data-theme="dark"] {
     color-scheme: dark;
-    --color-bg: #0d1a1f;
-    --color-surface: #15262d;
-    --color-ink: #e9f1ed;
-    --color-muted: #a2b4ba;
-    --color-line: #25393f;
-    --color-mint: #16303a;
-    --color-link: #6fd3c4;
-    --color-placeholder: #1c3a40;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+    --color-bg: #1f2125;
+    --color-surface: #292c31;
+    --color-line: #3e4249;
+    --color-ink: #f0f2f5;
+    --color-body: #cfd3d9;
+    --color-muted: #a4a9b1;
+    --color-accent: #56c27c;
+    --color-accent-hover: #6fd092;
+    --color-accent-active: #8adca8;
+    --color-on-accent: #05250f;
 }
 
 :root[data-theme="light"] {
@@ -143,15 +145,16 @@
 
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
-        --color-bg: #0d1a1f;
-        --color-surface: #15262d;
-        --color-ink: #e9f1ed;
-        --color-muted: #a2b4ba;
-        --color-line: #25393f;
-        --color-mint: #16303a;
-        --color-link: #6fd3c4;
-        --color-placeholder: #1c3a40;
-        --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+        --color-bg: #1f2125;
+        --color-surface: #292c31;
+        --color-line: #3e4249;
+        --color-ink: #f0f2f5;
+        --color-body: #cfd3d9;
+        --color-muted: #a4a9b1;
+        --color-accent: #56c27c;
+        --color-accent-hover: #6fd092;
+        --color-accent-active: #8adca8;
+        --color-on-accent: #05250f;
     }
 }
 
@@ -167,48 +170,79 @@ html {
 
 body {
     margin: 0;
-    font-family: var(--font);
-    font-size: 18px;
-    line-height: 1.6;
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.55;
     background: var(--color-bg);
-    color: var(--color-ink);
+    color: var(--color-body);
 }
 
 a {
-    color: var(--color-link);
+    color: var(--color-accent);
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+}
+
+/* :where() keeps these at the lowest specificity, so a component that sets its own link colour
+   (button, card, nav) is not recoloured on hover. */
+a:where(:hover) {
+    color: var(--color-accent-hover);
+    text-decoration-thickness: 2px;
+}
+
+a:where(:active) {
+    color: var(--color-accent-active);
 }
 
 :focus-visible {
-    outline: 3px solid var(--color-coral);
-    outline-offset: 3px;
-    border-radius: 6px;
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
 }
 
 img {
     max-width: 100%;
     height: auto;
-    border-radius: 16px;
+    border-radius: 4px;
 }
 
 h1, h2, h3 {
-    line-height: 1.15;
-    letter-spacing: -0.02em;
+    color: var(--color-ink);
+    font-weight: 600;
     text-wrap: balance;
 }
 
+h1, h2 {
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+}
+
 h1 {
-    font-size: clamp(2rem, 4.4vw, 3.4rem);
+    font-size: 30px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
     margin: 1rem 0 1.25rem;
 }
 
 h2 {
-    font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+    font-size: 22px;
+    line-height: 1.3;
     margin: 0.5rem 0 0.75rem;
 }
 
 h3 {
-    font-size: 1.4rem;
+    font-size: 18px;
+    line-height: 1.35;
     margin: 0 0 0.4rem;
+}
+
+@media (min-width: 641px) {
+    body {
+        font-size: 18px;
+    }
+
+    h1 {
+        font-size: 36px;
+    }
 }
 
 .wrap {
@@ -266,7 +300,7 @@ a.logo {
 
 .main-nav a:hover,
 .main-nav a[aria-current="page"] {
-    background: var(--color-mint);
+    background: var(--color-surface);
 }
 
 /* "Visits" drop-down: a native <details>, the list floats under the summary */
@@ -307,7 +341,7 @@ a.logo {
 .nav-menu summary:hover,
 .nav-menu[open] summary,
 .nav-menu[data-current] summary {
-    background: var(--color-mint);
+    background: var(--color-surface);
 }
 
 .nav-menu-list {
@@ -323,7 +357,6 @@ a.logo {
     border: 1px solid var(--color-line);
     border-radius: 18px;
     background: var(--color-surface);
-    box-shadow: var(--shadow);
 }
 
 .nav-menu-list a {
@@ -378,7 +411,7 @@ a.logo {
 
 .theme-toggle:hover {
     color: var(--color-ink);
-    background: var(--color-mint);
+    background: var(--color-surface);
 }
 
 .theme-icon {
@@ -406,8 +439,8 @@ a.logo {
     padding: 0.85rem 1.5rem;
     border: 2px solid transparent;
     border-radius: 999px;
-    background: var(--color-sun);
-    color: var(--color-on-sun);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
     font-weight: 700;
     font-size: 1.1rem;
     line-height: 1.2;
@@ -416,7 +449,7 @@ a.logo {
 }
 
 .button:hover {
-    background: var(--color-sun-hover);
+    background: var(--color-accent-hover);
 }
 
 .button-secondary {
@@ -431,12 +464,12 @@ a.logo {
 }
 
 .button-light {
-    background: var(--color-on-teal);
-    color: var(--color-teal);
+    background: var(--color-on-accent);
+    color: var(--color-accent);
 }
 
 .button-light:hover {
-    background: var(--color-mint);
+    background: var(--color-surface);
 }
 
 /* Inner pages: guide, cats, visits */
@@ -462,7 +495,6 @@ main.page li {
 article {
     background: var(--color-surface);
     border-radius: 22px;
-    box-shadow: var(--shadow);
     padding: 1.25rem 1.5rem;
     margin-bottom: 1rem;
 }
@@ -489,7 +521,6 @@ article p {
     flex-direction: column;
     background: var(--color-surface);
     border-radius: 22px;
-    box-shadow: var(--shadow);
     overflow: hidden;
     text-decoration: none;
     color: var(--color-ink);
@@ -528,7 +559,7 @@ article p {
     display: inline-block;
     padding: 0.05rem 0.65rem;
     border-radius: 999px;
-    background: var(--color-mint);
+    background: var(--color-surface);
     color: var(--color-ink);
     font-size: 0.95rem;
     font-weight: 700;
@@ -633,7 +664,7 @@ main.home > section.hero {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--color-coral);
+    background: var(--color-accent);
 }
 
 .hero-grid {
@@ -689,7 +720,7 @@ main.home > section.hero {
     aspect-ratio: 5 / 4.4;
     object-fit: cover;
     border-radius: 28px 28px 120px 28px;
-    background: var(--color-placeholder);
+    background: var(--color-surface);
 }
 
 /* Next visit: the card slightly overlaps the hero so the main action is on the first screen */
@@ -708,7 +739,6 @@ main.home > section.next-visit {
     padding: 1.25rem 1.5rem;
     background: var(--color-surface);
     border-radius: 24px;
-    box-shadow: var(--shadow);
 }
 
 .visit-date {
@@ -719,8 +749,8 @@ main.home > section.next-visit {
     width: 76px;
     height: 76px;
     border-radius: 16px;
-    background: var(--color-coral);
-    color: #14232b;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
     line-height: 1;
 }
 
@@ -757,7 +787,7 @@ main.home > section.next-visit {
     margin-bottom: 0.35rem;
     padding: 0.1rem 0.7rem;
     border-radius: 999px;
-    background: var(--color-mint);
+    background: var(--color-surface);
     color: var(--color-ink);
     font-weight: 700;
 }
@@ -780,7 +810,7 @@ main.home > section.next-visit {
 .task {
     padding: 1.75rem;
     border-radius: 24px;
-    background: var(--color-mint);
+    background: var(--color-surface);
 }
 
 .task p {
@@ -802,7 +832,7 @@ main.home > section.next-visit {
     width: 28px;
     height: 28px;
     fill: none;
-    stroke: var(--color-link);
+    stroke: var(--color-accent);
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -818,8 +848,8 @@ main.home > section.next-visit {
 .band {
     margin-top: 72px;
     padding-block: 64px;
-    background: var(--color-teal);
-    color: var(--color-on-teal);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
 }
 
 .band h2 {
@@ -831,11 +861,11 @@ main.home > section.next-visit {
 }
 
 .band a {
-    color: var(--color-on-teal);
+    color: var(--color-on-accent);
 }
 
 .band a.button-light {
-    color: var(--color-teal);
+    color: var(--color-accent);
 }
 
 .band-top {
@@ -880,7 +910,7 @@ main.home > section.next-visit {
     font-size: 3rem;
     font-weight: 700;
     line-height: 1;
-    color: var(--color-sun);
+    color: var(--color-on-accent);
 }
 
 .steps p {
@@ -962,7 +992,7 @@ main.home > section.next-visit {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--color-coral);
+    background: var(--color-accent);
 }
 
 .help-list li::first-letter {
@@ -991,7 +1021,7 @@ main.home > section.next-visit {
 .guide-toc a {
     padding: 0.4rem 1rem;
     border-radius: 999px;
-    background: var(--color-mint);
+    background: var(--color-surface);
     color: var(--color-ink);
     font-weight: 700;
     text-decoration: none;
@@ -1016,10 +1046,9 @@ main.home > section.next-visit {
     margin-top: 1rem;
     padding: 1.25rem 1.5rem;
     border: 2px solid var(--color-line);
-    border-left: 6px solid var(--color-coral);
+    border-left: 6px solid var(--color-accent);
     border-radius: 22px;
     background: var(--color-surface);
-    box-shadow: var(--shadow);
 }
 
 .guide-callout p {
@@ -1044,7 +1073,6 @@ blockquote {
     padding: 2rem;
     border-radius: 28px;
     background: var(--color-surface);
-    box-shadow: var(--shadow);
 }
 
 blockquote p {

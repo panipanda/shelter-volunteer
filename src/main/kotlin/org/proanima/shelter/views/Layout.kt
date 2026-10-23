@@ -40,17 +40,18 @@ try {
 // mainClass sets the content width: "page" is a narrow readable column for inner
 // pages, "home" is unrestricted — the home page puts sections into .wrap itself and stretches
 // the colored strip to full width.
-// Fonts needed from the first paint: regular and bold latin (nav, headings) plus the subset
-// for the locale's alphabet: cyrillic for ru, latin-ext (č, š, ž, đ, ć) for sr. Without the
-// preload the browser finds them only after parsing the CSS and re-renders the text on
-// font-display: swap, shifting the layout on every language switch.
+// Fonts needed from the first paint: both families (Literata for headings, Source Sans 3 for the
+// rest) in latin plus the subset for the locale's alphabet: cyrillic for ru, latin-ext (č, š, ž,
+// đ, ć) for sr. Each is one variable file per subset. Without the preload the browser finds them
+// only after parsing the CSS and re-renders the text on font-display: swap, shifting the layout
+// on every language switch.
 private fun preloadedFonts(locale: AppLocale): List<String> {
     val subsets = when (locale) {
         AppLocale.RU -> listOf("latin", "cyrillic")
         AppLocale.SR -> listOf("latin", "latin-ext")
         AppLocale.EN -> listOf("latin")
     }
-    return listOf(400, 700).flatMap { weight -> subsets.map { "ubuntu-mono-$weight-$it" } }
+    return listOf("literata-600", "source-sans-3").flatMap { family -> subsets.map { "$family-$it" } }
 }
 
 fun HTML.pageLayout(
