@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Направление A+B — склейка</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&display=swap&subset=cyrillic,latin-ext" rel="stylesheet">
+<style>
+:root {
+  --bg: #fbfaf7; --surface: #f3efe6; --ink: #1f1e1b; --body: #3b3a36; --muted: #6a6862; --line: #e3e0d8;
+  --accent: #b8501a; --on-accent: #fff;
+  --font: "Source Sans 3", system-ui, sans-serif;
+  --col: 720px; --gutter: 24px; --card: 220px;
+}
+/* Dark: same tokens, only values change. Accent is lightened to keep AA contrast on dark. */
+.dark {
+  --bg: #171613; --surface: #22201c; --ink: #f1efe9; --body: #d6d3cb; --muted: #a29f97; --line: #34312c;
+  --accent: #e08a55; --on-accent: #171613;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #e9e7e1; font-family: var(--font); color: var(--ink); font-size: 18px; line-height: 1.55; }
+.label { max-width: 1100px; margin: 32px auto 8px; padding: 0 8px; font: 600 13px/1 var(--font); letter-spacing: .08em; text-transform: uppercase; color: #6a6862; }
+.screen { max-width: 1100px; margin: 0 auto 8px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); }
+a { color: var(--accent); text-underline-offset: 3px; }
+.wrap { max-width: calc(var(--col) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+
+header { border-bottom: 1px solid var(--line); }
+header .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; min-height: 64px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--ink); text-decoration: none; margin-right: auto; }
+.brand img { width: 28px; height: 28px; }
+header nav { display: flex; flex-wrap: wrap; gap: 4px 22px; font-size: 16px; }
+header nav a { color: var(--ink); text-decoration: none; padding: 4px 0; }
+header nav a[aria-current] { box-shadow: 0 2px 0 var(--accent); }
+.lang { font-size: 14px; color: var(--muted); display: flex; gap: 10px; }
+.lang b { color: var(--ink); font-weight: 600; }
+
+main { padding: 56px 0 72px; }
+h1 { font-size: 36px; line-height: 1.2; font-weight: 600; margin: 0 0 16px; letter-spacing: -.01em; }
+h2 { font-size: 22px; line-height: 1.3; font-weight: 600; margin: 0 0 12px; }
+p { margin: 0 0 16px; }
+.lead { font-size: 20px; color: var(--body); }
+.sub { color: var(--muted); margin: 0 0 20px; }
+.btn { display: inline-block; padding: 10px 18px; border-radius: 4px; background: var(--accent); color: var(--on-accent); text-decoration: none; font-weight: 600; font-size: 16px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; margin-top: 24px; }
+section.block { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line); }
+.facts { display: flex; flex-wrap: wrap; gap: 12px 40px; margin-top: 32px; color: var(--muted); font-size: 15px; }
+.facts b { display: block; font-size: 24px; color: var(--ink); font-weight: 600; line-height: 1.2; }
+.next { margin-top: 40px; padding-left: 16px; border-left: 3px solid var(--accent); }
+.next .when { font-weight: 600; } .next p { margin: 4px 0 0; color: var(--body); }
+ol.steps { padding-left: 22px; margin: 0; } ol.steps li { margin-bottom: 10px; padding-left: 4px; }
+.photo-wide { width: 100%; aspect-ratio: 3/2; object-fit: cover; border-radius: 4px; display: block; margin-top: 40px; }
+.note { margin-top: 16px; color: var(--muted); font-size: 16px; }
+
+/* cards from B: fixed width, left-aligned, never stretched; three fit in the column */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, var(--card)); gap: 28px 24px; margin-top: 20px; }
+.card { color: var(--ink); text-decoration: none; display: block; }
+.card img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 4px; display: block; }
+.card .name { font-size: 20px; font-weight: 600; margin-top: 10px; line-height: 1.2; }
+.card .meta { color: var(--muted); font-size: 15px; }
+.card:hover .name { color: var(--accent); }
+.sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.sec-head h2 { margin: 0; } .sec-head a { font-size: 15px; }
+
+/* profile: photo beside facts inside the same column */
+.back { font-size: 15px; display: inline-block; margin-bottom: 20px; }
+.profile { display: grid; grid-template-columns: 300px 1fr; gap: 32px; align-items: start; margin-top: 24px; }
+.main-photo { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 4px; display: block; }
+.thumbs { display: flex; gap: 8px; margin-top: 8px; } .thumbs img { width: 56px; height: 56px; object-fit: cover; border-radius: 4px; opacity: .75; } .thumbs img:first-child { opacity: 1; outline: 2px solid var(--accent); outline-offset: 2px; }
+.desc { margin: 0 0 20px; }
+dl.facts-list { margin: 0; display: grid; grid-template-columns: 100px 1fr; border-top: 1px solid var(--line); font-size: 16px; }
+dl.facts-list dt, dl.facts-list dd { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--line); }
+dl.facts-list dt { color: var(--muted); font-size: 14px; padding-top: 12px; }
+.callout { margin-top: 20px; padding: 14px 18px; background: var(--surface); border-radius: 4px; font-size: 16px; }
+
+footer { border-top: 1px solid var(--line); padding: 24px 0; color: var(--muted); font-size: 15px; }
+
+@media (max-width: 640px) {
+  :root { --gutter: 16px; }
+  body { font-size: 17px; }
+  main { padding: 32px 0 48px; }
+  h1 { font-size: 30px; }
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 24px 16px; }
+  .card .name { font-size: 18px; }
+  .profile { grid-template-columns: 1fr; gap: 24px; }
+  .main-photo { max-width: 320px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HOME ============ -->
+<div class="label">A+B · Главная</div>
+<div class="screen">
+<header><div class="wrap">
+  <a class="brand" href="#"><img src="/src/main/resources/static/icons/logo.png" alt="">Pro Anima</a>
+  <nav><a href="#">Кошки</a><a href="#">Собаки</a><a href="#">Гайд волонтёра</a><a href="#">Визиты</a></nav>
+  <div class="lang"><b>RU</b><span>EN</span><span>SR</span></div>
+</div></header>
+<main><div class="wrap">
+  <h1>Животным приюта нужны ваши руки и время</h1>
+  <p class="lead">Мы помогаем кошкам и собакам белградского приюта Pro Anima: ухаживаем за ними, играем с ними и ищем им семьи.</p>
+  <div class="actions"><a class="btn" href="#">Как присоединиться</a><a href="#">Кошки в поиске дома</a></div>
+  <div class="facts"><div><b>2010</b>год основания приюта</div><div><b>40+</b>кошек в приюте</div><div><b>2</b>визита в неделю</div></div>
+
+  <div class="next"><div class="when">Ближайший визит · суббота, 24 октября</div>
+    <p>Выезд из Врачара (Белград) в 10:00. Запись и свободные места — в чате котоволонтёров. Если есть вопросы, пишите координаторам.</p>
+    <p><a href="#">Записаться в чате</a></p></div>
+
+  <img class="photo-wide" src="/data/images/home-hero.jpg" alt="">
+
+  <section class="block"><div class="sec-head"><h2>Кошки в поиске дома</h2><a href="#">Все кошки</a></div>
+    <div class="grid">
+      <a class="card" href="#"><img src="/data/images/felix.jpg" alt=""><div class="name">Феликс</div><div class="meta">8 месяцев · В приюте</div></a>
+      <a class="card" href="#"><img src="/data/images/fox.jpg" alt=""><div class="name">Фокс</div><div class="meta">1 год · В приюте</div></a>
+    </div></section>
+
+  <section class="block"><h2>Как присоединиться</h2>
+    <p>Ограничений для новых волонтёров нет. Выезды в приют организует Свора. Чтобы начать:</p>
+    <ol class="steps">
+      <li>Прочитайте короткий <a href="#">гайд</a>: в нём написано, что взять с собой и как вести себя в приюте.</li>
+      <li>Напишите координатору в Telegram, чтобы попасть в чат котоволонтёров: <a href="#">Наталья</a>, <a href="#">Алина</a>.</li>
+      <li>Выберите визит в чате: там актуальное расписание и запись.</li>
+    </ol>
+    <p class="note">Визиты проходят по средам и субботам и длятся около трёх часов. Выезд из Врачара: в среду в 9:00, в субботу в 10:00. Мест ограниченное количество — следите за расписанием в чате.</p></section>
+
+  <section class="block"><h2>Чем занимаются волонтёры</h2>
+    <p>Волонтёры приезжают в приют и помогают с повседневными делами. С кошками это уборка вольеров, кормление и общение: гладят, играют, помогают привыкнуть к людям.</p>
+    <p><a href="#">Гайд волонтёра</a> · <a href="#">О работе с собаками</a></p></section>
+
+  <section class="block"><h2>О приюте</h2>
+    <p>Pro Anima — приют для кошек и собак в Белграде. Основан в 2010 году, сейчас в нём живут более 40 кошек и около 60 собак. Приюту помогает волонтёрская группа Свора.</p></section>
+</div></main>
+<footer><div class="wrap">Волонтёрский центр Pro Anima · <a href="#">Telegram-канал приюта</a> · <a href="#">Svora.Volunteers</a></div></footer>
+</div>
+
+<!-- ============ CATS LIST ============ -->
+<div class="label">A+B · Список кошек</div>
+<div class="screen">
+<header><div class="wrap">
+  <a class="brand" href="#"><img src="/src/main/resources/static/icons/logo.png" alt="">Pro Anima</a>
+  <nav><a href="#" aria-current="page">Кошки</a><a href="#">Собаки</a><a href="#">Гайд волонтёра</a><a href="#">Визиты</a></nav>
+  <div class="lang"><b>RU</b><span>EN</span><span>SR</span></div>
+</div></header>
+<main><div class="wrap">
+  <h1>Кошки</h1>
+  <p class="sub">Ждут свою семью</p>
+  <div class="grid" style="margin-top:0">
+    <a class="card" href="#"><img src="/data/images/felix.jpg" alt=""><div class="name">Феликс</div><div class="meta">8 месяцев · В приюте</div></a>
+    <a class="card" href="#"><img src="/data/images/fox.jpg" alt=""><div class="name">Фокс</div><div class="meta">1 год · В приюте</div></a>
+  </div>
+  <section class="block"><h2>Нашли дом</h2><p class="sub" style="margin-bottom:0">Эти кошки уже обрели свою семью.</p>
+    <div class="grid"><a class="card" href="#"><img src="/data/images/nami.jpg" alt=""><div class="name">Нами</div><div class="meta">9 месяцев</div></a></div></section>
+</div></main>
+<footer><div class="wrap">Волонтёрский центр Pro Anima · <a href="#">Telegram-канал приюта</a> · <a href="#">Svora.Volunteers</a></div></footer>
+</div>
+
+<!-- ============ CAT PROFILE ============ -->
+<div class="label">A+B · Кошка</div>
+<div class="screen">
+<header><div class="wrap">
+  <a class="brand" href="#"><img src="/src/main/resources/static/icons/logo.png" alt="">Pro Anima</a>
+  <nav><a href="#" aria-current="page">Кошки</a><a href="#">Собаки</a><a href="#">Гайд волонтёра</a><a href="#">Визиты</a></nav>
+  <div class="lang"><b>RU</b><span>EN</span><span>SR</span></div>
+</div></header>
+<main><div class="wrap">
+  <a class="back" href="#">← Все кошки</a>
+  <h1>Феликс</h1>
+  <div class="profile">
+    <div>
+      <img class="main-photo" src="/data/images/felix.jpg" alt="">
+      <div class="thumbs"><img src="/data/images/felix.jpg" alt=""><img src="/data/images/felix-2.jpg" alt=""><img src="/data/images/felix-3.jpg" alt=""></div>
+    </div>
+    <div>
+      <p class="desc">Любопытная и дружелюбная кошка. Немного осторожничает из-за жизни в приюте, но, если заслужить её доверие, с удовольствием устроится на коленях и будет выпрашивать вкусняшки.</p>
+      <dl class="facts-list">
+        <dt>Возраст</dt><dd>8 месяцев</dd>
+        <dt>Где сейчас</dt><dd>В приюте</dd>
+        <dt>Статус</dt><dd>Ждёт свою семью</dd>
+        <dt>Здоровье</dt><dd>Привита, стерилизована, обработана от паразитов.</dd>
+      </dl>
+      <div class="callout"><b>Как забрать.</b> Пишите координатору по пристройству в Telegram: <a href="#">@Nata_Rogava</a></div>
+    </div>
+  </div>
+</div></main>
+<footer><div class="wrap">Волонтёрский центр Pro Anima · <a href="#">Telegram-канал приюта</a> · <a href="#">Svora.Volunteers</a></div></footer>
+</div>
+
+<!-- ============ DARK ============ -->
+<div class="label">A+B · Тёмная тема (список кошек и профиль)</div>
+<div class="screen dark">
+<header><div class="wrap">
+  <a class="brand" href="#"><img src="/src/main/resources/static/icons/logo.png" alt="">Pro Anima</a>
+  <nav><a href="#" aria-current="page">Кошки</a><a href="#">Собаки</a><a href="#">Гайд волонтёра</a><a href="#">Визиты</a></nav>
+  <div class="lang"><b>RU</b><span>EN</span><span>SR</span></div>
+</div></header>
+<main><div class="wrap">
+  <h1>Кошки</h1>
+  <p class="sub">Ждут свою семью</p>
+  <div class="grid" style="margin-top:0">
+    <a class="card" href="#"><img src="/data/images/felix.jpg" alt=""><div class="name">Феликс</div><div class="meta">8 месяцев · В приюте</div></a>
+    <a class="card" href="#"><img src="/data/images/fox.jpg" alt=""><div class="name">Фокс</div><div class="meta">1 год · В приюте</div></a>
+  </div>
+  <section class="block" style="margin-top:48px"><h2>Феликс</h2>
+    <div class="profile" style="margin-top:12px">
+      <div><img class="main-photo" src="/data/images/felix.jpg" alt=""></div>
+      <div>
+        <p class="desc">Любопытная и дружелюбная кошка. Немного осторожничает из-за жизни в приюте.</p>
+        <dl class="facts-list"><dt>Возраст</dt><dd>8 месяцев</dd><dt>Где сейчас</dt><dd>В приюте</dd><dt>Статус</dt><dd>Ждёт свою семью</dd></dl>
+        <div class="callout"><b>Как забрать.</b> Пишите в Telegram: <a href="#">@Nata_Rogava</a></div>
+        <p style="margin-top:20px"><a class="btn" href="#">Записаться в чате</a></p>
+      </div>
+    </div></section>
+</div></main>
+<footer><div class="wrap">Волонтёрский центр Pro Anima · <a href="#">Telegram-канал приюта</a> · <a href="#">Svora.Volunteers</a></div></footer>
+</div>
+<div style="height:48px"></div>
+</body>
+</html>

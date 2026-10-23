@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Логотип — пёс v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Literata:opsz,wght@7..72,600&display=swap&subset=cyrillic,latin-ext" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #cfcfd4; font-family: "Source Sans 3", system-ui, sans-serif; padding: 20px 0 40px; }
+.page { max-width: 1200px; margin: 0 auto; padding: 0 12px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 10px; }
+.panel { background: var(--bg); color: var(--ink); border: 1px solid var(--line); padding: 20px 26px; }
+.light { --bg:#ffffff; --ink:#18181b; --muted:#67676f; --line:#e4e4e7; --accent:#1a7f37; }
+.dark  { --bg:#1f2125; --ink:#f0f2f5; --muted:#a4a9b1; --line:#3e4249; --accent:#56c27c; }
+.lock { display: flex; align-items: center; gap: 22px; color: var(--ink); }
+.word { font-family: "Literata", serif; font-weight: 600; letter-spacing: -.012em; line-height: 1; white-space: nowrap; color: var(--ink); }
+.lock .word { font-size: 52px; }
+.hdr { display: flex; align-items: center; gap: 12px; height: 60px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 16px -26px 0; padding: 0 26px; font-size: 15px; }
+.hdr .word { font-size: 22px; }
+.hdr .nav { margin-left: auto; display: flex; gap: 16px; }
+.row { display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-top: 16px; }
+.stack { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.tile { background: var(--bg); border: 1px solid var(--line); padding: 8px; display: flex; align-items: center; justify-content: center; }
+.cap { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- Dog: round head, long ears hanging down the sides, light muzzle with a dark nose.
+         Cat: pointed ears. Both sit on the sill at y = 78. -->
+    <symbol id="win" viewBox="0 18 96 68">
+      <g transform="translate(0 2)">
+      <g fill="currentColor">
+        <path d="M14 78A16 16 0 0 1 46 78Z"/>
+        <path d="M21 63C11 62 8 70 9 78H14.500C14.500 72 17 68 21 63Z"/>
+        <path d="M39 63C49 62 52 70 51 78H45.500C45.500 72 43 68 39 63Z"/>
+      </g>
+      <g fill="var(--bg)">
+        <ellipse cx="30" cy="78" rx="8.500" ry="7.500"/>
+        <circle cx="23" cy="69" r="2.200"/><circle cx="37" cy="69" r="2.200"/>
+      </g>
+      <ellipse cx="30" cy="73.500" rx="3.600" ry="2.500" fill="currentColor"/>
+      <g fill="var(--accent)">
+        <path d="M55 78A15 13 0 0 1 85 78Z"/>
+        <path d="M57 71.500 58.500 57.500 66.500 65.500Z"/><path d="M83 71.500 81.500 57.500 73.500 65.500Z"/>
+      </g>
+      <g fill="var(--bg)"><circle cx="63.500" cy="72.500" r="2.100"/><circle cx="76.500" cy="72.500" r="2.100"/></g>
+      </g>
+      <!-- frame last, so nothing cuts through the sill -->
+      <path d="M6 82V48A42 28 0 0 1 90 48V82Z" fill="none" stroke="currentColor" stroke-width="4"/>
+    </symbol>
+    <!-- Favicon: solid dome, animals cut out -->
+    <symbol id="fav" viewBox="0 20 96 64">
+      <path d="M2 84V52A46 30 0 0 1 94 52V84Z" fill="var(--accent)"/>
+      <g fill="var(--bg)">
+        <path d="M12 84A18 18 0 0 1 48 84Z"/>
+        <path d="M20 66C8 64 5 74 6 84H13C13 77 16 71 20 66Z"/>
+        <path d="M40 66C52 64 55 74 54 84H47C47 77 44 71 40 66Z"/>
+        <path d="M53 84A17 15 0 0 1 87 84Z"/>
+        <path d="M55.500 77 58 55 68 68Z"/><path d="M84.500 77 82 55 72 68Z"/>
+      </g>
+      <g fill="var(--accent)">
+        <ellipse cx="30" cy="84" rx="9.500" ry="8.500"/>
+        <circle cx="22" cy="74" r="2.800"/><circle cx="38" cy="74" r="2.800"/>
+        <circle cx="62" cy="78" r="2.600"/><circle cx="78" cy="78" r="2.600"/>
+      </g>
+      <ellipse cx="30" cy="78.500" rx="4" ry="2.800" fill="var(--bg)"/>
+    </symbol>
+  </defs>
+</svg>
+<div class="page" id="root"></div>
+<script>
+const RATIO = { win: 96 / 68, fav: 96 / 64 };
+const svg = (id, h) => `<svg style="height:${h}px;width:${h * RATIO[id]}px"><use href="#${id}" width="100%" height="100%"/></svg>`;
+function sheet(theme) {
+  return `<div class="panel ${theme}">
+    <div class="lock">${svg("win", 100)}<span class="word">Pro Anima</span></div>
+    <div class="hdr">${svg("win", 34)}<span class="word">Pro Anima</span><span class="nav"><span>Кошки</span><span>Собаки</span><span>Гайд</span></span></div>
+    <div class="row">
+      <div class="stack"><div class="tile">${svg("fav", 32)}</div><span class="cap">favicon 32</span></div>
+      <div class="stack"><div class="tile">${svg("fav", 16)}</div><span class="cap">favicon 16</span></div>
+      <div class="stack"><div class="tile">${svg("win", 40)}</div><span class="cap">40 px</span></div>
+      <div class="stack"><div class="tile">${svg("win", 28)}</div><span class="cap">28 px</span></div>
+    </div></div>`;
+}
+document.getElementById("root").innerHTML = `<div class="pair">${sheet("light")}${sheet("dark")}</div>` +
+  `<div class="pair"><div class="panel light" style="display:flex;gap:30px;align-items:center;color:var(--ink)">${svg("win", 240)}</div><div class="panel dark" style="display:flex;gap:30px;align-items:center;color:var(--ink)">${svg("win", 240)}</div></div>`;
+</script>
+</body>
+</html>

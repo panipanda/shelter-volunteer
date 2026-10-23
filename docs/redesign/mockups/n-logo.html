@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Логотип — система</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Literata:opsz,wght@7..72,600&display=swap&subset=cyrillic,latin-ext" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #cfcfd4; font-family: "Source Sans 3", system-ui, sans-serif; padding: 20px 0 40px; }
+.page { max-width: 1200px; margin: 0 auto; padding: 0 12px; }
+h2.t { font: 600 13px/1 "Source Sans 3", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #333; margin: 22px 0 8px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 8px; }
+.panel { background: var(--bg); color: var(--ink); border: 1px solid var(--line); padding: 22px 26px; }
+.light { --bg:#ffffff; --ink:#18181b; --muted:#67676f; --line:#e4e4e7; --accent:#1a7f37; --surface:#f4f4f5; }
+.dark  { --bg:#1f2125; --ink:#f0f2f5; --muted:#a4a9b1; --line:#3e4249; --accent:#56c27c; --surface:#292c31; }
+.lock { display: flex; align-items: center; gap: 20px; color: var(--ink); }
+.lock svg { height: 110px; width: auto; flex: none; }
+.word { font-family: "Literata", serif; font-weight: 600; letter-spacing: -.012em; line-height: 1; white-space: nowrap; color: var(--ink); }
+.lock .word { font-size: 52px; }
+.row { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.hdr { display: flex; align-items: center; gap: 12px; height: 60px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 18px -26px 0; padding: 0 26px; font-size: 15px; }
+.hdr svg { height: 36px; width: auto; flex: none; } .hdr .word { font-size: 22px; }
+.hdr .nav { margin-left: auto; display: flex; gap: 16px; }
+.tile { background: var(--bg); border: 1px solid var(--line); padding: 8px; display: flex; align-items: center; justify-content: center; }
+.cap { font-size: 12px; color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+/* secondary illustration in use */
+.strip { margin: 0 -26px; padding: 26px 26px 0; border-top: 1px solid var(--line); }
+.strip svg { display: block; width: 100%; height: auto; max-width: 340px; color: var(--ink); }
+.foot { padding: 12px 0 0; font-size: 14px; color: var(--muted); border-top: 1px solid var(--ink); margin-top: 0; }
+.e404 { text-align: left; }
+.e404 .big { font: 600 40px/1.1 "Literata", serif; margin: 10px 0 6px; color: var(--ink); }
+.e404 p { margin: 0 0 12px; font-size: 17px; color: var(--ink); }
+.e404 a { color: var(--accent); text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- Primary mark: window arch, dog (ink) and cat (accent) sitting side by side, seen from behind -->
+    <symbol id="win" viewBox="0 0 80 92">
+      <path d="M6 90V38A34 34 0 0 1 74 38V90Z" fill="none" stroke="currentColor" stroke-width="4"/>
+      <g fill="currentColor">
+        <path d="M13 88C13 71 19 62 27 62S41 71 41 88Z"/><circle cx="27" cy="52" r="10.500"/>
+        <ellipse cx="16.900" cy="59" rx="3.800" ry="11.500"/><ellipse cx="37.100" cy="59" rx="3.800" ry="11.500"/>
+      </g>
+      <g fill="var(--accent)">
+        <path d="M44 88C44 74 48 66 54 66S64 74 64 88Z"/><circle cx="54" cy="57.500" r="8.500"/>
+        <path d="M45.600 56.500 46.200 44 52.800 50.500Z"/><path d="M62.400 56.500 61.800 44 55.200 50.500Z"/>
+      </g>
+    </symbol>
+    <!-- One-colour version: everything in currentColor -->
+    <symbol id="winMono" viewBox="0 0 80 92">
+      <path d="M6 90V38A34 34 0 0 1 74 38V90Z" fill="none" stroke="currentColor" stroke-width="4"/>
+      <g fill="currentColor">
+        <path d="M13 88C13 71 19 62 27 62S41 71 41 88Z"/><circle cx="27" cy="52" r="10.500"/>
+        <ellipse cx="16.900" cy="59" rx="3.800" ry="11.500"/><ellipse cx="37.100" cy="59" rx="3.800" ry="11.500"/>
+        <path d="M44 88C44 74 48 66 54 66S64 74 64 88Z"/><circle cx="54" cy="57.500" r="8.500"/>
+        <path d="M45.600 56.500 46.200 44 52.800 50.500Z"/><path d="M62.400 56.500 61.800 44 55.200 50.500Z"/>
+      </g>
+    </symbol>
+    <!-- Favicon version: solid arch, the two figures cut out of it, bolder and simpler -->
+    <symbol id="winFav" viewBox="0 0 80 92">
+      <path d="M2 92V38A38 38 0 0 1 78 38V92Z" fill="var(--accent)"/>
+      <g fill="var(--bg)">
+        <path d="M11 92C11 70 18 58 27 58S43 70 43 92Z"/><circle cx="27" cy="46" r="12"/>
+        <ellipse cx="16" cy="54" rx="4.600" ry="12.500"/><ellipse cx="38" cy="54" rx="4.600" ry="12.500"/>
+        <path d="M46 92C46 76 50 66 57 66S68 76 68 92Z"/><circle cx="57" cy="55" r="9.500"/>
+        <path d="M48.200 53.500 49 38.500 56.500 46.500Z"/><path d="M65.800 53.500 65 38.500 57.500 46.500Z"/>
+      </g>
+    </symbol>
+    <!-- Secondary illustration: two heads peeking over an edge -->
+    <symbol id="peek" viewBox="0 0 96 54">
+      <rect x="0" y="46" width="96" height="4" fill="currentColor"/>
+      <g fill="currentColor"><path d="M10 46A16 16 0 0 1 42 46Z"/><ellipse cx="9" cy="40" rx="4.800" ry="9.500"/><ellipse cx="43" cy="40" rx="4.800" ry="9.500"/></g>
+      <g fill="var(--accent)"><path d="M54 46A14 14 0 0 1 82 46Z"/><path d="M55.500 39 57 22 65 31Z"/><path d="M80.500 39 79 22 71 31Z"/></g>
+      <g fill="var(--bg)"><circle cx="21" cy="41" r="1.900"/><circle cx="31" cy="41" r="1.900"/><circle cx="62" cy="41" r="1.800"/><circle cx="74" cy="41" r="1.800"/></g>
+    </symbol>
+  </defs>
+</svg>
+<div class="page" id="root"></div>
+<script>
+const svg = (id, vb, h) => { const [,, w, hh] = vb.split(' '); return `<svg viewBox="${vb}" style="height:${h}px;width:${h*w/hh}px"><use href="#${id}"/></svg>`; };
+const W = "0 0 80 92";
+const P = "0 0 96 54";
+function sheet(theme) {
+  return `<div class="panel ${theme}">
+    <div class="lock">${svg("win", W, 110)}<span class="word">Pro Anima</span></div>
+    <div class="hdr">${svg("win", W, 36)}<span class="word">Pro Anima</span><span class="nav"><span>Кошки</span><span>Собаки</span><span>Гайд</span></span></div>
+    <div class="row" style="margin-top:18px">
+      <div class="stack"><div class="tile">${svg("winFav", W, 32)}</div><span class="cap">favicon 32</span></div>
+      <div class="stack"><div class="tile">${svg("winFav", W, 16)}</div><span class="cap">favicon 16</span></div>
+      <div class="stack"><div class="tile" style="color:var(--ink)">${svg("winMono", W, 48)}</div><span class="cap">одноцветный</span></div>
+      <div class="stack"><div class="tile" style="color:var(--ink)">${svg("win", W, 24)}</div><span class="cap">24 px: минимум</span></div>
+    </div>
+  </div>`;
+}
+function context(theme) {
+  return `<div class="panel ${theme}">
+    <div class="e404">
+      <div class="cap">Страница 404, «Выглядывают» как иллюстрация</div>
+      <div class="big">Здесь никого нет</div>
+      <p>Такой страницы не нашлось. <a href="#">Вернуться на главную</a></p>
+      <div class="strip"><svg viewBox="${P}" style="color:var(--ink)"><use href="#peek"/></svg></div>
+    </div>
+    <div class="foot">Волонтёрский центр Pro Anima · Telegram-канал приюта · Svora.Volunteers</div>
+  </div>`;
+}
+document.getElementById("root").innerHTML =
+  `<h2 class="t">Основной знак: «Окно»</h2><div class="pair">${sheet("light")}${sheet("dark")}</div>` +
+  `<h2 class="t">Вторичная иллюстрация: «Выглядывают» в деле</h2><div class="pair">${context("light")}${context("dark")}</div>`;
+</script>
+</body>
+</html>

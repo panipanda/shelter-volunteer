@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Светлая C и тёмные 2 / 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&display=swap&subset=cyrillic,latin-ext" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #8a8a90; font-family: "Source Sans 3", system-ui, sans-serif; font-size: 16px; line-height: 1.45; padding: 24px 0 48px; }
+.page { max-width: 1220px; margin: 0 auto; padding: 0 12px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 380px); gap: 24px 20px; justify-content: space-between; }
+.cap { font: 600 13px/1.3 "Source Sans 3", sans-serif; color: #fff; margin-bottom: 6px; }
+.cap span { font-weight: 400; color: #eee; }
+.panel { background: var(--bg); color: var(--ink); border: 1px solid var(--line); }
+.panel a { color: var(--accent); text-underline-offset: 3px; }
+.in { padding: 0 20px; }
+header { border-bottom: 1px solid var(--line); }
+header .in { display: flex; align-items: center; gap: 12px; height: 46px; font-size: 13px; }
+.brand { display: flex; align-items: center; gap: 7px; font-weight: 600; margin-right: auto; font-size: 14px; }
+.brand img { width: 22px; height: 22px; }
+nav { display: flex; gap: 12px; } nav span.cur { box-shadow: 0 2px 0 var(--accent); }
+.lang { font-size: 12px; color: var(--muted); display: flex; gap: 6px; } .lang b { color: var(--ink); }
+main { padding: 24px 20px 20px; }
+h1 { font-size: 24px; line-height: 1.15; font-weight: 600; margin: 0 0 10px; letter-spacing: -.01em; }
+p { margin: 0 0 10px; }
+.lead { font-size: 16px; color: var(--body); }
+.actions { display: flex; gap: 14px; align-items: center; margin-top: 12px; font-size: 14px; }
+.btn { display: inline-block; padding: 8px 14px; border-radius: 4px; background: var(--accent); color: var(--on); font-weight: 600; }
+.next { margin-top: 18px; padding: 10px 14px; background: var(--surface); border-radius: 4px; font-size: 14px; color: var(--body); }
+.next b { color: var(--ink); }
+.sec { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line); }
+h2 { font-size: 16px; font-weight: 600; margin: 0 0 10px; }
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.card img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 4px; display: block; }
+.card .name { font-size: 15px; font-weight: 600; margin-top: 6px; line-height: 1.2; }
+.card .meta { color: var(--muted); font-size: 13px; display: flex; align-items: center; gap: 6px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex: none; }
+.callout { margin-top: 12px; padding: 10px 14px; background: var(--surface); border-radius: 4px; font-size: 14px; }
+.ratio { padding: 10px 20px 14px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); line-height: 1.6; }
+.ratio i { font-style: normal; font-weight: 600; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="page"><div class="grid3" id="g"></div></div>
+<script>
+const lum = h => { h=h.slice(1); const c=[0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(x=>x<=.03928?x/12.92:((x+.055)/1.055)**2.4); return .2126*c[0]+.7152*c[1]+.0722*c[2]; };
+const cr = (a,b) => { const [x,y]=[lum(a),lum(b)].sort((p,q)=>q-p); return ((x+.05)/(y+.05)).toFixed(1); };
+const T = [
+  { n:"Светлая · C", note:"акцент #1a7f37", bg:"#ffffff", surface:"#f4f4f5", line:"#e4e4e7", ink:"#18181b", body:"#3f3f46", muted:"#71717a", accent:"#1a7f37", on:"#ffffff" },
+  { n:"Тёмная · 2", note:"#1c1c1f, нейтральный графит", bg:"#1c1c1f", surface:"#27272b", line:"#3a3a3f", ink:"#f4f4f5", body:"#d4d4d8", muted:"#a6a6ae", accent:"#56c27c", on:"#05250f" },
+  { n:"Тёмная · 4", note:"#22272e, Dim", bg:"#22272e", surface:"#2d333b", line:"#444c56", ink:"#e6edf3", body:"#c9d1d9", muted:"#a3adb8", accent:"#56c27c", on:"#05250f" },
+  { n:"Тёмная · между 2 и 4", note:"#1f2125", bg:"#1f2125", surface:"#292c31", line:"#3e4249", ink:"#f0f2f5", body:"#cfd3d9", muted:"#a4a9b1", accent:"#56c27c", on:"#05250f" },
+  { n:"Светлая · C на светлой врезке", note:"ссылка и кнопка в крупном виде", bg:"#f4f4f5", surface:"#ffffff", line:"#e4e4e7", ink:"#18181b", body:"#3f3f46", muted:"#71717a", accent:"#1a7f37", on:"#ffffff" },
+];
+document.getElementById("g").innerHTML = T.slice(0,4).map(t => `
+<div><div class="cap">${t.n} <span>· ${t.note}</span></div>
+<div class="panel" style="--bg:${t.bg};--surface:${t.surface};--line:${t.line};--ink:${t.ink};--body:${t.body};--muted:${t.muted};--accent:${t.accent};--on:${t.on}">
+  <header><div class="in"><span class="brand"><img src="/src/main/resources/static/icons/logo.png" alt="">Pro Anima</span><nav><span class="cur">Кошки</span><span>Собаки</span><span>Гайд</span></nav><span class="lang"><b>RU</b><span>EN</span><span>SR</span></span></div></header>
+  <main>
+    <h1>Животным приюта нужны ваши руки и время</h1>
+    <p class="lead">Мы помогаем кошкам и собакам белградского приюта Pro Anima.</p>
+    <div class="actions"><span class="btn">Как присоединиться</span><a href="#">Кошки в поиске дома</a></div>
+    <div class="next"><b>Ближайший визит · суббота, 24 октября.</b> Выезд из Врачара в 10:00.</div>
+    <div class="sec"><h2>Кошки в поиске дома</h2><div class="cards">
+      <div class="card"><img src="/data/images/felix.jpg" alt=""><div class="name">Феликс</div><div class="meta"><span class="dot"></span>Ждёт семью · 8 мес.</div></div>
+      <div class="card"><img src="/data/images/fox.jpg" alt=""><div class="name">Фокс</div><div class="meta"><span class="dot"></span>Ждёт семью · 1 год</div></div></div>
+      <div class="callout"><b>Как забрать.</b> Telegram: <a href="#">@Nata_Rogava</a></div></div>
+  </main>
+  <div class="ratio">текст на кнопке: <i>${cr(t.on,t.accent)}</i> · акцент на фоне: <i>${cr(t.accent,t.bg)}</i> · акцент на врезке: <i>${cr(t.accent,t.surface)}</i><br>вторичный на фоне: <i>${cr(t.muted,t.bg)}</i> · вторичный на врезке: <i>${cr(t.muted,t.surface)}</i></div>
+</div></div>`).join("");
+</script>
+</body>
+</html>

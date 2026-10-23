@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Свежий — доводка</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&display=swap&subset=cyrillic,latin-ext" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #d9d9dc; font-family: "Source Sans 3", system-ui, sans-serif; font-size: 16px; line-height: 1.45; padding: 24px 0 48px; color: #18181b; }
+.page { max-width: 1220px; margin: 0 auto; padding: 0 12px; }
+.band { font: 600 14px/1 "Source Sans 3", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #333; margin: 28px 0 12px; }
+.note { font-size: 14px; color: #444; margin: -4px 0 12px; max-width: 900px; }
+.row4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.cell { background: var(--bg); color: var(--ink); border: 1px solid var(--line); padding: 14px; }
+.cell .tag { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.cell .tag b { color: var(--ink); }
+.btn { display: inline-block; padding: 8px 14px; border-radius: 4px; background: var(--accent); color: var(--on); font-weight: 600; font-size: 14px; }
+.cell a { color: var(--link); font-size: 14px; margin-left: 10px; text-underline-offset: 3px; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 6px; }
+.cell .meta { margin-top: 10px; font-size: 13px; color: var(--muted); }
+.ratio { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+.ratio i { font-style: normal; font-weight: 600; color: var(--ink); }
+
+/* component sheet */
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.sheet { background: var(--bg); color: var(--ink); border: 1px solid var(--line); padding: 24px; }
+.sheet h3 { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 24px 0 10px; }
+.sheet h3:first-child { margin-top: 0; }
+.sheet a { color: var(--link); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.sheet a:hover { color: var(--link-hover); text-decoration-thickness: 2px; }
+.sheet .btn { padding: 9px 16px; font-size: 15px; background: var(--accent); color: var(--on); }
+.sheet .btn.hover { background: var(--accent-hover); }
+.sheet .btn.active { background: var(--accent-active); }
+.sheet .btn.focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sheet .btn.sec { background: transparent; color: var(--ink); border: 1px solid var(--ink); padding: 8px 15px; }
+.sheet .btn.dis { background: var(--line); color: var(--muted); }
+.states { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; }
+.cap { font-size: 12px; color: var(--muted); margin-top: 4px; }
+nav.demo { display: flex; gap: 20px; font-size: 15px; }
+nav.demo span.cur { box-shadow: 0 2px 0 var(--accent); }
+.status { display: flex; flex-direction: column; gap: 6px; font-size: 15px; }
+.s { display: flex; align-items: center; gap: 8px; }
+.s i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+.s.for i { background: var(--accent); }
+.s.res i { border: 2px solid var(--ink); background: transparent; }
+.s.adp i { background: var(--muted); opacity: .55; }
+.s small { color: var(--muted); font-size: 13px; }
+.swatches { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.sw { height: 44px; border-radius: 4px; border: 1px solid var(--line); font-size: 10px; padding: 4px 6px; display: flex; align-items: flex-end; }
+.callout { padding: 12px 16px; background: var(--surface); border-radius: 4px; font-size: 15px; }
+.callout.info { border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; }
+.cards { display: grid; grid-template-columns: repeat(2, 140px); gap: 14px; }
+.card img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 4px; display: block; }
+.card .name { font-weight: 600; margin-top: 6px; line-height: 1.2; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 12px 0; }
+.p-h1 { font-size: 30px; line-height: 1.15; font-weight: 600; letter-spacing: -.01em; margin: 0 0 6px; }
+.p-lead { font-size: 18px; color: var(--body); margin: 0 0 6px; }
+.p-small { font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="band">1 · Подбор оттенка светлого акцента (кнопка с белым текстом, ссылка на белом)</div>
+<div class="row4" id="lightVariants"></div>
+
+<div class="band">2 · Подбор акцента для тёмной темы (кнопка с тёмным текстом, ссылка на тёмном)</div>
+<div class="note">Неоновость «Свежего» в тёмной теме — главный риск. Сравниваем яркость и насыщенность.</div>
+<div class="row4" id="darkVariants"></div>
+
+<div class="band">3 · Итоговый набор состояний (с выбранными значениями)</div>
+<div class="pair" id="sheets"></div>
+
+</div>
+<script>
+const lum = h => { h=h.slice(1); const c=[0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(x=>x<=.03928?x/12.92:((x+.055)/1.055)**2.4); return .2126*c[0]+.7152*c[1]+.0722*c[2]; };
+const cr = (a,b) => { const [x,y]=[lum(a),lum(b)].sort((p,q)=>q-p); return ((x+.05)/(y+.05)).toFixed(2); };
+
+const light = { bg:"#ffffff", surface:"#f4f4f5", ink:"#18181b", body:"#3f3f46", muted:"#71717a", line:"#e4e4e7" };
+const dark  = { bg:"#111113", surface:"#1b1b1e", ink:"#f4f4f5", body:"#d4d4d8", muted:"#a1a1aa", line:"#2c2c30" };
+
+const LV = [
+  { n:"A · исходный", hex:"#15803d", note:"hue 142°" },
+  { n:"B · чуть темнее", hex:"#117a37", note:"hue 142°, L ниже" },
+  { n:"C · чуть жёлтее", hex:"#1a7f37", note:"hue 135°, как у GitHub" },
+  { n:"D · чуть синее", hex:"#0e8049", note:"hue 150°, ближе к изумрудному" },
+];
+const DV = [
+  { n:"A · исходный", hex:"#4ade80", on:"#052e16" },
+  { n:"B · мягче", hex:"#3fb768", on:"#04210f" },
+  { n:"C · светлее и спокойнее", hex:"#56c27c", on:"#05250f" },
+  { n:"D · пастельнее", hex:"#6dcb90", on:"#062812" },
+];
+
+function vars(t, accent, on, extra={}) {
+  return `--bg:${t.bg};--surface:${t.surface};--ink:${t.ink};--body:${t.body};--muted:${t.muted};--line:${t.line};--accent:${accent};--link:${accent};--on:${on};` +
+         Object.entries(extra).map(([k,v])=>`--${k}:${v}`).join(";");
+}
+document.getElementById("lightVariants").innerHTML = LV.map(v => `
+  <div class="cell" style="${vars(light, v.hex, "#ffffff")}">
+    <div class="tag"><b>${v.n}</b> · ${v.hex} · ${v.note}</div>
+    <span class="btn">Как присоединиться</span><a href="#">Кошки в поиске дома</a>
+    <div class="meta"><span class="dot"></span>Ждёт семью · 8 месяцев</div>
+    <div class="ratio">кнопка: <i>${cr("#ffffff", v.hex)}</i> : 1 · ссылка/точка на белом: <i>${cr(v.hex, "#ffffff")}</i> : 1</div>
+  </div>`).join("");
+document.getElementById("darkVariants").innerHTML = DV.map(v => `
+  <div class="cell" style="${vars(dark, v.hex, v.on)}">
+    <div class="tag"><b>${v.n}</b> · ${v.hex}</div>
+    <span class="btn">Как присоединиться</span><a href="#">Кошки в поиске дома</a>
+    <div class="meta"><span class="dot"></span>Ждёт семью · 8 месяцев</div>
+    <div class="ratio">текст кнопки: <i>${cr(v.on, v.hex)}</i> : 1 · акцент на фоне: <i>${cr(v.hex, dark.bg)}</i> : 1</div>
+  </div>`).join("");
+
+// Final proposal: light = A (verified on screen), dark = C. Hover/active are derived shades.
+const FL = { accent:"#15803d", hover:"#116b32", active:"#0e5a2a", linkHover:"#0e5a2a", on:"#ffffff" };
+const FD = { accent:"#56c27c", hover:"#6fd092", active:"#8adca8", linkHover:"#8adca8", on:"#05250f" };
+
+function sheet(t, f, label) {
+  const s = vars(t, f.accent, f.on, { "accent-hover": f.hover, "accent-active": f.active, "link-hover": f.linkHover });
+  const sw = [["bg",t.bg],["surface",t.surface],["line",t.line],["muted",t.muted],["body",t.body],["ink",t.ink],["accent",f.accent],["hover",f.hover],["active",f.active],["on",f.on]]
+    .map(([n,c]) => `<div class="sw" style="background:${c};color:${lum(c)>.4?'#111':'#fff'}">${n}<br>${c}</div>`).join("");
+  return `<div class="sheet" style="${s}">
+    <h3>${label} · токены</h3><div class="swatches">${sw}</div>
+    <h3>Типографика</h3>
+    <div class="p-h1">Животным приюта нужны ваши руки</div>
+    <div class="p-lead">Мы помогаем кошкам и собакам белградского приюта.</div>
+    <div class="p-small">Подпись, вторичный текст, дата обновления</div>
+    <h3>Кнопки и ссылки</h3>
+    <div class="states">
+      <span class="btn">Обычная</span><span class="btn hover">Hover</span><span class="btn active">Нажата</span><span class="btn focus">Фокус</span>
+      <span class="btn sec">Вторичная</span><span class="btn dis">Недоступна</span>
+    </div>
+    <div class="cap">Ссылка: <a href="#">обычная</a> · <a href="#" style="color:var(--link-hover);text-decoration-thickness:2px">при наведении</a></div>
+    <h3>Навигация</h3>
+    <nav class="demo"><span class="cur">Кошки</span><span>Собаки</span><span>Гайд волонтёра</span><span>Визиты</span></nav>
+    <h3>Статусы кошки (форма вместо цвета)</h3>
+    <div class="status">
+      <div class="s for"><i></i>Ждёт семью <small>FOR_ADOPTION</small></div>
+      <div class="s res"><i></i>Зарезервирована <small>RESERVED</small></div>
+      <div class="s adp"><i></i>Нашла дом <small>ADOPTED</small></div>
+    </div>
+    <h3>Карточки и врезки</h3>
+    <div class="cards"><div class="card"><img src="/data/images/felix.jpg" alt=""><div class="name">Феликс</div><div class="p-small"><span class="dot"></span>8 месяцев</div></div><div class="card"><img src="/data/images/fox.jpg" alt=""><div class="name">Фокс</div><div class="p-small"><span class="dot"></span>1 год</div></div></div>
+    <div style="height:12px"></div>
+    <div class="callout">Как забрать. Пишите в Telegram: <a href="#">@Nata_Rogava</a></div>
+    <div style="height:8px"></div>
+    <div class="callout info">Врезка в гайде: тонкая линия акцента слева, без красной рамки.</div>
+  </div>`;
+}
+document.getElementById("sheets").innerHTML = sheet(light, FL, "Светлая") + sheet(dark, FD, "Тёмная");
+</script>
+</body>
+</html>

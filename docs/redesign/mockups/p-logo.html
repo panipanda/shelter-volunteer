@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Логотип — пропорции</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Literata:opsz,wght@7..72,600&display=swap&subset=cyrillic,latin-ext" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #cfcfd4; font-family: "Source Sans 3", system-ui, sans-serif; padding: 20px 0 40px; }
+.page { max-width: 1200px; margin: 0 auto; padding: 0 12px; }
+h2.t { font: 600 13px/1 "Source Sans 3", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #333; margin: 18px 0 8px; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 8px; }
+.panel { background: var(--bg); color: var(--ink); border: 1px solid var(--line); padding: 20px 26px; }
+.light { --bg:#ffffff; --ink:#18181b; --muted:#67676f; --line:#e4e4e7; --accent:#1a7f37; }
+.dark  { --bg:#1f2125; --ink:#f0f2f5; --muted:#a4a9b1; --line:#3e4249; --accent:#56c27c; }
+.lock { display: flex; align-items: center; gap: 20px; color: var(--ink); }
+.word { font-family: "Literata", serif; font-weight: 600; letter-spacing: -.012em; line-height: 1; white-space: nowrap; color: var(--ink); }
+.lock .word { font-size: 50px; }
+.hdr { display: flex; align-items: center; gap: 12px; height: 58px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 16px -26px 0; padding: 0 26px; font-size: 15px; }
+.hdr .word { font-size: 21px; }
+.hdr .nav { margin-left: auto; display: flex; gap: 16px; }
+.row { display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-top: 16px; }
+.stack { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.tile { background: var(--bg); border: 1px solid var(--line); padding: 8px; display: flex; align-items: center; justify-content: center; }
+.cap { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- Shared heads: dog (floppy ears) left, cat (pointed ears) right. Base line y = 78. -->
+    <g id="heads">
+      <g fill="currentColor">
+        <path d="M13 78A19 19 0 0 1 51 78Z"/>
+        <ellipse cx="13.800" cy="66" rx="4.600" ry="12"/><ellipse cx="50.200" cy="66" rx="4.600" ry="12"/>
+      </g>
+      <g fill="var(--accent)">
+        <path d="M52 78A16 16 0 0 1 84 78Z"/>
+        <path d="M54 70 56 44 66 59Z"/><path d="M82 70 80 44 70 59Z"/>
+      </g>
+      <g fill="var(--bg)"><circle cx="26" cy="70" r="2.500"/><circle cx="38" cy="70" r="2.500"/><circle cx="62" cy="72" r="2.300"/><circle cx="74" cy="72" r="2.300"/></g>
+    </g>
+    <!-- A: dome window -->
+    <symbol id="A" viewBox="0 0 96 84"><path d="M6 82V44A42 42 0 0 1 90 44V82Z" fill="none" stroke="currentColor" stroke-width="4"/><use href="#heads"/></symbol>
+    <!-- B: wide window with large corner radius -->
+    <symbol id="B" viewBox="0 18 96 66"><path d="M6 82V44Q6 22 28 22H68Q90 22 90 44V82Z" fill="none" stroke="currentColor" stroke-width="4"/><use href="#heads"/></symbol>
+    <!-- favicons: solid window shape, heads cut out -->
+    <symbol id="Af" viewBox="0 0 96 84"><path d="M2 84V44A46 46 0 0 1 94 44V84Z" fill="var(--accent)"/><g style="color:var(--bg)"><g fill="var(--bg)"><path d="M13 84A19 19 0 0 1 51 84Z"/><ellipse cx="13.800" cy="70" rx="5.200" ry="13"/><ellipse cx="50.200" cy="70" rx="5.200" ry="13"/><path d="M52 84A16 16 0 0 1 84 84Z"/><path d="M54 76 56 48 66 64Z"/><path d="M82 76 80 48 70 64Z"/></g><g fill="var(--accent)"><circle cx="26" cy="76" r="3.200"/><circle cx="38" cy="76" r="3.200"/><circle cx="62" cy="78" r="3"/><circle cx="74" cy="78" r="3"/></g></g></symbol>
+    <symbol id="Bf" viewBox="0 18 96 66"><path d="M2 84V44Q2 18 28 18H68Q94 18 94 44V84Z" fill="var(--accent)"/><g fill="var(--bg)"><path d="M13 84A19 19 0 0 1 51 84Z"/><ellipse cx="13.800" cy="70" rx="5.200" ry="13"/><ellipse cx="50.200" cy="70" rx="5.200" ry="13"/><path d="M52 84A16 16 0 0 1 84 84Z"/><path d="M54 76 56 48 66 64Z"/><path d="M82 70 80 44 70 59Z" transform="translate(0 6)"/></g><g fill="var(--accent)"><circle cx="26" cy="76" r="3.200"/><circle cx="38" cy="76" r="3.200"/><circle cx="62" cy="78" r="3"/><circle cx="74" cy="78" r="3"/></g></symbol>
+  </defs>
+</svg>
+<div class="page" id="root"></div>
+<script>
+const VB = { A:[96,84], B:[96,66], Af:[96,84], Bf:[96,66] };
+const svg = (id, h) => { const [w,hh] = VB[id]; return `<svg viewBox="${id.startsWith('B') ? '0 18 96 66' : '0 0 96 84'}" style="height:${h}px;width:${h*w/hh}px"><use href="#${id}"/></svg>`; };
+function sheet(theme, id) {
+  const f = id + "f";
+  return `<div class="panel ${theme}">
+    <div class="lock">${svg(id, 96)}<span class="word">Pro Anima</span></div>
+    <div class="hdr">${svg(id, 34)}<span class="word">Pro Anima</span><span class="nav"><span>Кошки</span><span>Собаки</span><span>Гайд</span></span></div>
+    <div class="row">
+      <div class="stack"><div class="tile">${svg(f, 32)}</div><span class="cap">favicon 32</span></div>
+      <div class="stack"><div class="tile">${svg(f, 16)}</div><span class="cap">favicon 16</span></div>
+      <div class="stack"><div class="tile">${svg(id, 28)}</div><span class="cap">28 px</span></div>
+      <div class="stack"><div class="tile">${svg(id, 22)}</div><span class="cap">22 px</span></div>
+    </div></div>`;
+}
+document.getElementById("root").innerHTML =
+  `<h2 class="t">A · купол</h2><div class="pair">${sheet("light","A")}${sheet("dark","A")}</div>` +
+  `<h2 class="t">B · широкое окно</h2><div class="pair">${sheet("light","B")}${sheet("dark","B")}</div>`;
+</script>
+</body>
+</html>
