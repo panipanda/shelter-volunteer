@@ -37,8 +37,8 @@ try {
 // Common skeleton for all pages: <head>/nav/<main>/footer/CSS link in one place,
 // so it is not repeated in every Views file. contentLang is separate from locale —
 // it is needed by GuideViews, whose content is not yet translated while the route is already localized.
-// mainClass: "page" is the 720 px text column used by inner pages; "home" does not restrict
-// the width — the home page puts its sections into .wrap itself (the same 720 px).
+// mainClass: "page" is the 720 px text column used by every page; the parameter stays for a page that
+// needs a different class on <main>.
 // Fonts needed from the first paint: both families (Literata for headings, Source Sans 3 for the
 // rest) in latin plus the subset for the locale's alphabet: cyrillic for ru, latin-ext (č, š, ž,
 // đ, ć) for sr. Each is one variable file per subset. Without the preload the browser finds them

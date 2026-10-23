@@ -247,7 +247,7 @@ h3 {
 
 .wrap {
     width: 100%;
-    max-width: var(--wrap-width);
+    max-width: calc(var(--wrap-width) + 2 * var(--gutter));
     margin-inline: auto;
     padding-inline: var(--gutter);
 }
@@ -422,21 +422,19 @@ a.logo {
     mask-image: var(--icon-sun);
 }
 
-/* Buttons */
+/* Buttons: one primary button per view; every other action is a plain link. */
 
 .button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 48px;
-    padding: 0.85rem 1.5rem;
-    border: 2px solid transparent;
-    border-radius: 999px;
+    min-height: 44px;
+    padding: 9px 16px;
+    border-radius: 4px;
     background: var(--color-accent);
     color: var(--color-on-accent);
-    font-weight: 700;
-    font-size: 1.1rem;
-    line-height: 1.2;
+    font-weight: 600;
+    line-height: 1.3;
     text-align: center;
     text-decoration: none;
 }
@@ -445,35 +443,28 @@ a.logo {
     background: var(--color-accent-hover);
 }
 
-.button-secondary {
-    background: transparent;
-    border-color: var(--color-ink);
-    color: var(--color-ink);
+.button:active {
+    background: var(--color-accent-active);
 }
 
-.button-secondary:hover {
-    background: var(--color-ink);
-    color: var(--color-bg);
+/* A row of plain links (secondary actions, contacts) */
+
+.links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
 }
 
-.button-light {
-    background: var(--color-on-accent);
-    color: var(--color-accent);
-}
-
-.button-light:hover {
-    background: var(--color-surface);
-}
-
-/* Inner pages: guide, cats, visits */
+/* Pages: one 720 px text column */
 
 main.page {
-    max-width: var(--wrap-width);
+    max-width: calc(var(--wrap-width) + 2 * var(--gutter));
     margin-inline: auto;
     padding: 24px var(--gutter) 0;
 }
 
-main.page ul {
+main.page ul,
+main.page ol {
     padding-left: 1.25rem;
 }
 
@@ -481,89 +472,213 @@ main.page li {
     margin-bottom: 0.35rem;
 }
 
-article {
-    background: var(--color-surface);
-    border-radius: 22px;
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 1rem;
+.back {
+    margin: 0 0 8px;
+    font-size: 15px;
+    line-height: 1.5;
 }
 
-article h2 {
+/* Sections: a 1 px rule and 32 px above the heading, 56 px apart */
+
+main.page > section,
+main.page > h2 {
+    margin-top: 56px;
+}
+
+main.page > section {
+    padding-top: 32px;
+    border-top: 1px solid var(--color-line);
+}
+
+main.page > section > h2:first-child {
     margin-top: 0;
-    font-size: 1.6rem;
 }
 
-article p {
-    margin: 0.35rem 0;
+main.page > section.hero {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
 }
 
-/* Cats: cards are used on both the home page and the catalog */
+/* Call-out: a quiet surface, no border */
+
+.callout {
+    margin-block: 16px;
+    padding: 14px;
+    border-radius: 4px;
+    background: var(--color-surface);
+}
+
+.callout p {
+    margin: 0;
+}
+
+/* Cat and dog cards: the same card on the lists and the home page */
 
 .cat-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, 220px);
+    gap: 28px 24px;
+    margin-block: 20px;
 }
 
 .cat-card {
     display: flex;
     flex-direction: column;
-    background: var(--color-surface);
-    border-radius: 22px;
-    overflow: hidden;
-    text-decoration: none;
     color: var(--color-ink);
-    transition: transform 0.2s ease;
-}
-
-.cat-card:hover {
-    transform: translateY(-4px);
-}
-
-.cat-list + h2 {
-    margin-top: 2.5rem;
+    text-decoration: none;
 }
 
 .cat-card-photo {
+    display: block;
     width: 100%;
-    aspect-ratio: 1;
+    aspect-ratio: 4 / 5;
     object-fit: cover;
-    border-radius: 0;
-}
-
-.cat-card-body {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.35rem;
-    padding: 1rem 1.15rem 1.25rem;
+    background: var(--color-surface);
 }
 
 .cat-card-name {
-    font-weight: 700;
-    font-size: 1.4rem;
+    margin-top: 10px;
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
 }
 
-.tag {
-    display: inline-block;
-    padding: 0.05rem 0.65rem;
-    border-radius: 999px;
-    background: var(--color-surface);
-    color: var(--color-ink);
-    font-size: 0.95rem;
-    font-weight: 700;
+.cat-card:hover .cat-card-name {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+
+.cat-card-meta {
+    color: var(--color-muted);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.cat-list + h2 {
+    margin-top: 40px;
+}
+
+/* Status: the marker shape carries the meaning and the text always comes with it */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status::before {
+    content: "";
+    flex: none;
+    width: 10px;
+    height: 10px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: var(--color-muted);
+}
+
+.status-for-adoption::before {
+    background: var(--color-accent);
+}
+
+.status-reserved::before {
+    border: 2px solid var(--color-ink);
+    background: transparent;
+}
+
+.status-adopted::before {
+    opacity: 0.55;
+}
+
+.status-line {
+    margin: 0 0 24px;
+    font-size: 15px;
+}
+
+/* Cat and dog page */
+
+.cat-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 24px;
+    margin-bottom: 12px;
+}
+
+.cat-head h1 {
+    margin-block: 8px 0;
+}
+
+/* Photo and text sit side by side while the text keeps at least 280 px, otherwise the text drops below. */
+.cat-profile {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 32px;
+    align-items: flex-start;
 }
 
 .cat-gallery {
+    flex: 0 1 360px;
+    min-width: 0;
+}
+
+.cat-info {
+    flex: 1 1 280px;
+    min-width: 0;
+}
+
+.cat-info > p:first-child {
+    margin-top: 0;
+}
+
+.facts-list {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    margin: 24px 0 0;
+    border-top: 1px solid var(--color-line);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.facts-list dt,
+.facts-list dd {
+    margin: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--color-line);
+}
+
+.facts-list dt {
+    padding-right: 12px;
+    color: var(--color-muted);
+}
+
+.cat-gallery-main,
+.cat-gallery-photo {
+    display: block;
+}
+
+.cat-gallery-photo {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    background: var(--color-surface);
+}
+
+.cat-gallery-thumbs {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    gap: 8px;
+    margin-top: 8px;
 }
 
 .cat-gallery-thumb {
-    width: 120px;
-    height: 120px;
+    display: block;
+    width: 56px;
+    height: 56px;
     object-fit: cover;
 }
 
@@ -571,10 +686,10 @@ article p {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.85);
+    z-index: 20;
     align-items: center;
     justify-content: center;
-    z-index: 10;
+    background: rgba(0, 0, 0, 0.85);
 }
 
 .cat-gallery-lightbox:target {
@@ -596,9 +711,9 @@ article p {
     top: 50%;
     transform: translateY(-50%);
     padding: 0.25rem 0.75rem;
+    color: #ffffff;
     font-size: 2.5rem;
     line-height: 1;
-    color: #ffffff;
     text-decoration: none;
     user-select: none;
 }
@@ -617,73 +732,19 @@ article p {
 
 /* Home */
 
-main.home > section {
-    padding-block: 72px 0;
+.lead {
+    line-height: 1.5;
 }
 
-main.home > section.hero {
-    padding-block: 32px 56px;
+.hero h1 {
+    margin-top: 8px;
 }
 
-.head {
-    max-width: 40rem;
-    margin-bottom: 2rem;
-}
-
-.head p {
-    margin: 0;
-    color: var(--color-muted);
-    font-size: 1.15rem;
-}
-
-.eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-muted);
-}
-
-.eyebrow::before {
-    content: "";
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--color-accent);
-}
-
-.hero-grid {
-    display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: 40px;
-    align-items: center;
-}
-
-.hero .lead {
-    max-width: 34rem;
-    margin: 0 0 2rem;
-    font-size: 1.25rem;
-    color: var(--color-muted);
-}
-
-.hero-actions {
-    /* Equal-width buttons side by side; stacked on narrow screens (see 640px query) */
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 1fr;
-    justify-content: start;
-    gap: 0.75rem;
-}
-
-.facts {
+main.page .facts {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.75rem;
-    margin: 2.25rem 0 0;
+    gap: 8px 40px;
+    margin: 24px 0 0;
     padding: 0;
     list-style: none;
 }
@@ -695,386 +756,138 @@ main.home > section.hero {
 }
 
 .facts strong {
-    font-size: 2rem;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    color: var(--color-ink);
+    font-size: 24px;
+    line-height: 1.2;
 }
 
 .facts span {
     color: var(--color-muted);
+    font-size: 15px;
 }
 
-.hero-photo {
-    width: 100%;
-    aspect-ratio: 5 / 4.4;
-    object-fit: cover;
-    border-radius: 28px 28px 120px 28px;
+/* Next visit: the one big accent of the page */
+
+main.page > section.next-visit {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 24px;
+    margin-top: 32px;
+    padding: 20px;
+    border-top: 0;
+    border-radius: 4px;
     background: var(--color-surface);
-}
-
-/* Next visit: the card slightly overlaps the hero so the main action is on the first screen */
-
-main.home > section.next-visit {
-    position: relative;
-    padding-top: 0;
-    margin-top: -24px;
-}
-
-.visit-strip {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem 2rem;
-    padding: 1.25rem 1.5rem;
-    background: var(--color-surface);
-    border-radius: 24px;
 }
 
 .visit-date {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    width: 76px;
-    height: 76px;
-    border-radius: 16px;
-    background: var(--color-accent);
-    color: var(--color-on-accent);
+    min-width: 64px;
     line-height: 1;
 }
 
 .visit-date strong {
-    font-size: 2.4rem;
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    font-size: 56px;
+    font-weight: 600;
 }
 
 .visit-date span {
-    margin-top: 4px;
-    font-size: 0.95rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.visit-body {
-    flex: 1 1 260px;
+    margin-top: 6px;
+    color: var(--color-muted);
+    font-size: 15px;
 }
 
 .visit-body h2 {
-    margin: 0;
-    font-size: 1.4rem;
+    margin: 0 0 2px;
 }
 
 .visit-body p {
-    margin: 0.2rem 0 0;
-    color: var(--color-muted);
+    margin: 0 0 8px;
 }
 
-.pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0.35rem;
-    padding: 0.1rem 0.7rem;
-    border-radius: 999px;
-    background: var(--color-surface);
+.visit-body p:last-child {
+    margin: 16px 0 0;
+}
+
+.visit-body .visit-weekday {
     color: var(--color-ink);
-    font-weight: 700;
+    font-weight: 600;
 }
 
-.visit-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1.25rem;
+.hero-photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    margin-top: 32px;
+    object-fit: cover;
+    background: var(--color-surface);
 }
 
-/* What volunteers do */
+.steps li::marker {
+    color: var(--color-ink);
+    font-weight: 600;
+}
 
-.tasks {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+.steps .links {
+    margin: 4px 0 0;
 }
 
 .task {
-    padding: 1.75rem;
-    border-radius: 24px;
-    background: var(--color-surface);
+    margin-bottom: 16px;
+}
+
+.task h3 {
+    margin: 0 0 2px;
 }
 
 .task p {
     margin: 0;
+}
+
+blockquote {
+    margin: 32px 0 0;
+    padding-left: 20px;
+    border-left: 3px solid var(--color-line);
+}
+
+blockquote p {
+    margin: 0 0 8px;
+    color: var(--color-ink);
+    font-size: 20px;
+    line-height: 1.5;
+}
+
+blockquote .quote-author {
     color: var(--color-muted);
+    font-size: 15px;
 }
 
-.task-icon {
-    display: grid;
-    place-items: center;
-    width: 52px;
-    height: 52px;
-    margin-bottom: 1.25rem;
-    border-radius: 16px;
-    background: var(--color-surface);
-}
-
-.task-icon svg {
-    width: 28px;
-    height: 28px;
-    fill: none;
-    stroke: var(--color-accent);
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.more {
-    margin-top: 1.25rem;
-    font-weight: 700;
-}
-
-/* How to join: a full-width colored strip */
-
-.band {
-    margin-top: 72px;
-    padding-block: 64px;
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-}
-
-.band h2 {
-    margin-top: 0;
-}
-
-.band .head p {
-    color: rgba(255, 255, 255, 0.85);
-}
-
-.band a {
-    color: var(--color-on-accent);
-}
-
-.band a.button-light {
-    color: var(--color-accent);
-}
-
-.band-top {
-    display: grid;
-    grid-template-columns: 1fr minmax(0, 320px);
-    gap: 32px;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.band-top .head {
-    margin-bottom: 0;
-}
-
-.band-photo {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    border-radius: 24px;
-}
-
-.steps {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    counter-reset: step;
-}
-
-.steps li {
-    counter-increment: step;
-    padding-top: 1rem;
-    border-top: 2px solid rgba(255, 255, 255, 0.35);
-}
-
-.steps li::before {
-    content: counter(step);
-    display: block;
-    margin-bottom: 0.75rem;
-    font-size: 3rem;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--color-on-accent);
-}
-
-.steps p {
-    margin: 0 0 0.9rem;
-}
-
-.inline-link {
-    font-weight: 700;
-}
-
-.step-actions {
-    display: grid;
-    grid-template-columns: fit-content(100%);
-    justify-content: start;
-    gap: 0.5rem;
-}
-
-.schedule {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 2.5rem;
-}
-
-.schedule p {
-    flex: 1 1 280px;
-    margin: 0;
-    padding: 0.9rem 1.25rem;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.12);
-}
-
-.section-foot {
-    margin: 1.75rem 0 0;
-}
-
-/* Other ways to help */
-
-.help-layout {
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 48px;
-    align-items: start;
-}
-
-.help-intro p {
-    margin: 0 0 0.75rem;
-    color: var(--color-muted);
-}
-
-.contact-buttons {
-    /* One column sized to the widest button, so both contacts get the same width */
-    display: grid;
-    grid-template-columns: fit-content(100%);
-    justify-content: start;
-    gap: 0.75rem;
-    margin-top: 1.25rem;
-}
-
-.help-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    border-top: 1px solid var(--color-line);
-}
-
-.help-list li {
-    position: relative;
-    margin: 0;
-    padding: 1rem 0 1rem 1.5rem;
-    border-bottom: 1px solid var(--color-line);
-}
-
-.help-list li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 1.55rem;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--color-accent);
-}
-
-.help-list li::first-letter {
-    text-transform: uppercase;
-}
-
-/* Volunteer guide: text on the left, callout on the right */
-
-.guide {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 20rem;
-    column-gap: 3rem;
-}
-
-.guide > * {
-    grid-column: 1;
-}
+/* Volunteer guide */
 
 .guide-toc {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-block: 1rem;
-}
-
-.guide-toc a {
-    padding: 0.4rem 1rem;
-    border-radius: 999px;
-    background: var(--color-surface);
-    color: var(--color-ink);
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.guide > h3 {
-    margin-top: 1.75rem;
+    gap: 4px 24px;
+    margin-block: 16px 8px;
 }
 
 .guide > h2 {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
+    margin-top: 56px;
+    padding-top: 32px;
     border-top: 1px solid var(--color-line);
 }
 
-.guide > .guide-callout {
-    grid-column: 2;
-    grid-row: span 40;
-    align-self: start;
-    position: sticky;
-    top: 24px;
-    margin-top: 1rem;
-    padding: 1.25rem 1.5rem;
-    border: 2px solid var(--color-line);
-    border-left: 6px solid var(--color-accent);
-    border-radius: 22px;
-    background: var(--color-surface);
+.guide > h3 {
+    margin-top: 28px;
 }
 
-.guide-callout p {
-    margin: 0;
-}
-
-/* About the shelter and the quote */
-
-.about-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-    align-items: center;
-}
-
-.about-text p {
-    color: var(--color-muted);
-}
-
-blockquote {
-    margin: 0;
-    padding: 2rem;
-    border-radius: 28px;
-    background: var(--color-surface);
-}
-
-blockquote p {
-    margin: 0 0 1rem;
-    font-size: 1.5rem;
-    line-height: 1.4;
-    text-wrap: pretty;
-}
-
-blockquote .quote-author {
-    margin: 0;
-    font-size: 1.1rem;
-    color: var(--color-muted);
+.guide > .callout {
+    border-left: 3px solid var(--color-accent);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 /* Footer */
@@ -1090,70 +903,6 @@ footer {
 
 footer p {
     margin: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .cat-card {
-        transition: none;
-    }
-
-    .cat-card:hover {
-        transform: none;
-    }
-}
-
-@media (max-width: 860px) {
-    .guide {
-        display: block;
-    }
-
-    .guide > .guide-callout {
-        position: static;
-        margin-block: 1.5rem;
-    }
-
-    .hero-grid,
-    .about-layout,
-    .band-top {
-        grid-template-columns: 1fr;
-        gap: 28px;
-    }
-
-    /* List right under the intro line ending with a colon, contacts after it */
-    .help-layout {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .help-intro {
-        display: contents;
-    }
-
-    .help-list {
-        order: 1;
-    }
-
-    .help-intro .help-contact {
-        order: 2;
-        margin-top: 1.5rem;
-    }
-
-    .help-intro .contact-buttons {
-        order: 2;
-    }
-
-    .hero-photo {
-        border-radius: 24px 24px 80px 24px;
-    }
-
-    .tasks,
-    .steps {
-        grid-template-columns: 1fr;
-    }
-
-    main.home > section.hero {
-        padding-block: 16px 40px;
-    }
 }
 
 /* The one-row header needs about 700 px in ru and sr, so it collapses earlier than the rest of
@@ -1199,46 +948,27 @@ footer p {
         --gutter: 16px;
     }
 
-    .hero-actions {
-        grid-auto-flow: row;
-        grid-auto-columns: fit-content(100%);
+    .cat-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px 16px;
+    }
+
+    main.page > section.next-visit {
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .visit-date strong {
+        font-size: 44px;
+    }
+
+    .lead {
+        font-size: 18px;
     }
 }
 
-@media (max-width: 520px) {
-    .hero-actions .button,
-    .visit-actions .button,
-    .contact-buttons .button {
-        width: 100%;
-    }
-
-    .contact-buttons {
-        grid-template-columns: 100%;
-    }
-
-    .hero-actions {
-        grid-auto-columns: 100%;
-    }
-
-    .facts {
-        gap: 1.25rem;
-    }
-
-    main.home > section {
-        padding-block: 56px 0;
-    }
-
-    .band {
-        margin-top: 56px;
-        padding-block: 48px;
-    }
-
-    blockquote {
-        padding: 1.5rem;
-    }
-
-    .cat-list {
-        grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
-        gap: 12px;
+@media (min-width: 641px) {
+    .lead {
+        font-size: 20px;
     }
 }

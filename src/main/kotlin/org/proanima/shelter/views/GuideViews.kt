@@ -51,7 +51,7 @@ fun HTML.guidePage(locale: AppLocale, blocks: List<GuideBlock>, contentLang: Str
                     is GuideBlock.BulletList -> ul {
                         block.items.forEach { item -> li { inlineText(item) } }
                     }
-                    is GuideBlock.Callout -> aside(classes = "guide-callout") { p { inlineText(block.text) } }
+                    is GuideBlock.Callout -> aside(classes = "callout") { p { inlineText(block.text) } }
                 }
             }
         }
