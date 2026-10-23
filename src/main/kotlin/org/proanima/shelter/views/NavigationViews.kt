@@ -7,7 +7,6 @@ import kotlinx.html.button
 import kotlinx.html.details
 import kotlinx.html.div
 import kotlinx.html.header
-import kotlinx.html.img
 import kotlinx.html.nav
 import kotlinx.html.span
 import kotlinx.html.summary
@@ -22,14 +21,8 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String) {
 
     header(classes = "site-header") {
         div(classes = "wrap site-header-row") {
-            // The logo text is hidden from screen readers: the link name is already given by the image alt.
-            a(href = prefix, classes = "logo") {
-                img(src = "/icons/logo.png", alt = messages.t("nav.home"), classes = "logo-image")
-                span(classes = "logo-text") {
-                    attributes["aria-hidden"] = "true"
-                    +"Pro Anima"
-                }
-            }
+            // The wordmark is live text. The logo mark is not in the header yet; it will go before the text.
+            a(href = prefix, classes = "logo") { +"Pro Anima" }
 
             nav(classes = "main-nav") {
                 navLink("$prefix/cats", messages.t("nav.cats"), currentPath, matchChildren = true)
@@ -54,7 +47,7 @@ private fun FlowContent.visitsMenu(prefix: String, messages: ResourceBundle, cur
         if (currentPath == upcoming || currentPath == archive) {
             attributes["data-current"] = "true"
         }
-        summary { +messages.t("nav.visits.menu") }
+        summary { span(classes = "nav-menu-label") { +messages.t("nav.visits.menu") } }
         div(classes = "nav-menu-list") {
             navLink(upcoming, messages.t("nav.visits"), currentPath)
             navLink(archive, messages.t("nav.archive"), currentPath)

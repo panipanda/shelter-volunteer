@@ -252,55 +252,62 @@ h3 {
     padding-inline: var(--gutter);
 }
 
-/* Header */
+/* Header: wordmark, nav, language switch, theme toggle. Every control is at least 44 px high. */
+
+.site-header {
+    border-bottom: 1px solid var(--color-line);
+}
 
 .site-header-row {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 1rem 2rem;
-    padding-block: 18px;
+    min-height: 64px;
 }
 
+/* The wordmark is live text. The mark (logo) will go before it, inside the same link. */
 a.logo {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    text-decoration: none;
+    min-height: 44px;
     color: var(--color-ink);
-}
-
-.logo-image {
-    width: 40px;
-    height: 40px;
-    display: block;
-    border-radius: 0;
-}
-
-.logo-text {
-    font-weight: 700;
-    font-size: 1.3rem;
-    letter-spacing: -0.01em;
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 .main-nav {
     display: flex;
-    gap: 0.25rem;
     margin-inline-start: auto;
 }
 
-.main-nav a {
-    padding: 0.5rem 0.9rem;
-    border-radius: 999px;
+.main-nav a,
+.nav-menu summary {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 10px;
     color: var(--color-ink);
     text-decoration: none;
-    font-weight: 700;
-    font-size: 1.05rem;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
 .main-nav a:hover,
-.main-nav a[aria-current="page"] {
-    background: var(--color-surface);
+.nav-menu summary:hover {
+    color: var(--color-accent);
+}
+
+/* The current item is marked by a 2 px accent underline under the text only. */
+.main-nav a[aria-current="page"],
+.nav-menu[data-current] .nav-menu-label {
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
 }
 
 /* "Visits" drop-down: a native <details>, the list floats under the summary */
@@ -310,14 +317,7 @@ a.logo {
 }
 
 .nav-menu summary {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 0.9rem;
-    border-radius: 999px;
-    font-weight: 700;
-    font-size: 1.05rem;
-    cursor: pointer;
+    gap: 6px;
     list-style: none;
 }
 
@@ -327,21 +327,15 @@ a.logo {
 
 .nav-menu summary::after {
     content: "";
-    width: 0.4em;
-    height: 0.4em;
-    border-right: 2px solid currentColor;
-    border-bottom: 2px solid currentColor;
-    transform: translateY(-0.12em) rotate(45deg);
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
 }
 
 .nav-menu[open] summary::after {
-    transform: translateY(0.1em) rotate(225deg);
-}
-
-.nav-menu summary:hover,
-.nav-menu[open] summary,
-.nav-menu[data-current] summary {
-    background: var(--color-surface);
+    transform: translateY(1px) rotate(225deg);
 }
 
 .nav-menu-list {
@@ -351,32 +345,31 @@ a.logo {
     z-index: 10;
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
-    margin-top: 0.35rem;
-    padding: 0.35rem;
+    padding-block: 4px;
     border: 1px solid var(--color-line);
-    border-radius: 18px;
-    background: var(--color-surface);
+    border-radius: 4px;
+    background: var(--color-bg);
 }
 
 .nav-menu-list a {
+    padding-inline: 16px;
     white-space: nowrap;
 }
 
 .lang-switch {
-    display: inline-flex;
-    border: 1px solid var(--color-line);
-    border-radius: 999px;
-    padding: 2px;
-    font-weight: 700;
+    display: flex;
+    margin-inline-start: 16px;
+    font-size: 15px;
 }
 
 .lang-switch a,
 .lang-switch-current {
-    padding: 0.15rem 0.6rem;
-    border-radius: 999px;
-    text-decoration: none;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 6px;
     color: var(--color-muted);
+    text-decoration: none;
 }
 
 .lang-switch a:hover {
@@ -384,8 +377,8 @@ a.logo {
 }
 
 .lang-switch-current {
-    background: var(--color-ink);
-    color: var(--color-bg);
+    color: var(--color-ink);
+    font-weight: 600;
 }
 
 /* Theme toggle: hidden until JS has set data-theme. The icon is a CSS mask, so it takes the
@@ -395,11 +388,12 @@ a.logo {
     display: none;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
+    margin-inline-end: -10px;
     padding: 0;
-    border: 1px solid var(--color-line);
-    border-radius: 999px;
+    border: 0;
+    border-radius: 4px;
     background: transparent;
     color: var(--color-muted);
     cursor: pointer;
@@ -411,7 +405,6 @@ a.logo {
 
 .theme-toggle:hover {
     color: var(--color-ink);
-    background: var(--color-surface);
 }
 
 .theme-icon {
@@ -475,13 +468,9 @@ a.logo {
 /* Inner pages: guide, cats, visits */
 
 main.page {
-    max-width: 46rem;
+    max-width: var(--wrap-width);
     margin-inline: auto;
     padding: 24px var(--gutter) 0;
-}
-
-main.page.page-wide {
-    max-width: var(--wrap-width);
 }
 
 main.page ul {
@@ -1091,10 +1080,12 @@ blockquote .quote-author {
 /* Footer */
 
 footer {
-    margin-top: 80px;
-    padding-block: 32px 40px;
+    margin-top: 56px;
+    padding-block: 24px 32px;
     border-top: 1px solid var(--color-line);
     color: var(--color-muted);
+    font-size: 15px;
+    line-height: 1.5;
 }
 
 footer p {
@@ -1165,7 +1156,49 @@ footer p {
     }
 }
 
+/* The one-row header needs about 700 px in ru and sr, so it collapses earlier than the rest of
+   the page: wordmark with language and theme controls, then the nav on its own row. The nav text
+   is pulled back by its own padding so it lines up with the page text. */
+@media (max-width: 760px) {
+    .site-header-row {
+        flex-wrap: wrap;
+        min-height: 0;
+        padding-top: 8px;
+    }
+
+    .lang-switch {
+        margin-inline-start: auto;
+    }
+
+    .main-nav {
+        position: relative;
+        order: 3;
+        flex-wrap: wrap;
+        width: calc(100% + 16px);
+        margin: 0 -8px;
+    }
+
+    .main-nav a,
+    .nav-menu summary {
+        padding-inline: 8px;
+    }
+
+    /* The drop-down hangs under the whole nav row, not under its own item, so it can never
+       leave the screen however the items wrap. */
+    .nav-menu {
+        position: static;
+    }
+
+    .nav-menu-list {
+        inset-inline: 0 auto;
+    }
+}
+
 @media (max-width: 640px) {
+    :root {
+        --gutter: 16px;
+    }
+
     .hero-actions {
         grid-auto-flow: row;
         grid-auto-columns: fit-content(100%);
@@ -1173,35 +1206,6 @@ footer p {
 }
 
 @media (max-width: 520px) {
-    :root {
-        --gutter: 16px;
-    }
-
-    /* Narrower column gap so logo, language switch and theme toggle fit in one row. */
-    .site-header-row {
-        column-gap: 0.75rem;
-    }
-
-    .main-nav {
-        order: 3;
-        width: 100%;
-        margin: 0;
-        flex-wrap: wrap;
-    }
-
-    .nav-menu-list {
-        inset-inline-end: auto;
-        inset-inline-start: 0;
-    }
-
-    .main-nav a {
-        white-space: nowrap;
-    }
-
-    .lang-switch {
-        margin-inline-start: auto;
-    }
-
     .hero-actions .button,
     .visit-actions .button,
     .contact-buttons .button {

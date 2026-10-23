@@ -28,7 +28,7 @@ import java.util.ResourceBundle
 fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
 
-    pageLayout(locale, pageTitle = messages.t("cat.page.title"), currentPath = currentPath, mainClass = "page page-wide") {
+    pageLayout(locale, pageTitle = messages.t("cat.page.title"), currentPath = currentPath) {
         h1 { +messages.t("cat.page.title") }
 
         val (adopted, others) = cats.partition { it.adoptionStage == AdoptionStage.ADOPTED }

@@ -28,7 +28,6 @@ fun HTML.dogsPage(dogs: List<Dog>, locale: AppLocale, currentPath: String) {
         locale,
         pageTitle = messages.t("dogs.page.title"),
         currentPath = currentPath,
-        mainClass = "page page-wide",
         description = messages.t("dogs.page.description")
     ) {
         h1 { +messages.t("nav.dogs") }

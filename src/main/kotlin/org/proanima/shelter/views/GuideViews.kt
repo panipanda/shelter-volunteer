@@ -28,8 +28,7 @@ fun HTML.guidePage(locale: AppLocale, blocks: List<GuideBlock>, contentLang: Str
         locale,
         pageTitle = messages.t("nav.guide"),
         currentPath = currentPath,
-        contentLang = contentLang,
-        mainClass = "page page-wide"
+        contentLang = contentLang
     ) {
         div(classes = "guide") {
             blocks.forEach { block ->
