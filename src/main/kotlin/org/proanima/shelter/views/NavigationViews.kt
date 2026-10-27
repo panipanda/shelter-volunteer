@@ -23,13 +23,16 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String) {
             a(href = prefix, classes = "logo") { +"Pro Anima" }
 
             nav(classes = "main-nav") {
+                attributes["aria-label"] = messages.t("nav.main")
                 navLink("$prefix/cats", messages.t("nav.cats"), currentPath, matchChildren = true)
                 navLink("$prefix/dogs", messages.t("nav.dogs"), currentPath, matchChildren = true)
-                navLink("$prefix/guide", messages.t("nav.guide"), currentPath)
+                // The short name: five items have to fit in one row on a 360 px phone. The page itself keeps the full title.
+                navLink("$prefix/guide", messages.t("nav.guide.short"), currentPath)
                 navLink("$prefix/visits", messages.t("nav.visits"), currentPath, matchChildren = true)
+                navLink("$prefix/help", messages.t("nav.help"), currentPath)
             }
 
-            localeSwitcher(locale, currentPath)
+            localeSwitcher(locale, currentPath, messages.t("nav.language"))
             themeToggle(messages.t("nav.theme"))
         }
     }
@@ -63,15 +66,29 @@ private fun FlowContent.navLink(href: String, label: String, currentPath: String
 
 // We change only the language prefix and keep the rest of the path as is (/ru/cats/1 -> /en/cats/1) —
 // the path structure is the same in all locales, so stripping the current prefix is enough.
-private fun FlowContent.localeSwitcher(locale: AppLocale, currentPath: String) {
+// The visible text is the short code. The full name in its own language is the tooltip and the accessible
+// name, and lang/hreflang tell a screen reader which voice to use for it.
+private fun FlowContent.localeSwitcher(locale: AppLocale, currentPath: String, label: String) {
     val pathSuffix = currentPath.removePrefix("/${locale.code}")
 
     nav(classes = "lang-switch") {
+        attributes["aria-label"] = label
         AppLocale.entries.forEach { entryLocale ->
             if (entryLocale == locale) {
-                span(classes = "lang-switch-current") { +entryLocale.code.uppercase() }
+                span(classes = "lang-switch-current") {
+                    attributes["aria-current"] = "true"
+                    attributes["lang"] = entryLocale.code
+                    attributes["title"] = entryLocale.nativeName
+                    +entryLocale.code.uppercase()
+                }
             } else {
-                a(href = "/${entryLocale.code}$pathSuffix") { +entryLocale.code.uppercase() }
+                a(href = "/${entryLocale.code}$pathSuffix") {
+                    attributes["lang"] = entryLocale.code
+                    attributes["hreflang"] = entryLocale.code
+                    attributes["title"] = entryLocale.nativeName
+                    attributes["aria-label"] = entryLocale.nativeName
+                    +entryLocale.code.uppercase()
+                }
             }
         }
     }

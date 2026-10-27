@@ -1,7 +1,6 @@
 package org.proanima.shelter.routes
 
 import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
 import org.proanima.shelter.configureRoutes
@@ -65,10 +64,9 @@ class HomeRoutesTest {
 
         listOf("ru", "en", "sr").forEach { code ->
             val response = client.get("/$code")
-            val body = response.bodyAsText()
+            val body = response.plainText()
 
             assertEquals(HttpStatusCode.OK, response.status, code)
-            assertTrue(body.contains("https://www.instagram.com/proanima_beograd"), code)
             assertTrue(body.contains("https://t.me/proanima_belgrade"), code)
             assertTrue(body.contains("https://t.me/Nata_Rogava"), code)
             assertTrue(body.contains("https://t.me/Trikcsy"), code)
@@ -88,7 +86,7 @@ class HomeRoutesTest {
 
         listOf("ru", "en", "sr").forEach { code ->
             listOf("/$code/cats", "/$code/guide", "/$code/visits").forEach { path ->
-                val body = client.get(path).bodyAsText()
+                val body = client.get(path).plainText()
                 assertTrue(body.contains("<a href=\"/$code\" class=\"logo\">"), path)
                 assertTrue(body.contains("/icons/favicon-32.png"), path)
             }
@@ -108,7 +106,7 @@ class HomeRoutesTest {
                     clock = clockAt(dateTime)
                 )
             }
-            body = client.get(path).bodyAsText()
+            body = client.get(path).plainText()
         }
         body
     }
@@ -164,13 +162,125 @@ class HomeRoutesTest {
             )
         }
 
-        val body = client.get("/en").bodyAsText()
+        val body = client.get("/en").plainText()
 
         assertTrue(body.contains("Alfa"))
         assertTrue(body.contains("Gamma"))
         assertTrue(body.contains("Delta"))
         assertFalse(body.contains("Beta"))
         assertFalse(body.contains("Epsilon"))
+    }
+
+    @Test
+    fun `GET home says the regular days once, in the next-visit block, and has no schedule paragraph in the steps`() {
+        val body = homeAt("2026-09-14T10:00:00")
+
+        assertTrue(
+            body.contains(
+                "Выезды по средам и субботам, длятся около трёх часов. " +
+                    "Запись, свободные места, отмены и переносы — в чате волонтёров."
+            )
+        )
+        assertFalse(body.contains("зависит от трансфера"))
+        assertFalse(body.contains("Визиты проходят по средам"))
+    }
+
+    @Test
+    fun `GET home shows the Saturday departure time when the next visit is a Saturday`() {
+        // Thursday: after Wednesday the next one is Saturday, which leaves at 10:00, not at 9:00.
+        val body = homeAt("2026-09-17T12:00:00")
+
+        assertTrue(body.contains("Выезд из Врачара (Белград) в 10:00."))
+        assertFalse(body.contains("Выезд из Врачара (Белград) в 9:00."))
+    }
+
+    @Test
+    fun `GET home step one reads as one sentence with the link inside it`() {
+        val body = homeAt("2026-09-14T10:00:00")
+
+        assertTrue(body.contains("""Прочитайте <a href="/ru/guide">гайд волонтёра</a>: что взять с собой и как вести себя в приюте."""))
+        assertFalse(body.contains("Открыть гайд"))
+        assertFalse(body.contains("короткий гайд"))
+    }
+
+    @Test
+    fun `GET home ends with the text about the shelter alone, no news links and no help link`() {
+        listOf("ru", "en", "sr").forEach { code ->
+            val body = homeAt("2026-09-14T10:00:00", "/$code")
+
+            val about = body.substringBeforeLast("</section>").substringAfterLast("<section>")
+            assertTrue(about.contains("<h2>"), code)
+            assertEquals(1, Regex("<p>").findAll(about).count(), "$code: one paragraph")
+            assertFalse(about.contains("<a "), "$code: no links in it")
+            assertFalse(body.contains("instagram.com/proanima_beograd"), code)
+        }
+    }
+
+    @Test
+    fun `GET home puts the founder's quote at the end of the join section and links to the help page`() {
+        listOf("ru", "en", "sr").forEach { code ->
+            val body = homeAt("2026-09-14T10:00:00", "/$code")
+
+            assertEquals(1, Regex("<blockquote").findAll(body).count(), code)
+            assertTrue(body.indexOf("""id="join"""") < body.indexOf("<blockquote"), code)
+            // The first <h3> is in the volunteers section, which follows the join section.
+            assertTrue(body.indexOf("<blockquote") < body.indexOf("<h3>"), code)
+            assertTrue(hasTag(body, "a", """href="/$code/help""""), code)
+            assertFalse(body.contains("help-list"), "$code: the list of ways to help is on the help page")
+        }
+    }
+
+    @Test
+    fun `GET home has the way to sign up for the dog trips as the third step, once`() {
+        listOf("ru", "en", "sr").forEach { code ->
+            val body = homeAt("2026-09-14T10:00:00", "/$code")
+
+            assertEquals(1, Regex("https://t.me/dashafirman").findAll(body).count(), code)
+
+            val joinSection = body.substring(body.indexOf("""id="join"""")).substringBefore("</section>")
+            val steps = joinSection.substringAfter("<ol").substringBefore("</ol>").split("<li>").drop(1)
+            assertEquals(4, steps.size, "$code: guide, cat chat, dog chat, pick a visit")
+
+            // Like the cats' step: a sentence that ends with a colon, and the one link to the moderator in the same line.
+            val dogStep = steps[2]
+            assertTrue(dogStep.contains("https://t.me/dashafirman"), "$code: the third step is the dogs'")
+            assertTrue(dogStep.substringBefore("<a ").trimEnd().endsWith(":"), "$code: $dogStep")
+            assertEquals(1, Regex("<a ").findAll(dogStep).count(), "$code: a single link")
+            assertFalse(dogStep.contains("<p"), "$code: the link is not set off in a paragraph of its own")
+            assertFalse(joinSection.contains("instagram.com"), "$code: no second link in the dogs' sign-up")
+            // The quote still closes the section.
+            assertTrue(joinSection.indexOf("</ol>") < joinSection.indexOf("<blockquote"), code)
+        }
+    }
+
+    @Test
+    fun `GET home keeps the coordinators' links in the line of the sentence that asks to write to them`() {
+        listOf("ru", "en", "sr").forEach { code ->
+            val body = homeAt("2026-09-14T10:00:00", "/$code")
+
+            val joinSection = body.substring(body.indexOf("""id="join"""")).substringBefore("</section>")
+            val catStep = joinSection.substringAfter("<ol").substringBefore("</ol>").split("<li>")[2]
+
+            assertEquals(2, Regex("<a ").findAll(catStep).count(), code)
+            assertTrue(catStep.substringBefore("<a ").trimEnd().endsWith(":"), "$code: $catStep")
+            assertFalse(catStep.contains("<p"), "$code: no paragraph of links under the sentence")
+        }
+    }
+
+    @Test
+    fun `GET home lists what volunteers do with the dogs and no longer points to a dogs page of its own`() {
+        val body = homeAt("2026-09-14T10:00:00")
+
+        assertTrue(body.contains("Гуляют с собаками."))
+        assertTrue(body.contains("Убирают вольеры."))
+        assertTrue(body.contains("Общаются и помогают собакам социализироваться."))
+        assertFalse(body.contains("О собаках и как помочь"))
+        assertFalse(body.contains("организуются отдельно"))
+    }
+
+    @Test
+    fun `GET visits has no quote, only the two blocks`() {
+        assertFalse(homeAt("2026-09-14T10:00:00", "/ru/visits").contains("<blockquote"))
     }
 
     @Test

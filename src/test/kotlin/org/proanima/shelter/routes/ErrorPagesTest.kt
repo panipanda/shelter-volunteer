@@ -1,7 +1,6 @@
 package org.proanima.shelter.routes
 
 import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
@@ -27,10 +26,10 @@ class ErrorPagesTest {
         val ru = client.get("/ru/cats/nobody")
         assertEquals(HttpStatusCode.NotFound, ru.status)
         assertTrue(ru.headers[HttpHeaders.ContentType]!!.startsWith("text/html"))
-        assertTrue(ru.bodyAsText().contains("Страница не найдена"))
+        assertTrue(ru.plainText().contains("Страница не найдена"))
 
-        assertTrue(client.get("/en/cats/nobody").bodyAsText().contains("Page not found"))
-        assertTrue(client.get("/sr/cats/nobody").bodyAsText().contains("Stranica nije pronađena"))
+        assertTrue(client.get("/en/cats/nobody").plainText().contains("Page not found"))
+        assertTrue(client.get("/sr/cats/nobody").plainText().contains("Stranica nije pronađena"))
     }
 
     @Test
@@ -40,7 +39,7 @@ class ErrorPagesTest {
         val response = client.get("/en/dogs/nobody")
 
         assertEquals(HttpStatusCode.NotFound, response.status)
-        assertTrue(response.bodyAsText().contains("Page not found"))
+        assertTrue(response.plainText().contains("Page not found"))
     }
 
     @Test
@@ -50,7 +49,7 @@ class ErrorPagesTest {
         val response = client.get("/no/such/page")
 
         assertEquals(HttpStatusCode.NotFound, response.status)
-        assertTrue(response.bodyAsText().contains("Страница не найдена"))
+        assertTrue(response.plainText().contains("Страница не найдена"))
     }
 
     @Test
@@ -77,7 +76,7 @@ class ErrorPagesTest {
         val response = client.get("/en/cats")
 
         assertEquals(HttpStatusCode.InternalServerError, response.status)
-        val body = response.bodyAsText()
+        val body = response.plainText()
         assertTrue(body.contains("Something went wrong"))
         assertTrue(!body.contains("data file is broken"), "the error details must not leak to visitors")
     }

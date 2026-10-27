@@ -146,8 +146,8 @@ Expected result:
 - page contains cat names from `data/cats.json`, in the page language (`name` is a
   `ru`/`en`/`sr` object like `description`, e.g. `Феликс` / `Felix` / `Feliks`);
 - each cat is displayed as a preview card with a photo and its name;
-- the card photo is the cat's first `photoUrls` entry, or the default cat image if
-  `photoUrls` is empty (same fallback as the cat details gallery, via `displayPhotoUrls`);
+- the card photo is the card copy (`name-card.jpg`) of the cat's first `photoUrls` entry, or the default cat
+  image if `photoUrls` is empty (same fallback as the cat details gallery, via `displayPhotoUrls`);
 - each cat card links to `/ru/cats/{slug}`, where `slug` is the cat's English name lowercased,
   the same in every language (e.g. `Nami` → `nami`; a cat without an English name falls back
   to its numeric `id`);
@@ -255,9 +255,49 @@ Expected result:
 - the "Ближайший визит" card shows the date and weekday of the nearest departure: Wednesday 9:00
   or Saturday 10:00 (from Vračar), whichever comes first; once today's departure time has passed,
   the next one is shown;
-- the card mentions the cat volunteer chat and the coordinators, and does not show free places;
-- the button "Записаться в чате" scrolls to the "How to join" block;
+- the card says the trips run on Wednesdays and Saturdays and last about three hours, and that sign-up,
+  free places, cancellations and changes are in the volunteer chat; it does not show free places; the departure
+  line above it is the time of the next trip itself (9:00 on a Wednesday, 10:00 on a Saturday);
+- the schedule is stated only there: the "How to join" block has its numbered steps and, after them, the
+  founder's quote, and no paragraph about days and times;
+- the button "Как записаться" scrolls to the "How to join" block;
 - the same card is shown in `/en` and `/sr` with translated text.
+
+## Help page and footer
+
+Open `http://localhost:8080/ru/help` (also `/en/help`, `/sr/help`).
+
+Expected result:
+
+- the heading is "Как ещё помочь", followed by the list of five ways to help, a link "Поддержать приют донатом"
+  to the Svora Linktree and a link "координаторам" to the "How to join" block of the home page;
+- the home page's "О приюте" section is the heading and one paragraph, with no links; the page is reached from the
+  menu and from the footer of every page, where "Как помочь" is the last link;
+- below the list there is a section "Кто такая Свора" (what the group does); the dogs page has neither the donation
+  link nor this description;
+- "Как помочь" (en "How to help", sr "Kako pomoći") is the fifth item of the main menu and is marked as current on this page;
+  at 360 px the five items fit one row.
+
+## Dogs
+
+Open `http://localhost:8080/ru/dogs`.
+
+Expected result:
+
+- the page is the heading "Собаки" and the dog cards, like the list of cats: no introduction, no sign-up block;
+- the sign-up for the dog trips (a sentence ending with a colon and one link to the moderator Даша, like the cats' step) is in the
+  "Как присоединиться" section of the home page, as its third step (after the cats' chat, before "pick a visit");
+- a dog's page (`/ru/dogs/sava`) is built like a cat's: back link, name, photo with thumbnails, description, facts;
+  the tab reads "Сава · Pro Anima".
+
+## Page titles and link previews
+
+Expected result, on any page:
+
+- the browser tab reads "{page} · Pro Anima" (the home page keeps its own title);
+- the page source has `og:title`, `og:url`, `og:image` with absolute addresses, a `canonical` link and `hreflang`
+  alternates for ru, en, sr and x-default; the 404 page has `noindex` and none of these links;
+- a cat page's `og:image` is the cat's first photo.
 
 ## Upcoming visits endpoint (stub)
 
@@ -589,6 +629,7 @@ Current implemented pages:
 - `/{lang}/visits` and `/{lang}/visits/archive` return stub HTML pages (no visit data yet).
 - `/{lang}/guide` — volunteer guide page; `ru`, `en` and `sr` body content is real
   (see "Other locales" above).
+- `/{lang}/help` — other ways to help the shelter (donations, food, things, fostering).
 - static image resources are served from `/images/...`, unprefixed (real directory on disk).
 - CSS is served from `/styles/main.css`, unprefixed (classpath resource, bundled with the build).
 - every page shares one skeleton via `pageLayout()` in `views/Layout.kt`: `<head>`/nav/language

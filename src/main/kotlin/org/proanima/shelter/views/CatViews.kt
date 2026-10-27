@@ -23,6 +23,7 @@ import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.service.petSlug
 import org.proanima.shelter.model.CatLocation
+import org.proanima.shelter.service.cardPhotoUrl
 import org.proanima.shelter.service.displayAdoptionStage
 import org.proanima.shelter.service.displayCatAge
 import org.proanima.shelter.service.displayCatLocation
@@ -41,7 +42,6 @@ fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String) {
 
         if (adopted.isNotEmpty()) {
             h2 { +messages.t("cat.adopted.title") }
-            p { +messages.t("cat.adopted.intro") }
             catList(adopted, locale)
         }
     }
@@ -53,10 +53,10 @@ internal fun FlowContent.catList(cats: List<Cat>, locale: AppLocale) {
     val prefix = "/${locale.code}"
 
     div(classes = "cat-list") {
-        cats.forEach { cat ->
+        cats.forEachIndexed { index, cat ->
             val name = displayCatName(cat.name, locale)
             a(href = "$prefix/cats/${petSlug(cat.name?.en, cat.id)}", classes = "cat-card") {
-                img(src = displayPhotoUrls(cat.photoUrls).first(), alt = name, classes = "cat-card-photo")
+                cardPhoto(displayPhotoUrls(cat.photoUrls).first(), name, index)
                 span(classes = "cat-card-name") { +name }
                 val meta = listOfNotNull(
                     cat.birthYear?.let { displayCatAge(it, cat.birthMonth, locale) },
@@ -69,6 +69,18 @@ internal fun FlowContent.catList(cats: List<Cat>, locale: AppLocale) {
                     adoptionStatus(cat.adoptionStage, locale, "cat-card-meta")
                 }
             }
+        }
+    }
+}
+
+// The first row of a list is on the first screen and loads at once; the rest waits until it is near the viewport.
+private const val CARDS_IN_FIRST_ROW = 3
+
+internal fun FlowContent.cardPhoto(photoUrl: String, alt: String, position: Int) {
+    img(src = cardPhotoUrl(photoUrl), alt = alt, classes = "cat-card-photo") {
+        attributes["decoding"] = "async"
+        if (position >= CARDS_IN_FIRST_ROW) {
+            attributes["loading"] = "lazy"
         }
     }
 }
@@ -103,7 +115,14 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
         ?: messages.t("cat.adoptionInstruction.unknown")
     val coordinator = telegramHandle(instruction).takeIf { forAdoption }
 
-    pageLayout(locale, pageTitle = name, currentPath = currentPath) {
+    pageLayout(
+        locale,
+        pageTitle = name,
+        currentPath = currentPath,
+        mainClass = "page cat-page",
+        description = description,
+        ogImage = photoUrls.first()
+    ) {
         p(classes = "back") { a(href = "$prefix/cats") { +messages.t("cat.backToCats") } }
 
         div(classes = "cat-head") {
@@ -146,7 +165,7 @@ internal fun DL.fact(label: String, value: String) {
 internal fun FlowContent.photoGallery(photoUrls: List<String>, name: String, messages: ResourceBundle) {
     // CSS lightbox: clicking a photo navigates to #photo-N, :target shows the
     // matching div over the page; href="#" closes it by resetting the target. Works
-    // without JS; cat-gallery.js layers keyboard arrow support on top where it helps.
+    // without JS; cat-gallery.js layers Esc, the arrow keys and focus handling on top.
     div(classes = "cat-gallery") {
         a(href = "#photo-0", classes = "cat-gallery-main") {
             img(src = photoUrls.first(), alt = name, classes = "cat-gallery-photo")
@@ -155,7 +174,10 @@ internal fun FlowContent.photoGallery(photoUrls: List<String>, name: String, mes
             div(classes = "cat-gallery-thumbs") {
                 photoUrls.forEachIndexed { index, url ->
                     a(href = "#photo-$index") {
-                        img(src = url, alt = name, classes = "cat-gallery-thumb")
+                        img(src = cardPhotoUrl(url), alt = name, classes = "cat-gallery-thumb") {
+                            attributes["loading"] = "lazy"
+                            attributes["decoding"] = "async"
+                        }
                     }
                 }
             }
@@ -163,8 +185,15 @@ internal fun FlowContent.photoGallery(photoUrls: List<String>, name: String, mes
         photoUrls.forEachIndexed { index, url ->
             div(classes = "cat-gallery-lightbox") {
                 id = "photo-$index"
-                a(href = "#", classes = "cat-gallery-lightbox-close")
-                img(src = url, alt = name)
+                attributes["role"] = "dialog"
+                attributes["aria-modal"] = "true"
+                attributes["aria-label"] = name
+                attributes["tabindex"] = "-1"
+                a(href = "#", classes = "cat-gallery-lightbox-close") {
+                    attributes["aria-label"] = messages.t("cat.gallery.close")
+                }
+                // Lazy: the lightbox is hidden until opened, so its full-size photo is not fetched with the page.
+                img(src = url, alt = name) { attributes["loading"] = "lazy" }
                 if (photoUrls.size > 1) {
                     val prevIndex = (index - 1 + photoUrls.size) % photoUrls.size
                     val nextIndex = (index + 1) % photoUrls.size
@@ -180,9 +209,7 @@ internal fun FlowContent.photoGallery(photoUrls: List<String>, name: String, mes
             }
         }
     }
-    if (photoUrls.size > 1) {
-        script(src = "/scripts/cat-gallery.js") {
-            attributes["defer"] = "defer"
-        }
+    script(src = "/scripts/cat-gallery.js") {
+        attributes["defer"] = "defer"
     }
 }

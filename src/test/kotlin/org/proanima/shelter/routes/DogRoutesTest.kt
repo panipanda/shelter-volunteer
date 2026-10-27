@@ -1,7 +1,6 @@
 package org.proanima.shelter.routes
 
 import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
 import org.proanima.shelter.configureRoutes
@@ -25,27 +24,39 @@ import kotlin.test.assertTrue
 class DogRoutesTest {
 
     @Test
-    fun `GET dogs links to Svora in every locale`() = testApplication {
+    fun `GET dogs is the heading and the dog cards, like the list of cats`() = testApplication {
         application { module() }
 
         listOf("ru", "en", "sr").forEach { code ->
             val response = client.get("/$code/dogs")
-            val body = response.bodyAsText()
+            val body = response.plainText()
+            val main = body.substringAfter("<main").substringBefore("</main>")
 
             assertEquals(HttpStatusCode.OK, response.status, code)
-            assertTrue(body.contains("https://www.instagram.com/svora.volunteers/"), code)
-            assertTrue(body.contains("https://linktr.ee/svora.volunteers"), code)
-            assertTrue(body.contains("Svora.Volunteers"), code)
-            assertTrue(body.contains("https://t.me/dashafirman"), code)
-            assertTrue(body.contains("""href="/$code/dogs""""), code)
+            assertEquals(1, Regex("<h1>").findAll(main).count(), code)
+            assertEquals(0, Regex("<h2>|<section>|<p>|<ul>").findAll(main).count(), "$code: only the heading and the cards")
+            assertFalse(body.contains("https://t.me/dashafirman"), "$code: the sign-up is on the home page")
+            assertFalse(body.contains("https://linktr.ee/svora.volunteers"), "$code: donations live on the help page")
         }
+    }
+
+    @Test
+    fun `a dog page is built like a cat page`() = testApplication {
+        application { module() }
+
+        val body = client.get("/ru/dogs/sava").plainText()
+
+        assertTrue(hasTag(body, "main", """class="page cat-page""""))
+        assertTrue(body.contains("""<div class="cat-head">"""))
+        assertTrue(hasTag(body, "div", """class="cat-profile""""))
+        assertEquals("Сава · Pro Anima", Regex("<title>\\s*(.*?)\\s*</title>").find(body)!!.groupValues[1])
     }
 
     @Test
     fun `home page mentions Svora and links to the dogs page`() = testApplication {
         application { module() }
 
-        val body = client.get("/ru").bodyAsText()
+        val body = client.get("/ru").plainText()
 
         assertTrue(body.contains("Волонтёрский центр Pro Anima · Svora.Volunteers"))
         assertTrue(body.contains("""href="/ru/dogs""""))
@@ -56,13 +67,13 @@ class DogRoutesTest {
     fun `dogs page shows dog cards with localized names and photos`() = testApplication {
         application { module() }
 
-        val ru = client.get("/ru/dogs").bodyAsText()
+        val ru = client.get("/ru/dogs").plainText()
         assertTrue(ru.contains("Сава"))
         assertTrue(ru.contains("Мила"))
-        assertTrue(ru.contains("/images/sava.jpg"))
-        assertTrue(ru.contains("/images/mila.jpg"))
+        assertTrue(ru.contains("/images/sava-card.jpg"))
+        assertTrue(ru.contains("/images/mila-card.jpg"))
 
-        val en = client.get("/en/dogs").bodyAsText()
+        val en = client.get("/en/dogs").plainText()
         assertTrue(en.contains("Sava"))
         assertTrue(en.contains("Mila"))
     }
@@ -71,7 +82,7 @@ class DogRoutesTest {
     fun `dog cards link to dog pages`() = testApplication {
         application { module() }
 
-        val body = client.get("/ru/dogs").bodyAsText()
+        val body = client.get("/ru/dogs").plainText()
 
         assertTrue(body.contains("""href="/ru/dogs/sava""""))
         assertTrue(body.contains("""href="/ru/dogs/mila""""))
@@ -82,7 +93,7 @@ class DogRoutesTest {
         application { module() }
 
         val ru = client.get("/ru/dogs/sava")
-        val ruBody = ru.bodyAsText()
+        val ruBody = ru.plainText()
         assertEquals(HttpStatusCode.OK, ru.status)
         assertTrue(ruBody.contains("<h1>Сава</h1>"))
         assertTrue(ruBody.contains("Около 3 лет"))
@@ -91,8 +102,8 @@ class DogRoutesTest {
         assertTrue(ruBody.contains("""href="/ru/dogs""""))
         assertTrue(ruBody.contains("/images/sava.jpg"))
 
-        assertTrue(client.get("/en/dogs/mila").bodyAsText().contains("A kind, people-oriented dog."))
-        assertTrue(client.get("/sr/dogs/sava").bodyAsText().contains("Prijateljski i umiljat pas."))
+        assertTrue(client.get("/en/dogs/mila").plainText().contains("A kind, people-oriented dog."))
+        assertTrue(client.get("/sr/dogs/sava").plainText().contains("Prijateljski i umiljat pas."))
     }
 
     @Test
@@ -114,7 +125,7 @@ class DogRoutesTest {
         }
 
         listOf("/en/dogs", "/en/dogs/rex").forEach { path ->
-            val body = client.get(path).bodyAsText()
+            val body = client.get(path).plainText()
             assertTrue(body.contains("/images/default-dog.svg"), path)
             assertFalse(body.contains("default-cat"), path)
         }

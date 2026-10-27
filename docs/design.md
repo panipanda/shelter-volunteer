@@ -48,7 +48,7 @@ per page); headings then use the text cut at display size and look slightly stur
 | Role | Family | Desktop | ≤ 640 px | Weight | Line height |
 |---|---|---|---|---|---|
 | h1 | Literata | 36 px | 30 px | 600 | 1.2 |
-| h2 | Literata | 22 px | 22 px | 600 | 1.3 |
+| h2 | Literata | 26 px | 24 px | 600 | 1.3 |
 | h3 and smaller headings | Source Sans 3 | 18 px | 18 px | 600 | 1.35 |
 | Lead paragraph | Source Sans 3 | 20 px | 18 px | 400 | 1.5 |
 | Body | Source Sans 3 | 18 px | 17 px | 400 | 1.55 |
@@ -57,16 +57,36 @@ per page); headings then use the text cut at display size and look slightly stur
 
 `letter-spacing: -0.01em` on h1 only. No uppercase, no letter-spaced labels. Emphasis is 600 weight, never italics.
 
+Running text (typesetting):
+
+- **Measure.** Paragraphs, lists, quotes and call-outs are at most `--measure: 33em` wide (about 600 px, 70 characters in ru),
+  while photos, cards, rules and the next-visit block keep the full 720 px column. A 720 px line of 18 px text is 85–90
+  characters, too long to read comfortably.
+- **No hanging words.** Every text node goes through `typographicText` (`service/DisplayHelpers.kt`), which joins one-letter
+  words and short prepositions (ru: в, к, с, на, по, из…; sr: one-letter words) to the next word with a no-break space,
+  and a dash to the word before it. It runs once for the whole page in `respondPage` (`views/PageResponse.kt`), so UI strings,
+  cat and dog descriptions and the guide are all covered. Attributes (alt, aria-label) and scripts are not touched.
+  Headings use `text-wrap: balance`, running text `text-wrap: pretty`.
+- **Quotes.** Content files use the language's own marks, never the straight `"`: «ёлочки» (ru), “…” (en), „…“ (sr).
+  A test fails on a straight quote in `content/*.md`.
+
 ## Layout
 
 - One text column: `--wrap-width: 720px` of text plus a side gutter of `24px` each (`16px` at ≤ 640 px), so the box is
   768 px wide. It is the same on
   every page, including the home page. The old 1120 px wrap and full-width coloured strips go away.
-- Header: 64 px high, bottom border 1 px. Logo + name on the left, nav, then language switch and theme toggle.
-  The one-row version needs about 700 px in ru and sr, so at ≤ 760 px (the only breakpoint besides 640 and only for
+- Header: 64 px high, bottom border 1 px. Logo + name on the left, nav (Cats, Dogs, Guide, Visits, How to help), then language
+  switch and theme toggle. "How to help" is the help page, the start of the part of the site for donors; it is named as a
+  question, like the page's own heading, not as a verb ("Помочь") or as "Support" (which reads as technical support in
+  English). The menu says "Guide", not "Volunteer guide" (`nav.guide.short`), and on a phone the items are 16 px with
+  6 px of padding: five items have to fit in one row on a 360 px phone in ru, where "Как помочь" is the longest; the page
+  itself keeps the full title. The one-row version needs about 700 px in ru and sr, so at ≤ 760 px (the only breakpoint besides 640 and only for
   the header) it becomes two rows: wordmark with language and theme controls, then the nav. The "Visits" drop-down
   hangs under the whole nav row there, so it cannot leave the screen. Every control is at least 44 px high.
   Until the logo exists the header shows only the wordmark as live text.
+- Skip link: the first focusable element of every page ("Skip to content", `#main`). It is off screen until it gets focus,
+  then it is an accent button in the top left corner. Both `nav` landmarks have an `aria-label`; the language links carry
+  `lang`, `hreflang` and the language's own name as tooltip and accessible name.
 - Sections: `56px` apart, each starts with a 1 px `--color-line` rule and `32px` padding above the heading.
 - Breakpoint: `640px`. There is one.
 - Radius: `4px` for photos, buttons and call-outs. Nothing else is rounded.
@@ -91,20 +111,35 @@ per page); headings then use the text cut at display size and look slightly stur
   flex row, not a breakpoint: the text keeps at least 280 px, otherwise it drops below the photo.
 - Facts are a `dl`: `110px` label column, 1 px line between rows, labels without the colon. Rows: age, where now, health.
   The adoption stage is not a row: it is the status line under the title.
-- Dogs use the same page without the button and the status.
+- Dogs use the same page without the button and the status: the same markup (`cat-head`, `cat-profile`, class `cat-page`),
+  the same title rule (`{name} · Pro Anima`), and the list of dogs is the same as the list of cats: the heading and the cards,
+  nothing else. Sign-up for the dog trips is on the home page, who Svora is is on the help page.
 
 ### Home page order
 
-Heading and lead (no links, no figures) → next visit → photo → cats looking for a home → how to join → how volunteers help
-(cats, dogs) → about the shelter (the figures, news links, how else to help, the founder's quote). Five sections after
-the hero; each one after the photo starts with a 1 px rule. The next visit is the one big accent: the day number in
+Heading and lead (no links, no figures) → next visit → photo → cats looking for a home → how to join (four steps: the guide,
+the cats' chat, the dogs' chat, picking a visit; then the founder's quote) → how volunteers help (what they do with
+the cats and with the dogs, three points each) → about the shelter (the figures, nothing else: no links). Five sections after the hero; each one after the photo starts with a 1 px rule.
+The photo under the next-visit block is a 16:9 file, `data/images/home-hero.jpg` (910×512): the original (910×682, in git
+history at commit c845d70) cropped at its bottom edge, which removes the top 170 px of roof, because the group sits in the
+lower part of the frame. The file itself is cropped, not the CSS, so the link preview (`og:image`) shows the same frame.
+A different photo should be cut to 16:9 the same way, at least 1440 px wide, with the faces checked after the crop.
+"How else to help" (donations, food, things, fostering) is for a different reader than the volunteer, so it has its own page,
+`/{lang}/help`, linked from the menu and from the footer; the donation link and the description of Svora live only there.
+The shelter's own news channels (Instagram, Telegram) are not on the home page; the footer has the Telegram channel.
+
+The next visit is the one big accent: the day number in
 Literata 56 px, the weekday, the departure, and the page's single primary button ("How to sign up"), which goes to
-"how to join". The lead explains who organises the trips (Svora.Volunteers), so the page does not use the word without
+"how to join". At ≤ 640 px the block is one column: the title, then the number, the month and the weekday on one line
+(44 px number), then the text across the full width. The block's own title stays 22 px so the date remains the headline. The lead explains who organises the trips (Svora.Volunteers), so the page does not use the word without
 saying what it is.
 
 Each fact is stated once: the founding year and the counts only in "about"; the coordinators' contacts only in
-"how to join" (everywhere else a link to it); the dogs' signup only on the dogs page (the home page points to it).
-A short "next visit" date and the regular schedule in "how to join" are different facts, so both stay.
+"how to join" (everywhere else a link to it); the dog trips' sign-up (one sentence and the link to the moderator, built like the cats' step) only in the
+same section. A step with a link is one sentence with the link inside it ("Read the guide: …"), not a sentence and a second
+line saying "open the guide".
+The regular days (Wednesday and Saturday) are said once, in the next-visit block, together with how places and sign-up
+work; "how to join" has only the steps. The departure time is the one in the block's own line, so it is never given twice.
 
 The next visit is computed from the regular schedule (`NextVisit.kt`) and can be changed by hand in
 `data/visit-overrides.json`; the block says the trips run on schedule and that cancellations are announced in the chat,
@@ -141,6 +176,9 @@ Dark: accent on surface 6.3, muted on surface 5.9. Re-check when changing any va
   hover/active tokens. One primary button per view.
 - **Secondary action**: a plain link. No outlined or ghost buttons.
 - **Links**: accent colour, always underlined, `text-underline-offset: 3px`, 1 px; 2 px on hover.
+  A contact in a step ("write to the coordinator: Name (@handle), Name (@handle)") is part of the sentence: it follows
+  the colon in the same line and wraps with the text, never in a row of its own under it. A name stays together with its
+  handle (`.nowrap`), so on a narrow screen a link that does not fit moves down whole, never split in two.
 - **Nav**: ink text, no background on the current item, current item has a 2 px accent underline.
 - **Focus**: `outline: 2px solid var(--color-accent); outline-offset: 2px` on every interactive element. Never removed.
 - **Status** (cat): shape carries the meaning, so no extra colours are needed. It is shown only where it tells the
@@ -154,6 +192,10 @@ Dark: accent on surface 6.3, muted on surface 5.9. Re-check when changing any va
   first: the face visible and in focus, nothing between the lens and the animal (no fence or grille: Mila's cover is
   the known bad example), and the face in the middle of the frame, because the 4:5 crop cuts the sides and the edge.
   CSS cannot fix a bad cover, so the rule lives in the data.
+- **Card copies**: cards and gallery thumbnails load `name-card.jpg` (about 440×550, made by `tools/make-card-images.py`),
+  the big photo and the lightbox load the original. The copy is not cropped, so the 4:5 crop is still CSS. Images after
+  the first three cards, the thumbnails and the hidden lightbox photos have `loading="lazy"`; the main photo is not lazy.
+  The server does not start if a photo has no copy.
 - **Placeholder**: an animal with no photos shows `data/images/default-cat.svg` or `default-dog.svg`: a neutral grey
   head (`#9a9ea6`, eyes and nose cut out) on a transparent ground, so the `--color-surface` under the image shows through
   in both themes. Cats and dogs have separate files and separate constants; do not reuse one for the other. The face is
@@ -180,6 +222,17 @@ Dark: accent on surface 6.3, muted on surface 5.9. Re-check when changing any va
 - No horizontal scroll at 375 px. Respect `prefers-reduced-motion`: there are no transitions to begin with.
 - Theme: saved choice, otherwise the system one, set before first paint (existing head script).
 
+## Page metadata
+
+- **Title:** `{page} · Pro Anima`, so a row of tabs says where each one is from. The home page's own title already has the
+  name and is used as is.
+- **Link preview:** every page has `og:title`, `og:description` (when the page has a description), `og:url`, `og:image`
+  and `twitter:card`. A cat or dog page uses its first photo; every other page, and anything whose first photo is an SVG
+  placeholder, uses `/images/home-hero.jpg` (a link preview needs a raster picture). Addresses are absolute, from
+  `PUBLIC_BASE_URL` (`views/Layout.kt`, see `docs/deploy.md`).
+- **Language alternates:** `canonical` and `hreflang` (ru, en, sr, x-default = ru) on every page. Error pages are rendered for
+  any URL, so they have none and carry `noindex`.
+
 ## Implementation order
 
 1. Tokens + both fonts in `static/styles/main.css`; `preloadedFonts()` in `views/Layout.kt` (serif and sans files);
@@ -193,7 +246,6 @@ One commit per step. After each: `./gradlew test`, screenshots at 375 / 768 / 12
 
 ## Open points
 
-- Mobile header: the nav (4 items + language + theme) needs a collapsed pattern; `nav-menu.js` already exists, keep it
-  unless it fights the new header.
+- Mobile header: the nav (5 items + language + theme) fits one row from 360 px in ru and from 320 px in en and sr; in ru at
+  320 px it wraps to a second row. A collapsed pattern is needed if an item is added.
 - Guide aside on mobile: keep the current stacking, restyled.
-- Dogs page: text only for now; reuse the page template, no cards.

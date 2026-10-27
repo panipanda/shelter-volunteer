@@ -18,7 +18,7 @@ private fun HTML.errorPage(locale: AppLocale, keyPrefix: String) {
     val messages = messagesFor(locale)
     val title = messages.t("$keyPrefix.title")
 
-    pageLayout(locale, pageTitle = title, currentPath = "/${locale.code}") {
+    pageLayout(locale, pageTitle = title, currentPath = "/${locale.code}", indexable = false) {
         h1 { +title }
         p { +messages.t("$keyPrefix.text") }
         p { a(href = "/${locale.code}") { +messages.t("error.backHome") } }

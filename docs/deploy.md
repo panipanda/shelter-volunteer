@@ -65,6 +65,10 @@ docker run -p 8080:8080 -e PORT=8080 shelter-volunteer
 In the service's **Settings → Custom Domains**, add the domain and create the CNAME record
 Render shows at your registrar.
 
+Then set the environment variable `PUBLIC_BASE_URL` (for example `https://volunteers.example.org`, no trailing
+slash) on the service. Pages put it in the canonical link, the language alternates and the link preview
+(`og:url`, `og:image`); without it they point at `https://shelter-volunteer.onrender.com`.
+
 ## Known limitation
 
 Photos and JSON/Markdown data live inside the Docker image rather than on a persistent volume

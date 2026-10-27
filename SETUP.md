@@ -318,6 +318,18 @@ The application also checks the content at startup (`validatePets`): duplicate i
 month outside 1..12 and photo files missing from `data/images/` stop the server with a message that lists
 every problem. `DataValidationTest` runs the same check against the real `data/` files.
 
+### Adding or replacing a photo
+
+Cards and thumbnails load a smaller copy of each photo, `name-card.jpg` next to `name.jpg`. After putting a
+photo into `data/images/` and listing it in `photoUrls`, make the copy and commit both files:
+
+```powershell
+python tools/make-card-images.py
+```
+
+The script needs Pillow (`pip install pillow`), skips copies that are already up to date and takes
+`--force` to redo all of them. Without the copy the server stops at startup and names the missing file.
+
 ## Scratch files
 
 Do not put learning or experimental files into:

@@ -6,12 +6,8 @@ import kotlinx.html.a
 import kotlinx.html.dl
 import kotlinx.html.div
 import kotlinx.html.h1
-import kotlinx.html.h2
-import kotlinx.html.img
-import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.span
-import kotlinx.html.ul
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
@@ -31,50 +27,20 @@ fun HTML.dogsPage(dogs: List<Dog>, locale: AppLocale, currentPath: String) {
         currentPath = currentPath,
         description = messages.t("dogs.page.description")
     ) {
+        // Just like the list of cats: the heading and the cards. How to sign up for the dog trips is on the
+        // home page, who Svora is is on the help page.
         h1 { +messages.t("nav.dogs") }
-        p { +messages.t("dogs.intro") }
-        p { +messages.t("dogs.shelter") }
-
-        if (dogs.isNotEmpty()) {
-            h2 { +messages.t("dogs.list.title") }
-            p { +messages.t("dogs.list.intro") }
-            dogList(dogs, locale)
-        }
-
-        h2 { +messages.t("dogs.svora.title") }
-        p { +messages.t("dogs.svora.text") }
-        ul {
-            li { +messages.t("dogs.svora.item.trips") }
-            li { +messages.t("dogs.svora.item.supplies") }
-            li { +messages.t("dogs.svora.item.donations") }
-            li { +messages.t("dogs.svora.item.events") }
-        }
-
-        h2 { +messages.t("dogs.join.title") }
-        p { +messages.t("dogs.join.text") }
-        p {
-            a(href = "https://t.me/$DASHA_TELEGRAM", classes = "button") {
-                +"${messages.t("home.contact.dasha")} (@$DASHA_TELEGRAM)"
-            }
-        }
-        p(classes = "links") {
-            a(href = SVORA_INSTAGRAM_URL) { +messages.t("dogs.link.instagram") }
-            a(href = SVORA_LINKTREE_URL) { +messages.t("dogs.link.linktree") }
-        }
-        p {
-            +"${messages.t("dogs.guide.more")} "
-            a(href = "/${locale.code}/guide#general") { +messages.t("dogs.guide.link") }
-        }
+        dogList(dogs, locale)
     }
 }
 
 // Same card look as the cats: the whole card links to the dog's page.
 private fun FlowContent.dogList(dogs: List<Dog>, locale: AppLocale) {
     div(classes = "cat-list") {
-        dogs.forEach { dog ->
+        dogs.forEachIndexed { index, dog ->
             val name = dog.name.forLocale(locale)
             a(href = "/${locale.code}/dogs/${petSlug(dog.name.en, dog.id)}", classes = "cat-card") {
-                img(src = dog.photoUrls.firstOrNull() ?: DEFAULT_PHOTO, alt = name, classes = "cat-card-photo")
+                cardPhoto(dog.photoUrls.firstOrNull() ?: DEFAULT_PHOTO, name, index)
                 span(classes = "cat-card-name") { +name }
                 val meta = listOfNotNull(
                     dog.age?.forLocale(locale),
@@ -91,17 +57,30 @@ private fun FlowContent.dogList(dogs: List<Dog>, locale: AppLocale) {
 fun HTML.dogDetailsPage(dog: Dog, locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)
     val name = dog.name.forLocale(locale)
+    val photoUrls = dog.photoUrls.ifEmpty { listOf(DEFAULT_PHOTO) }
+    val description = dog.description.forLocale(locale)
 
-    pageLayout(locale, pageTitle = "$name — ${messages.t("nav.dogs")}", currentPath = currentPath) {
+    // The same page as a cat's, without the status and the contact button: same title rule, same head
+    // block and the same page class (the phone layout in main.css hangs on it).
+    pageLayout(
+        locale,
+        pageTitle = name,
+        currentPath = currentPath,
+        mainClass = "page cat-page",
+        description = description,
+        ogImage = photoUrls.first()
+    ) {
         p(classes = "back") { a(href = "/${locale.code}/dogs") { +messages.t("dog.backToDogs") } }
 
-        h1 { +name }
+        div(classes = "cat-head") {
+            h1 { +name }
+        }
 
         div(classes = "cat-profile") {
-            photoGallery(dog.photoUrls.ifEmpty { listOf(DEFAULT_PHOTO) }, name, messages)
+            photoGallery(photoUrls, name, messages)
 
             div(classes = "cat-info") {
-                p { +dog.description.forLocale(locale) }
+                p { +description }
                 dl(classes = "facts-list") {
                     dog.age?.let { age -> fact(messages.t("cat.label.age"), age.forLocale(locale)) }
                     fact(messages.t("cat.label.location"), displayCatLocation(dog.location, locale))

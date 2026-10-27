@@ -4,11 +4,11 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.install
-import io.ktor.server.html.respondHtml
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.path
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.views.notFoundPage
+import org.proanima.shelter.views.respondPage
 import org.proanima.shelter.views.serverErrorPage
 import org.slf4j.LoggerFactory
 
@@ -18,11 +18,13 @@ private val log = LoggerFactory.getLogger("org.proanima.shelter.ErrorPages")
 fun Application.configureErrorPages() {
     install(StatusPages) {
         status(HttpStatusCode.NotFound) { call, _ ->
-            call.respondHtml(HttpStatusCode.NotFound) { notFoundPage(call.localeFromPath()) }
+            val locale = call.localeFromPath()
+            call.respondPage(locale, HttpStatusCode.NotFound) { notFoundPage(locale) }
         }
         exception<Throwable> { call, cause ->
             log.error("Unhandled error on ${call.request.path()}", cause)
-            call.respondHtml(HttpStatusCode.InternalServerError) { serverErrorPage(call.localeFromPath()) }
+            val locale = call.localeFromPath()
+            call.respondPage(locale, HttpStatusCode.InternalServerError) { serverErrorPage(locale) }
         }
     }
 }

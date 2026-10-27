@@ -1,7 +1,5 @@
 # Volunteer guide
 
-This page is a guide for Svora.Volunteers who help the Pro Anima shelter. First the part that applies to everyone, then separate parts for working with cats and with dogs.
-
 ## General {#general}
 
 ### Before the visit
@@ -15,7 +13,6 @@ This page is a guide for Svora.Volunteers who help the Pro Anima shelter. First 
 
 - Comfortable clothes and closed shoes.
 - Water for yourself.
-- Work gloves, if you have them.
 - Cat and dog treats.
 
 ### During the visit
@@ -27,19 +24,13 @@ This page is a guide for Svora.Volunteers who help the Pro Anima shelter. First 
 - Ask questions if you're unsure about something, coordinators are there to help you.
 - Have fun and enjoy your time with the animals!
 
-### How signup works
-
-Trips to the shelter are organized by the Svora.Volunteers group. Signup is coordinated manually: check the volunteer visits page, then follow the signup instructions shown for the selected visit.
-
-If a visit is full or closed, feel free to check back later or contact a coordinator.
-
 ## Working with cats {#cats}
 
 The cats live in enclosures on the shelter grounds. Volunteers who work with the cats have a separate chat: it has the visit schedule, signup and the most information about the cats specifically. To join, message [Natalia](https://t.me/Nata_Rogava) or [Alina](https://t.me/Trikcsy).
 
 ### Cleaning the enclosures
 
-> The shelter has three cat enclosures: the Lower one ("Moscow", airlock system, 14 cats), the Middle one ("small", airlock system, 12 cats) and the Upper one ("big", entrance without an airlock, 15 cats). Enter the enclosures as carefully as possible so that no cat gets out. Each enclosure has its own cleaning equipment: litter scoops, scrapers, brushes, sponges, a mop, and a broom with a dustpan. Never use the equipment of one enclosure to clean another. If an enclosure is short on equipment, write to the cat volunteers' chat.
+> The shelter has three cat enclosures: the Lower one (“Moscow”, airlock system, 14 cats), the Middle one (“small”, airlock system, 12 cats) and the Upper one (“big”, entrance without an airlock, 15 cats). Enter the enclosures as carefully as possible so that no cat gets out. Each enclosure has its own cleaning equipment: litter scoops, scrapers, brushes, sponges, a mop, and a broom with a dustpan. Never use the equipment of one enclosure to clean another. If an enclosure is short on equipment, write to the cat volunteers' chat.
 
 - First, assess each litter tray by how dirty it is. If more than half of the litter is still clean, just scoop out the waste and leave the tray. If the tray is dirty, empty it into the cart, wash it with the long-handled brush and add fresh litter. Don't add much litter: it swells a lot, and the bottom of the tray should just barely show through.
 - Only organic waste can go into the cart.
@@ -47,8 +38,8 @@ The cats live in enclosures on the shelter grounds. Volunteers who work with the
 - Top up the food from the barrel if it's running low; a bowl should be no more than ¾ full.
 - After cleaning, wash the equipment so everything is ready for the next cleaning.
 - If there is little time or few volunteers, the floors can be left unwashed. The minimum is to clean the litter trays, wash the bowls and sweep the floor in the little house. The maximum is the same, plus washing the floors.
-- Bonus "maximum+" program: if there is time, you can sweep the inner yard by the cats.
+- Bonus “maximum+” program: if there is time, you can sweep the inner yard by the cats.
 
 ## Working with dogs {#dogs}
 
-Signup for the dog trips happens in the main Svora chat. To join, message the chat moderator, [Dasha](https://t.me/dashafirman). More details are on the [dogs page](/en/dogs).
+Signup for the dog trips happens in the main Svora chat. To join, message the chat moderator, [Dasha](https://t.me/dashafirman).

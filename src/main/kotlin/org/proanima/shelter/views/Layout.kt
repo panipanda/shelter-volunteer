@@ -1,5 +1,6 @@
 package org.proanima.shelter.views
 
+import kotlinx.html.HEAD
 import kotlinx.html.HTML
 import kotlinx.html.MAIN
 import kotlinx.html.a
@@ -7,6 +8,7 @@ import kotlinx.html.body
 import kotlinx.html.div
 import kotlinx.html.footer
 import kotlinx.html.head
+import kotlinx.html.id
 import kotlinx.html.lang
 import kotlinx.html.link
 import kotlinx.html.main
@@ -18,6 +20,17 @@ import kotlinx.html.unsafe
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
+
+const val SITE_NAME = "Pro Anima"
+
+// og:image, og:url and the canonical link must be absolute, so the public address is a setting: set
+// PUBLIC_BASE_URL when the site gets its own domain (see docs/deploy.md).
+val PUBLIC_BASE_URL: String =
+    (System.getenv("PUBLIC_BASE_URL") ?: "https://shelter-volunteer.onrender.com").trimEnd('/')
+
+// A link preview needs a raster picture, so pages without a photo of their own (and the SVG
+// placeholders) share the home page photo.
+private const val DEFAULT_SHARE_IMAGE = "/images/home-hero.jpg"
 
 const val TELEGRAM_CHANNEL_URL = "https://t.me/proanima_belgrade"
 const val DASHA_TELEGRAM = "dashafirman"
@@ -53,6 +66,53 @@ private fun preloadedFonts(locale: AppLocale): List<String> {
     return listOf("literata-600", "source-sans-3").flatMap { family -> subsets.map { "$family-$it" } }
 }
 
+// Title, canonical address, language alternates and the link preview (Open Graph, which Telegram and
+// Instagram read). indexable = false is for the error pages: they are rendered for any URL, so they
+// have no address of their own to point at.
+private fun HEAD.pageMetadata(
+    locale: AppLocale,
+    fullTitle: String,
+    currentPath: String,
+    description: String?,
+    ogImage: String?,
+    indexable: Boolean
+) {
+    title { +fullTitle }
+    if (description != null) {
+        meta(name = "description", content = description)
+    }
+    if (!indexable) {
+        meta(name = "robots", content = "noindex")
+        return
+    }
+
+    val pathSuffix = currentPath.removePrefix("/${locale.code}")
+    val canonical = "$PUBLIC_BASE_URL/${locale.code}$pathSuffix"
+    val image = (ogImage?.takeUnless { it.endsWith(".svg") } ?: DEFAULT_SHARE_IMAGE).let { "$PUBLIC_BASE_URL$it" }
+
+    link(rel = "canonical", href = canonical)
+    AppLocale.entries.forEach { alternate ->
+        link(rel = "alternate", href = "$PUBLIC_BASE_URL/${alternate.code}$pathSuffix") {
+            attributes["hreflang"] = alternate.code
+        }
+    }
+    link(rel = "alternate", href = "$PUBLIC_BASE_URL/${AppLocale.default.code}$pathSuffix") {
+        attributes["hreflang"] = "x-default"
+    }
+
+    listOfNotNull(
+        "og:type" to "website",
+        "og:site_name" to SITE_NAME,
+        "og:title" to fullTitle,
+        description?.let { "og:description" to it },
+        "og:url" to canonical,
+        "og:image" to image
+    ).forEach { (property, value) ->
+        meta(content = value) { attributes["property"] = property }
+    }
+    meta(name = "twitter:card", content = "summary_large_image")
+}
+
 fun HTML.pageLayout(
     locale: AppLocale,
     pageTitle: String,
@@ -60,19 +120,20 @@ fun HTML.pageLayout(
     contentLang: String = locale.code,
     mainClass: String = "page",
     description: String? = null,
+    ogImage: String? = null,
+    indexable: Boolean = true,
     content: MAIN.() -> Unit
 ) {
     val messages = messagesFor(locale)
+    // The brand goes after the page name, so a row of open tabs says where each one is from.
+    val fullTitle = if (SITE_NAME in pageTitle) pageTitle else "$pageTitle · $SITE_NAME"
 
     lang = contentLang
     head {
         meta(charset = "UTF-8")
         meta(name = "viewport", content = "width=device-width, initial-scale=1")
         meta(name = "color-scheme", content = "light dark")
-        title { +pageTitle }
-        if (description != null) {
-            meta(name = "description", content = description)
-        }
+        pageMetadata(locale, fullTitle, currentPath, description, ogImage, indexable)
         link(rel = "icon", href = "/icons/favicon-32.png", type = "image/png") {
             attributes["sizes"] = "32x32"
         }
@@ -94,8 +155,10 @@ fun HTML.pageLayout(
         }
     }
     body {
+        a(href = "#main", classes = "skip-link") { +messages.t("nav.skip") }
         navigation(locale, currentPath)
         main(classes = mainClass) {
+            id = "main"
             content()
         }
         footer {
@@ -105,6 +168,8 @@ fun HTML.pageLayout(
                     a(href = TELEGRAM_CHANNEL_URL) { +messages.t("footer.telegram") }
                     +" · "
                     a(href = SVORA_INSTAGRAM_URL) { +"Svora.Volunteers" }
+                    +" · "
+                    a(href = "/${locale.code}/help") { +messages.t("footer.help") }
                 }
             }
         }

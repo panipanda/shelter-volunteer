@@ -17,6 +17,9 @@ class DataValidationTest {
 
     private val imagesDir: File = createTempDirectory("images").toFile().also {
         File(it, "ok.jpg").writeText("x")
+        File(it, "ok-card.jpg").writeText("x")
+        File(it, "plain.jpg").writeText("x")
+        File(it, "placeholder.svg").writeText("x")
         it.deleteOnExit()
     }
 
@@ -79,6 +82,21 @@ class DataValidationTest {
 
         assertTrue(problems.any { "missing.jpg" in it }, problems.toString())
         assertTrue(problems.any { "outside /images/" in it }, problems.toString())
+    }
+
+    @Test
+    fun `a photo without a card copy is reported with the way to make one`() {
+        val problem = validatePets(listOf(cat(1, photoUrls = listOf("/images/plain.jpg"))), emptyList(), imagesDir).single()
+
+        assertTrue("plain-card.jpg" in problem && "tools/make-card-images.py" in problem, problem)
+    }
+
+    @Test
+    fun `an svg photo needs no card copy`() {
+        assertEquals(
+            emptyList(),
+            validatePets(listOf(cat(1, photoUrls = listOf("/images/placeholder.svg"))), emptyList(), imagesDir)
+        )
     }
 
     @Test

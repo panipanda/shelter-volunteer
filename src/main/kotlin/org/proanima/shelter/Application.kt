@@ -27,6 +27,7 @@ import org.proanima.shelter.repository.MarkdownGuideRepository
 import org.proanima.shelter.routes.catRoutes
 import org.proanima.shelter.routes.dogRoutes
 import org.proanima.shelter.routes.healthRoutes
+import org.proanima.shelter.routes.helpRoutes
 import org.proanima.shelter.routes.visitRoutes
 import org.proanima.shelter.routes.guideRoutes
 import org.proanima.shelter.routes.homeRoutes
@@ -121,6 +122,7 @@ fun Application.configureRoutes(
                 dogRoutes(dogService, locale)
                 visitRoutes(locale, clock, visitOverrides)
                 guideRoutes(guideService, locale)
+                helpRoutes(locale)
             }
         }
     }

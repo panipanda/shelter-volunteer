@@ -1,7 +1,6 @@
 package org.proanima.shelter.routes
 
 import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
 import org.proanima.shelter.configureRoutes
@@ -45,7 +44,7 @@ class VisitRoutesTest {
                     visitOverrides = overrides
                 )
             }
-            body = client.get("/ru/visits").bodyAsText()
+            body = client.get("/ru/visits").plainText()
         }
         return body
     }
@@ -77,7 +76,7 @@ class VisitRoutesTest {
         }
 
         val response = client.get("/ru/visits/archive")
-        val body = response.bodyAsText()
+        val body = response.plainText()
 
         assertEquals(HttpStatusCode.OK, response.status)
         assertTrue(body.contains("Архив визитов"))
