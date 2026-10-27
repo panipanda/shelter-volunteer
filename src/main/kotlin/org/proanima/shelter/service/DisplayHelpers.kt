@@ -13,7 +13,7 @@ fun displayCatName(name: LocalizedText?, locale: AppLocale): String {
 }
 
 fun displayPhotoUrls(photoUrls: List<String>): List<String> {
-    return photoUrls.ifEmpty { listOf("/images/default-cat.jpg") }
+    return photoUrls.ifEmpty { listOf("/images/default-cat.svg") }
 }
 
 // A cat's or dog's URL is built from the name, not the id, so that it is human-readable. The caller

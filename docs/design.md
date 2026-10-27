@@ -150,6 +150,14 @@ Dark: accent on surface 6.3, muted on surface 5.9. Re-check when changing any va
   `RESERVED` = hollow ring in ink; `ADOPTED` = muted dot at 55% opacity; `NONE` = nothing. A dot always comes with its text label.
 - **Call-out**: `--color-surface` background, 14 px padding, radius 4, no border. The guide aside is the same with
   a 3 px accent line on the left and no radius on that edge. No red frame.
+- **Cover photo**: the first `photoUrls` entry is the card photo and the first image on the page, so put the best frame
+  first: the face visible and in focus, nothing between the lens and the animal (no fence or grille: Mila's cover is
+  the known bad example), and the face in the middle of the frame, because the 4:5 crop cuts the sides and the edge.
+  CSS cannot fix a bad cover, so the rule lives in the data.
+- **Placeholder**: an animal with no photos shows `data/images/default-cat.svg` or `default-dog.svg`: a neutral grey
+  head (`#9a9ea6`, eyes and nose cut out) on a transparent ground, so the `--color-surface` under the image shows through
+  in both themes. Cats and dogs have separate files and separate constants; do not reuse one for the other. The face is
+  deliberately wide: a tall head with eyes reads as a person.
 - **Language switch**: text `RU EN SR`, current one in ink 600, others muted. No pill.
 
 ## Do / don't

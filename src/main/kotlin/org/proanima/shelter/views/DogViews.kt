@@ -20,7 +20,7 @@ import org.proanima.shelter.model.Dog
 import org.proanima.shelter.service.displayCatLocation
 import org.proanima.shelter.service.petSlug
 
-private const val DEFAULT_PHOTO = "/images/default-cat.jpg"
+private const val DEFAULT_PHOTO = "/images/default-dog.svg"
 
 fun HTML.dogsPage(dogs: List<Dog>, locale: AppLocale, currentPath: String) {
     val messages = messagesFor(locale)

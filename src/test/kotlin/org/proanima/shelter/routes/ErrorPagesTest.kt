@@ -87,6 +87,6 @@ class ErrorPagesTest {
         application { module() }
 
         assertEquals("max-age=3600", client.get("/styles/main.css").headers[HttpHeaders.CacheControl])
-        assertEquals("max-age=86400", client.get("/images/default-cat.jpg").headers[HttpHeaders.CacheControl])
+        assertEquals("max-age=86400", client.get("/images/default-cat.svg").headers[HttpHeaders.CacheControl])
     }
 }

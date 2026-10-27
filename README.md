@@ -179,10 +179,11 @@ Cat photos should use public URLs like:
 /images/cats/zoka.jpg
 ```
 
-The default cat image should be available at:
+The default images for a cat or a dog without photos should be available at:
 
 ```text
-/images/default-cat.jpg
+/images/default-cat.svg
+/images/default-dog.svg
 ```
 
 JSON files should store public image URLs, not internal filesystem paths.

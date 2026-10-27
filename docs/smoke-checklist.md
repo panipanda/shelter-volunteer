@@ -411,7 +411,7 @@ Acceptance criteria:
 Open in a browser:
 
 ```text
-http://localhost:8080/images/default-cat.jpg
+http://localhost:8080/images/default-cat.svg
 ```
 
 Or check from terminal.
@@ -419,13 +419,13 @@ Or check from terminal.
 ### Windows PowerShell
 
 ```powershell
-Invoke-WebRequest http://localhost:8080/images/default-cat.jpg
+Invoke-WebRequest http://localhost:8080/images/default-cat.svg
 ```
 
 ### Linux/macOS
 
 ```bash
-curl -I http://localhost:8080/images/default-cat.jpg
+curl -I http://localhost:8080/images/default-cat.svg
 ```
 
 Expected result:
@@ -437,8 +437,8 @@ Expected result:
 Acceptance criteria:
 
 - static image resources are served by Ktor;
-- `/images/default-cat.jpg` is available;
-- the file is loaded from `data/images/default-cat.jpg` (a real directory on disk, not a
+- `/images/default-cat.svg` and `/images/default-dog.svg` are available;
+- the file is loaded from `data/images/default-cat.svg` (a real directory on disk, not a
   classpath resource baked into the build);
 - this endpoint is intentionally not language-prefixed.
 
@@ -541,7 +541,7 @@ After changing routes, views, services, repositories, static resources, or JSON 
 Then manually re-check:
 
 - `GET /health`
-- `GET /images/default-cat.jpg`
+- `GET /images/default-cat.svg`
 - `GET /styles/main.css`
 - `GET /ru/cats`
 - `GET /ru/cats/nami`

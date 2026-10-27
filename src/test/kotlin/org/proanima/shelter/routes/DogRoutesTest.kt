@@ -4,9 +4,22 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
+import org.proanima.shelter.configureRoutes
+import org.proanima.shelter.model.AppLocale
+import org.proanima.shelter.model.Cat
+import org.proanima.shelter.model.Dog
+import org.proanima.shelter.model.LocalizedText
 import org.proanima.shelter.module
+import org.proanima.shelter.repository.CatRepository
+import org.proanima.shelter.repository.DogRepository
+import org.proanima.shelter.repository.GuideContent
+import org.proanima.shelter.repository.GuideRepository
+import org.proanima.shelter.service.CatService
+import org.proanima.shelter.service.DogService
+import org.proanima.shelter.service.GuideService
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DogRoutesTest {
@@ -80,6 +93,31 @@ class DogRoutesTest {
 
         assertTrue(client.get("/en/dogs/mila").bodyAsText().contains("A kind, people-oriented dog."))
         assertTrue(client.get("/sr/dogs/sava").bodyAsText().contains("Prijateljski i umiljat pas."))
+    }
+
+    @Test
+    fun `a dog without photos gets the dog placeholder, never the cat one`() = testApplication {
+        val dogs = listOf(Dog(id = 1, name = LocalizedText(en = "Rex"), description = LocalizedText(en = "A dog")))
+        application {
+            configureRoutes(
+                catService = CatService(object : CatRepository {
+                    override fun findAll(): List<Cat> = emptyList()
+                    override fun findById(id: Int): Cat? = null
+                }),
+                guideService = GuideService(object : GuideRepository {
+                    override fun findGuideMarkdown(locale: AppLocale): GuideContent = GuideContent("# Guide", locale.code)
+                }),
+                dogService = DogService(object : DogRepository {
+                    override fun findAll(): List<Dog> = dogs
+                })
+            )
+        }
+
+        listOf("/en/dogs", "/en/dogs/rex").forEach { path ->
+            val body = client.get(path).bodyAsText()
+            assertTrue(body.contains("/images/default-dog.svg"), path)
+            assertFalse(body.contains("default-cat"), path)
+        }
     }
 
     @Test
