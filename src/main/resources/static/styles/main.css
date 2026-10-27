@@ -804,11 +804,12 @@ main.page > section.next-visit {
     font-weight: 600;
 }
 
-/* The file is already cropped to 16:9 (see docs/design.md); the ratio only reserves the space before it loads. */
-.hero-photo {
+/* The files are already cropped to 16:10 (see docs/design.md); the ratio only reserves the space before they load. */
+.hero-photo,
+.guide-photo {
     display: block;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 10;
     margin-top: 32px;
     object-fit: cover;
     background: var(--color-surface);

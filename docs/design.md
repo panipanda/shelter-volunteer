@@ -120,10 +120,13 @@ Running text (typesetting):
 Heading and lead (no links, no figures) → next visit → photo → cats looking for a home → how to join (four steps: the guide,
 the cats' chat, the dogs' chat, picking a visit; then the founder's quote) → how volunteers help (what they do with
 the cats and with the dogs, three points each) → about the shelter (the figures, nothing else: no links). Five sections after the hero; each one after the photo starts with a 1 px rule.
-The photo under the next-visit block is a 16:9 file, `data/images/home-hero.jpg` (910×512): the original (910×682, in git
-history at commit c845d70) cropped at its bottom edge, which removes the top 170 px of roof, because the group sits in the
+The photo under the next-visit block is a 16:10 file, `data/images/home-hero.jpg` (910×569): the original (910×682, in git
+history at commit c845d70) cropped at its bottom edge, which removes the top 113 px of roof, because the group sits in the
 lower part of the frame. The file itself is cropped, not the CSS, so the link preview (`og:image`) shows the same frame.
-A different photo should be cut to 16:9 the same way, at least 1440 px wide, with the faces checked after the crop.
+A different photo should be cut to 16:10 the same way, at least 1440 px wide, with the faces checked after the crop.
+The guide has one photo too, between the table of contents and the first section: `data/images/home-guide.jpg` (1440×900,
+three cats behind a wire fence). Both page photos are 16:10 and share one CSS rule (`.hero-photo`, `.guide-photo`): at 16:9 the
+lowest cat's muzzle on the guide photo is cut off, and the two pages should look alike.
 "How else to help" (donations, food, things, fostering) is for a different reader than the volunteer, so it has its own page,
 `/{lang}/help`, linked from the menu and from the footer; the donation link and the description of Svora live only there.
 The shelter's own news channels (Instagram, Telegram) are not on the home page; the footer has the Telegram channel.

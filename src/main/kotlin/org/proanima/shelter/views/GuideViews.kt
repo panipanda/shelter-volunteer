@@ -10,6 +10,7 @@ import kotlinx.html.h1
 import kotlinx.html.h2
 import kotlinx.html.h3
 import kotlinx.html.id
+import kotlinx.html.img
 import kotlinx.html.li
 import kotlinx.html.nav
 import kotlinx.html.p
@@ -37,6 +38,7 @@ fun HTML.guidePage(locale: AppLocale, blocks: List<GuideBlock>, contentLang: Str
                         1 -> {
                             h1 { +block.text }
                             tableOfContents(blocks, messages.t("guide.toc"))
+                            img(src = "/images/home-guide.jpg", alt = messages.t("guide.photo.alt"), classes = "guide-photo")
                         }
                         2 -> h2 {
                             block.id?.let { id = it }
