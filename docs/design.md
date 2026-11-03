@@ -112,14 +112,19 @@ Running text (typesetting):
 - Facts are a `dl`: `110px` label column, 1 px line between rows, labels without the colon. Rows: age, where now, health.
   The adoption stage is not a row: it is the status line under the title.
 - Dogs use the same page without the button and the status: the same markup (`cat-head`, `cat-profile`, class `cat-page`),
-  the same title rule (`{name} · Pro Anima`), and the list of dogs is the same as the list of cats: the heading and the cards,
-  nothing else. Sign-up for the dog trips is on the home page, who Svora is is on the help page.
+  the same title rule (`{name} · Pro Anima`), and the list of dogs is the same as the list of cats: the heading, one muted note
+  and the cards, nothing else. Sign-up for the dog trips is on the home page, who Svora is is on the help page.
 
 ### Home page order
 
-Heading and lead (no links, no figures) → next visit → photo → cats looking for a home → how to join (four steps: the guide,
-the cats' chat, the dogs' chat, picking a visit; then the founder's quote) → how volunteers help (what they do with
-the cats and with the dogs, three points each) → about the shelter (the figures, nothing else: no links). Five sections after the hero; each one after the photo starts with a 1 px rule.
+Heading and lead (no buttons, no figures; one plain text line under the lead, "Want to help with money or supplies? How to
+help", links to `/help` for the reader who is not coming to visit) → next visit → photo → how to join (four steps: the guide,
+the cats' chat, the dogs' chat, picking a visit; then the founder's quote) → cats looking for a home → how volunteers help
+(what they do with the cats and with the dogs, three points each) → about the shelter (the figures, nothing else: no links).
+Five sections after the hero; each one after the photo starts with a 1 px rule. The join steps come before the cats because the
+visit button leads to them: nothing should stand between a button and its target. The heading says what the page is
+("Volunteers at the Pro Anima shelter in Belgrade"), not what to do, and the lead makes no claim about restrictions for new
+volunteers (decision of 2026-11-03).
 The photo under the next-visit block is a 16:10 file, `data/images/home-hero.jpg` (910×569): the original (910×682, in git
 history at commit c845d70) cropped at its bottom edge, which removes the top 113 px of roof, because the group sits in the
 lower part of the frame. The file itself is cropped, not the CSS, so the link preview (`og:image`) shows the same frame.
@@ -128,7 +133,12 @@ The guide has one photo too, between the table of contents and the first section
 three cats behind a wire fence). Both page photos are 16:10 and share one CSS rule (`.hero-photo`, `.guide-photo`): at 16:9 the
 lowest cat's muzzle on the guide photo is cut off, and the two pages should look alike.
 "How else to help" (donations, food, things, fostering) is for a different reader than the volunteer, so it has its own page,
-`/{lang}/help`, linked from the menu and from the footer; the donation link and the description of Svora live only there.
+`/{lang}/help`, linked from the menu, the footer and the line under the home page lead; the donation link and the description of
+Svora live only there. The page's h1 is the menu label ("How to help"). The donation link is that page's one primary button,
+right under the intro and above the list of what the shelter needs.
+The lists of cats and of dogs have one muted line under the heading (`.list-note`) saying that photos and descriptions are
+being added little by little, so a short list does not look like an unfinished site; it has no apology and no "soon".
+There is no visit archive page (removed 2026-11-03).
 The shelter's own news channels (Instagram, Telegram) are not on the home page; the footer has the Telegram channel.
 
 The next visit is the one big accent: the day number in

@@ -36,6 +36,7 @@ fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String) {
 
     pageLayout(locale, pageTitle = messages.t("cat.page.title"), currentPath = currentPath) {
         h1 { +messages.t("cat.page.title") }
+        p(classes = "list-note") { +messages.t("cat.list.note") }
 
         val (adopted, others) = cats.partition { it.adoptionStage == AdoptionStage.ADOPTED }
         catList(others, locale)

@@ -8,7 +8,6 @@ import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.service.VisitOverrides
 import org.proanima.shelter.service.nextScheduledVisit
 import org.proanima.shelter.views.respondPage
-import org.proanima.shelter.views.visitArchivePage
 import org.proanima.shelter.views.visitsPage
 import java.time.Clock
 import java.time.LocalDateTime
@@ -19,12 +18,6 @@ fun Route.visitRoutes(locale: AppLocale, clock: Clock, visitOverrides: VisitOver
 
         call.respondPage(locale) {
             visitsPage(nextVisit, locale, call.request.path())
-        }
-    }
-
-    get("/visits/archive") {
-        call.respondPage(locale) {
-            visitArchivePage(locale, call.request.path())
         }
     }
 }

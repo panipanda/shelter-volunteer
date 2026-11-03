@@ -89,7 +89,7 @@ Routes and services must not depend on JSON-specific implementation details.
 Visit data is not stored yet. Visits are organised in the cat volunteer chat, and sync with it is not
 implemented, so the test data (`data/visits.json`, `data/visit-participants.json`) and the whole visit
 data layer (`VolunteerVisit`, `VisitService`, `VisitRepository` and related code) were removed.
-The "Upcoming visits" and "Visit archive" pages are stubs that point to the chat and the coordinators.
+The "Upcoming visits" page shows the next trip and how to join it. The "Visit archive" page was removed (2026-11-03): an empty public stub works against trust; bring it back when there is something to show.
 The data model will be designed again together with the sync.
 
 The home page computes the next visit from the regular schedule (Wednesday 9:00 and Saturday 10:00,

@@ -70,30 +70,24 @@ class VisitRoutesTest {
     }
 
     @Test
-    fun `GET visits archive returns a stub page`() = testApplication {
-        application {
-            configureRoutes(CatService(catRepository), GuideService(guideRepository))
-        }
-
-        val response = client.get("/ru/visits/archive")
-        val body = response.plainText()
-
-        assertEquals(HttpStatusCode.OK, response.status)
-        assertTrue(body.contains("Архив визитов"))
-        assertTrue(body.contains("Архив прошедших визитов скоро появится здесь"))
-        assertTrue(body.contains("""href="/ru/visits""""))
-    }
-
-    @Test
-    fun `visit stubs are served in every locale`() = testApplication {
+    fun `there is no visit archive page`() = testApplication {
         application {
             configureRoutes(CatService(catRepository), GuideService(guideRepository))
         }
 
         listOf("ru", "en", "sr").forEach { code ->
-            listOf("/$code/visits", "/$code/visits/archive").forEach { path ->
-                assertEquals(HttpStatusCode.OK, client.get(path).status, path)
-            }
+            assertEquals(HttpStatusCode.NotFound, client.get("/$code/visits/archive").status, code)
+        }
+    }
+
+    @Test
+    fun `visits page is served in every locale`() = testApplication {
+        application {
+            configureRoutes(CatService(catRepository), GuideService(guideRepository))
+        }
+
+        listOf("ru", "en", "sr").forEach { code ->
+            assertEquals(HttpStatusCode.OK, client.get("/$code/visits").status, code)
         }
     }
 }

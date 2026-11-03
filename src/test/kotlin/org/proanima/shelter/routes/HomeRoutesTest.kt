@@ -279,6 +279,35 @@ class HomeRoutesTest {
     }
 
     @Test
+    fun `GET home has no restriction claim and a plain link to the help page under the heading`() {
+        listOf("ru", "en", "sr").forEach { code ->
+            val body = homeAt("2026-09-14T10:00:00", "/$code")
+
+            val hero = body.substringBefore("</section>")
+            assertFalse(hero.contains("ограничений") || hero.contains("restrictions") || hero.contains("ograničenja"), code)
+            assertTrue(hasTag(hero, "a", """href="/$code/help""""), code)
+            assertFalse(hero.contains("""class="button""""), "$code: the button is in the next-visit block")
+        }
+    }
+
+    @Test
+    fun `GET home puts how to join before the cats`() = testApplication {
+        application {
+            configureRoutes(
+                catService = CatService(catRepository(listOf(cat(1, "Alfa", AdoptionStage.FOR_ADOPTION)))),
+                guideService = GuideService(guideRepository)
+            )
+        }
+
+        listOf("ru", "en", "sr").forEach { code ->
+            val body = client.get("/$code").plainText()
+
+            assertTrue(body.contains("cat-list"), code)
+            assertTrue(body.indexOf("""id="join"""") < body.indexOf("cat-list"), code)
+        }
+    }
+
+    @Test
     fun `GET visits has no quote, only the two blocks`() {
         assertFalse(homeAt("2026-09-14T10:00:00", "/ru/visits").contains("<blockquote"))
     }

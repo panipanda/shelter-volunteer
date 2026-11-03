@@ -11,9 +11,9 @@ import kotlin.test.assertTrue
 class HelpRoutesTest {
 
     private val headings = mapOf(
-        "ru" to "Как ещё помочь",
-        "en" to "Other ways to help",
-        "sr" to "Kako još možete pomoći"
+        "ru" to "Как помочь",
+        "en" to "How to help",
+        "sr" to "Kako pomoći"
     )
 
     @Test
@@ -28,7 +28,8 @@ class HelpRoutesTest {
                 assertEquals(HttpStatusCode.OK, response.status, code)
                 assertTrue(body.contains("<h1>$heading</h1>"), code)
                 assertEquals(5, Regex("<li>").findAll(body.substringAfter("help-list").substringBefore("</ul>")).count(), code)
-                assertTrue(hasTag(body, "a", """href="https://linktr.ee/svora.volunteers""""), code)
+                assertTrue(hasTag(body, "a", """href="https://linktr.ee/svora.volunteers"""", """class="button""""), code)
+                assertTrue(body.indexOf("linktr.ee") < body.indexOf("help-list"), "$code: the donation button is above the list")
                 assertTrue(hasTag(body, "a", """href="/$code#join""""), code)
             }
         }

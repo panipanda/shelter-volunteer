@@ -34,7 +34,9 @@ class DogRoutesTest {
 
             assertEquals(HttpStatusCode.OK, response.status, code)
             assertEquals(1, Regex("<h1>").findAll(main).count(), code)
-            assertEquals(0, Regex("<h2>|<section>|<p>|<ul>").findAll(main).count(), "$code: only the heading and the cards")
+            assertEquals(0, Regex("<h2>|<section>|<ul>").findAll(main).count(), "$code: only the heading, one note and the cards")
+            assertEquals(1, Regex("<p>|<p ").findAll(main).count(), code)
+            assertTrue(hasTag(main, "p", """class="list-note""""), "$code: the one line says the list is still being filled")
             assertFalse(body.contains("https://t.me/dashafirman"), "$code: the sign-up is on the home page")
             assertFalse(body.contains("https://linktr.ee/svora.volunteers"), "$code: donations live on the help page")
         }

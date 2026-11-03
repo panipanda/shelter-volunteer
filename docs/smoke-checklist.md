@@ -334,7 +334,6 @@ Expected result:
 - page contains navigation links to:
   - `/ru/cats`
   - `/ru/visits`
-  - `/ru/visits/archive`
 
 Acceptance criteria:
 
@@ -342,45 +341,14 @@ Acceptance criteria:
 - no data file is required for this page;
 - HTML response is returned with `ContentType.Text.Html`.
 
-## Visit archive endpoint (stub)
+## Visit archive endpoint (removed)
 
-Open in a browser:
-
-```text
-http://localhost:8080/ru/visits/archive
-```
-
-Or check from terminal.
-
-### Windows PowerShell
-
-```powershell
-Invoke-WebRequest http://localhost:8080/ru/visits/archive
-```
-
-### Linux/macOS
-
-```bash
-curl http://localhost:8080/ru/visits/archive
-```
+There is no archive page: the stub was taken off the site because an empty public page works against trust.
 
 Expected result:
 
-- response is returned successfully;
-- response is an HTML page;
-- page contains the `Visit archive` heading;
-- page contains the stub text saying the archive will appear soon;
-- page contains no visit cards;
-- page contains navigation links to:
-  - `/ru/cats`
-  - `/ru/visits`
-  - `/ru/visits/archive`
-
-Acceptance criteria:
-
-- application does not crash;
-- no data file is required for this page;
-- HTML response is returned with `ContentType.Text.Html`.
+- `GET /ru/visits/archive` (and `/en/...`, `/sr/...`) returns `404 Not Found` with the error page;
+- no page links to `/visits/archive`.
 
 ## Volunteer guide endpoint
 
@@ -397,7 +365,6 @@ Expected:
 - Navigation links are visible:
   - `Cats` -> `/ru/cats`
   - `Volunteer visits` -> `/ru/visits`
-  - `Visit archive` -> `/ru/visits/archive`
 
 Note: guide body content is now read from `content/volunteer-guide.md` (or the locale-specific
 `content/volunteer-guide.{locale}.md`, when present) at request time via `GuideRepository`, and
@@ -408,7 +375,7 @@ renders it too.
 
 ## Other locales
 
-Repeat the cat list, cat details, visits, visit archive, and guide checks above under `/en` and
+Repeat the cat list, cat details, visits, and guide checks above under `/en` and
 `/sr`.
 
 - `/ru` now has real translations for UI strings (`messages_ru.properties`), JSON content
@@ -437,7 +404,7 @@ Expected result:
 - `EN` and `SR` are links;
 - clicking `EN` opens `http://localhost:8080/en/cats/nami` — same page, only the locale prefix
   changes, the rest of the path (`/cats/nami`) is preserved;
-- this also holds on `/{lang}/guide`, `/{lang}/visits`, `/{lang}/visits/archive`, and the home
+- this also holds on `/{lang}/guide`, `/{lang}/visits`, and the home
   page (`/{lang}`).
 
 Acceptance criteria:
@@ -537,17 +504,17 @@ Current automated coverage includes:
 
 - repository tests;
 - service tests;
-- route tests for the visit stub pages (targeting `/ru/visits` and `/ru/visits/archive`);
+- route tests for the visits page (targeting `/ru/visits`) and for the missing archive (`/ru/visits/archive` is 404);
 - route tests for the home page next-visit card (Wednesday/Saturday choice with a fixed clock);
 - route tests for guide page (targeting `/ru/guide`):
   - `GET /ru/guide` returns `200 OK`;
   - response contains the main guide sections;
-  - response contains navigation links to `/ru/cats`, `/ru/visits`, and `/ru/visits/archive`.
+  - response contains navigation links to `/ru/cats` and `/ru/visits`.
 
 Acceptance criteria:
 
 - all automated tests pass;
-- route tests confirm that `/ru/visits` and `/ru/visits/archive` return stub pages in every locale;
+- route tests confirm that `/ru/visits` is served in every locale and `/ru/visits/archive` returns 404;
 - route tests confirm that the home page shows the nearest Wednesday or Saturday, mentions the chat
   and coordinators, and shows no free-place count.
 
@@ -559,11 +526,9 @@ After changing routes, views, services, repositories, static resources, or JSON 
   - `/ru/cats`
   - `/ru/cats/1`
   - `/ru/visits`
-  - `/ru/visits/archive`
   - `/health`
 - Verify that visit pages navigation does not link to the current page unnecessarily:
   - `/ru/visits` contains link to `/ru/guide`
-  - `/ru/visits/archive` contains link to `/ru/guide`
 - Verify that `/`, `/en`, and `/sr` still resolve the same set of pages as `/ru`.
 
 ### Windows
@@ -587,7 +552,7 @@ Then manually re-check:
 - `GET /ru/cats/nami`
 - `GET /ru/cats/no-such-cat`
 - `GET /ru/visits`
-- `GET /ru/visits/archive`
+- `GET /ru/visits/archive` (404)
 
 ## Stop application
 
@@ -626,7 +591,7 @@ Current implemented pages:
 - `/{lang}/cats/{slug}` returns HTML for an existing cat; the slug is derived from the cat's
   English name (see `catSlug()` in `service/DisplayHelpers.kt`), the numeric `id` is internal only.
 - `/{lang}/cats/{slug}` returns plain text for a slug that matches no cat.
-- `/{lang}/visits` and `/{lang}/visits/archive` return stub HTML pages (no visit data yet).
+- `/{lang}/visits` returns the next-visit and how-to-join blocks; `/{lang}/visits/archive` does not exist (404).
 - `/{lang}/guide` — volunteer guide page; `ru`, `en` and `sr` body content is real
   (see "Other locales" above).
 - `/{lang}/help` — other ways to help the shelter (donations, food, things, fostering).

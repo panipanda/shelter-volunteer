@@ -30,6 +30,7 @@ fun HTML.dogsPage(dogs: List<Dog>, locale: AppLocale, currentPath: String) {
         // Just like the list of cats: the heading and the cards. How to sign up for the dog trips is on the
         // home page, who Svora is is on the help page.
         h1 { +messages.t("nav.dogs") }
+        p(classes = "list-note") { +messages.t("dogs.list.note") }
         dogList(dogs, locale)
     }
 }

@@ -25,6 +25,9 @@ fun HTML.helpPage(locale: AppLocale, currentPath: String) {
     ) {
         h1 { +messages.t("help.title") }
         p { +messages.t("help.intro") }
+        // The donation link is the one thing this page asks for, so it is the page's primary button, above the list.
+        p { a(href = SVORA_LINKTREE_URL, classes = "button") { +messages.t("help.link.donate") } }
+        p { +messages.t("help.needs") }
         ul(classes = "help-list") {
             li { +messages.t("help.item.donations") }
             li { +messages.t("help.item.food") }
@@ -32,7 +35,6 @@ fun HTML.helpPage(locale: AppLocale, currentPath: String) {
             li { +messages.t("help.item.supplies") }
             li { +messages.t("help.item.foster") }
         }
-        p { a(href = SVORA_LINKTREE_URL) { +messages.t("help.link.donate") } }
         // The coordinators' contacts live in the "join" section of the home page; here they are only a link to it.
         p {
             +"${messages.t("help.contact")} "

@@ -39,21 +39,26 @@ fun HTML.homePage(cats: List<Cat>, nextVisit: NextVisit, locale: AppLocale, curr
         currentPath = currentPath,
         description = messages.t("home.page.description")
     ) {
-        heroSection(messages)
+        heroSection(locale, messages)
         nextVisitSection(nextVisit, locale, messages)
         img(src = "/images/home-hero.jpg", alt = messages.t("home.hero.photo.alt"), classes = "hero-photo")
-        catsSection(cats, locale, messages)
+        // The visit button leads to the join steps, so they come right after the photo, before the cats.
         joinSection(locale, messages) { founderQuote(messages) }
+        catsSection(cats, locale, messages)
         volunteersSection(messages)
         aboutSection(messages)
     }
 }
 
-// The primary button of the page is in the next-visit block right under the hero, so the hero has no links.
-private fun FlowContent.heroSection(messages: ResourceBundle) {
+// The primary button of the page is in the next-visit block right under the hero, so the hero has no buttons.
+// The one plain link is the way in for a reader who wants to help with money or things, not with visits.
+private fun FlowContent.heroSection(locale: AppLocale, messages: ResourceBundle) {
     section(classes = "hero") {
         h1 { +messages.t("home.hero.headline") }
         p(classes = "lead") { +messages.t("home.hero.lead") }
+        p(classes = "hero-help") {
+            textWithLink(messages.t("home.hero.help"), "/${locale.code}/help", messages.t("home.hero.help.link"))
+        }
     }
 }
 
