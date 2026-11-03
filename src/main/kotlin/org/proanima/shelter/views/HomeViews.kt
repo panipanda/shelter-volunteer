@@ -51,14 +51,13 @@ fun HTML.homePage(cats: List<Cat>, nextVisit: NextVisit, locale: AppLocale, curr
 }
 
 // The primary button of the page is in the next-visit block right under the hero, so the hero has no buttons.
-// The one plain link is the way in for a reader who wants to help with money or things, not with visits.
+// The one plain link (a whole sentence) is the way in for a reader who wants to help with money or things, not with visits.
 private fun FlowContent.heroSection(locale: AppLocale, messages: ResourceBundle) {
     section(classes = "hero") {
         h1 { +messages.t("home.hero.headline") }
         p(classes = "lead") { +messages.t("home.hero.lead") }
-        p(classes = "hero-help") {
-            textWithLink(messages.t("home.hero.help"), "/${locale.code}/help", messages.t("home.hero.help.link"))
-        }
+        // The whole sentence is the link, so it needs no "click here" next to it.
+        p(classes = "hero-help") { a(href = "/${locale.code}/help") { +messages.t("home.hero.help") } }
     }
 }
 

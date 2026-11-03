@@ -117,8 +117,8 @@ Running text (typesetting):
 
 ### Home page order
 
-Heading and lead (no buttons, no figures; one plain text line under the lead, "Want to help with money or supplies? How to
-help", links to `/help` for the reader who is not coming to visit) → next visit → photo → how to join (four steps: the guide,
+Heading and lead (no buttons, no figures; one line under the lead, "You can help us with money or supplies", is
+a link as a whole sentence to `/help`, for the reader who is not coming to visit) → next visit → photo → how to join (four steps: the guide,
 the cats' chat, the dogs' chat, picking a visit; then the founder's quote) → cats looking for a home → how volunteers help
 (what they do with the cats and with the dogs, three points each) → about the shelter (the figures, nothing else: no links).
 Five sections after the hero; each one after the photo starts with a 1 px rule. The join steps come before the cats because the
