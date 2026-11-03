@@ -285,8 +285,8 @@ class HomeRoutesTest {
 
             val hero = body.substringBefore("</section>")
             assertFalse(hero.contains("ограничений") || hero.contains("restrictions") || hero.contains("ograničenja"), code)
-            assertTrue(hasTag(hero, "a", """href="/$code/help""""), code)
-            assertFalse(hero.contains("""class="button""""), "$code: the button is in the next-visit block")
+            assertTrue(hasTag(hero, "a", """href="/$code/help"""", """class="button button-secondary""""), code)
+            assertFalse(hero.contains("""class="button""""), "$code: the primary button is in the next-visit block")
         }
     }
 

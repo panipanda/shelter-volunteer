@@ -429,6 +429,24 @@ a.logo {
     background: var(--color-accent-active);
 }
 
+/* Outlined variant: for an action that must be visible but must not compete with the primary button. */
+
+.button-secondary {
+    background: transparent;
+    color: var(--color-accent);
+    box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+
+.button-secondary:hover {
+    background: var(--color-surface);
+    color: var(--color-accent-hover);
+}
+
+.button-secondary:active {
+    background: var(--color-surface);
+    color: var(--color-accent-active);
+}
+
 /* A row of plain links (secondary actions, contacts) */
 
 .links {
@@ -752,7 +770,7 @@ main.page > section > h3:not(:first-child) {
 }
 
 .hero-help {
-    margin-top: 12px;
+    margin-top: 16px;
 }
 
 /* A line under the heading of a list: what the list is at the moment. */

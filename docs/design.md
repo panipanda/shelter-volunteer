@@ -118,7 +118,7 @@ Running text (typesetting):
 ### Home page order
 
 Heading and lead (no buttons, no figures; one line under the lead, "You can help us with money or supplies", is
-a link as a whole sentence to `/help`, for the reader who is not coming to visit) → next visit → photo → how to join (four steps: the guide,
+an outlined button as a whole sentence to `/help`, for the reader who is not coming to visit) → next visit → photo → how to join (four steps: the guide,
 the cats' chat, the dogs' chat, picking a visit; then the founder's quote) → cats looking for a home → how volunteers help
 (what they do with the cats and with the dogs, three points each) → about the shelter (the figures, nothing else: no links).
 Five sections after the hero; each one after the photo starts with a 1 px rule. The join steps come before the cats because the
@@ -187,7 +187,8 @@ Dark: accent on surface 6.3, muted on surface 5.9. Re-check when changing any va
 
 - **Primary button**: accent background, `on-accent` text, 600, `9px 16px`, radius 4. Hover/pressed use the
   hover/active tokens. One primary button per view.
-- **Secondary action**: a plain link. No outlined or ghost buttons.
+- **Secondary action**: a plain link. The one exception is `.button-secondary` (outlined, accent text and 1 px accent
+  border, no fill), used for the home page's "You can help us with money or supplies" line under the lead.
 - **Links**: accent colour, always underlined, `text-underline-offset: 3px`, 1 px; 2 px on hover.
   A contact in a step ("write to the coordinator: Name (@handle), Name (@handle)") is part of the sentence: it follows
   the colon in the same line and wraps with the text, never in a row of its own under it. A name stays together with its
