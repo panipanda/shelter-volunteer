@@ -34,67 +34,76 @@ Planned MVP features:
 - Manually updated visit availability
 - Multi-locale UI: `ru` (default), `en` and `sr` (Latin script) all have real translated content
 
+Added after the MVP went live: an admin panel for cats, dogs and their photos, backed by a database (see
+"Admin panel" below).
+
 ## Out of scope for MVP
 
 The following features are intentionally postponed:
 
-- Admin panel
 - Online visit registration
 - Visit cancellation flow
-- User accounts
-- Authentication and authorization
+- User accounts (the admin panel has one shared password, not accounts)
 - Public participant lists
 - Telegram integration
 - Google Calendar integration
 - Payment or donation integration
-- Database-backed storage
 
 ## MVP architecture
 
-The MVP uses file-based storage:
+The site has two storage modes, chosen at startup by the `DATABASE_URL` environment variable (see
+[docs/decisions.md](docs/decisions.md) "Data storage").
+
+**Without `DATABASE_URL` (the default, and what local development and the tests use)** everything is files:
 
 - `data/cats.json` for cat catalogue data
 - Volunteer visits are not stored yet: the "Visits" page shows the next trip and how to join it, and there is no visit archive page, until sync with the cat volunteer chat is implemented. The next visit is computed from the regular schedule (Wednesday 9:00, Saturday 10:00, Vračar)
 - `data/visit-overrides.json` (optional) for changes to that schedule, read at startup: `{"cancelled": ["2026-10-24"], "extra": [{"date": "2026-10-25", "departure": "11:00"}]}`. A moved trip is a cancellation plus an extra trip. A malformed file stops the server on start
+- `data/dogs.json` for dogs, `data/images/` for the photos of cats and dogs
 - `content/volunteer-guide.md` for volunteer instructions (plus a `.{locale}.md` variant per translated locale)
 
-Application code should access data through repository interfaces, not directly from routes.
+**With `DATABASE_URL` set** the cats, the dogs and their photos live in PostgreSQL (Neon, free plan) and the admin
+panel is switched on. The guide and `data/visit-overrides.json` stay files in both modes.
 
-Planned MVP data access flow:
-
-```text
-routes -> services -> repositories -> JSON/Markdown files
-```
-
-Future data access flow:
+Application code accesses data through repository interfaces, not directly from routes, so the web layer does not
+know which mode it runs in:
 
 ```text
-routes -> services -> repositories -> SQLite/PostgreSQL
+routes -> services -> repositories -> JSON/Markdown files   (no DATABASE_URL)
+routes -> services -> repositories -> PostgreSQL            (DATABASE_URL set)
 ```
-
-This keeps the web layer independent from the storage implementation.
 
 ## Data storage strategy
 
-The MVP starts with JSON and Markdown storage to keep the first version simple, free, and deployable.
-
-Planned storage evolution:
+The site started with JSON and Markdown files to keep the first version simple, free, and deployable. Files stay
+the default. The database came with the admin panel, because the free hosting plan wipes its disk on every deploy,
+so content edited while the site runs needs a home outside the host. SQLite, the earlier plan, was dropped for
+that reason: a SQLite file would be wiped too.
 
 ```text
-JSON/Markdown -> SQLite -> PostgreSQL if needed
+JSON/Markdown files  ->  PostgreSQL (cats, dogs, photos; when DATABASE_URL is set)
 ```
-
-The repository layer should make this migration possible without rewriting routes and services.
 
 ### Public data
 
-Public website data lives in:
+Public website data lives in (file mode; in database mode the cats, dogs and photos are in the database and these
+files only seed an empty one):
 
 ```text
 data/cats.json
+data/dogs.json
+data/images/
 content/volunteer-guide.md
 content/volunteer-guide.ru.md
 ```
+
+## Admin panel
+
+At `/admin`, only when `DATABASE_URL` is set. Russian interface, one shared password. Edits cats and dogs (texts in
+`ru`, `en` and `sr`), their photos (upload, order, cover, delete), drafts and publishing, a preview of any record
+as visitors see it, and a one-button backup (a zip of the texts and photos). Nothing on the public pages links
+to it. How to switch it on and what each setting means: [docs/deploy.md](docs/deploy.md) "Admin panel". To look at
+it locally with no setup: `./gradlew devAdmin` (see [SETUP.md](SETUP.md)).
 
 ### Internal data
 
@@ -167,26 +176,22 @@ Example:
 
 ## Static assets
 
-Static website assets such as cat photos and default images are stored under:
+Stylesheets, fonts and scripts are bundled under `src/main/resources/static/`. Pictures are served by the site at
+`/images/...` (from `data/images/` in file mode, from the database in database mode), for example:
 
 ```text
-src/main/resources/static/
+/images/felix.jpg
+/images/felix-card.jpg     the smaller copy that cards and thumbnails load
 ```
 
-Cat photos should use public URLs like:
-
-```text
-/images/cats/zoka.jpg
-```
-
-The default images for a cat or a dog without photos should be available at:
+The default images for a cat or a dog without photos are available at:
 
 ```text
 /images/default-cat.svg
 /images/default-dog.svg
 ```
 
-JSON files should store public image URLs, not internal filesystem paths.
+JSON files and database records store public image URLs, not internal filesystem paths.
 
 ## Planned tech stack
 
@@ -197,8 +202,7 @@ JSON files should store public image URLs, not internal filesystem paths.
 - kotlinx.serialization
 - JUnit 5 / Kotlin test
 - HTML/CSS
-- JSON/Markdown storage for MVP
-- SQLite later
+- JSON/Markdown files by default; PostgreSQL (Neon) for cats, dogs and photos when `DATABASE_URL` is set
 - Docker, deployed to Render (see [docs/deploy.md](docs/deploy.md))
 
 ## Current source structure

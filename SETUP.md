@@ -261,27 +261,26 @@ routes/      Ktor routes, added later
 views/       HTML rendering, added later
 ```
 
-Current planned architecture:
+Architecture (the mode is picked at startup by the `DATABASE_URL` environment variable):
 
 ```text
-routes -> services -> repositories -> JSON/Markdown files
-```
-
-Future storage migration path:
-
-```text
-JSON/Markdown -> SQLite -> PostgreSQL if needed
+routes -> services -> repositories -> JSON/Markdown files   (no DATABASE_URL: the default for local work)
+routes -> services -> repositories -> PostgreSQL            (DATABASE_URL set: production, with the admin panel)
 ```
 
 ## Data files
 
-The MVP uses file-based storage.
+Without `DATABASE_URL` the site uses file-based storage; this is what you get locally unless you set it.
+(With a database, the cats, dogs and photos are in it and `data/` only seeds an empty one: see
+[docs/deploy.md](docs/deploy.md).)
 
-Current planned data files:
+Current data files:
 
 ```text
 data/
   cats.json
+  dogs.json
+  images/
 
 content/
   volunteer-guide.md
@@ -292,6 +291,8 @@ Purpose:
 
 ```text
 data/cats.json                public cat catalogue data (per-field ru/en/sr text)
+data/dogs.json                public dog data, the same shape
+data/images/                  photos of cats and dogs (each with a -card.jpg copy), site pictures (home-*), placeholders (default-*)
 content/volunteer-guide.md    volunteer instruction content, English (fallback for missing translations)
 content/volunteer-guide.ru.md volunteer instruction content, Russian
 content/volunteer-guide.sr.md volunteer instruction content, Serbian (Latin)
@@ -320,6 +321,9 @@ every problem. `DataValidationTest` runs the same check against the real `data/`
 
 ### Adding or replacing a photo
 
+On the live site (database mode) photos are added in the admin panel, which makes both copies itself; the rest of
+this section is for file mode, i.e. for `data/images/` in the repository.
+
 Cards and thumbnails load a smaller copy of each photo, `name-card.jpg` next to `name.jpg`. After putting a
 photo into `data/images/` and listing it in `photoUrls`, make the copy and commit both files:
 
@@ -329,6 +333,25 @@ python tools/make-card-images.py
 
 The script needs Pillow (`pip install pillow`), skips copies that are already up to date and takes
 `--force` to redo all of them. Without the copy the server stops at startup and names the missing file.
+
+## The admin panel and the database mode locally
+
+The admin panel exists only in database mode. To look at it, with no database to install:
+
+```powershell
+.\gradlew.bat devAdmin
+```
+
+This starts the site with the panel at <http://localhost:8095> on a throwaway in-memory database (filled from
+`data/` at each start, gone when you stop it). Log in with the password `dev-password-123`. It runs with the same
+memory limits as the Render service (`-Xmx256m`), so a photo upload behaves as it will in production. The code is
+in `src/test`, not in the production build.
+
+To run against a real PostgreSQL instead, set `DATABASE_URL` (`postgresql://user:password@host/db?sslmode=require`),
+`ADMIN_PASSWORD` (at least 12 characters) and `SESSION_SECRET` (at least 32) before starting the app (add
+`ADMIN_COOKIE_SECURE=false` if your browser refuses the login cookie over plain `http://`); use a
+separate database, never the production one. `PostgresIntegrationTest` is skipped unless `TEST_DATABASE_URL` is set;
+with it set, it runs in a schema of its own and removes it afterwards.
 
 ## Scratch files
 

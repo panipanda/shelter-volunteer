@@ -1,5 +1,7 @@
 package org.proanima.shelter.admin
 
+import io.ktor.http.ContentDisposition
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.PartData
@@ -14,6 +16,7 @@ import io.ktor.server.request.receiveMultipart
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.header
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondOutputStream
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
@@ -36,6 +39,7 @@ import org.proanima.shelter.views.PagePreview
 import org.proanima.shelter.views.catDetailsPage
 import org.proanima.shelter.views.dogDetailsPage
 import org.proanima.shelter.views.respondPage
+import org.slf4j.LoggerFactory
 import java.security.SecureRandom
 import java.time.Clock
 import java.time.LocalDate
@@ -43,6 +47,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 private val SHELTER_ZONE = ZoneId.of("Europe/Belgrade")
 
@@ -62,6 +67,9 @@ class AdminSetup(
     val clock: Clock = Clock.systemUTC(),
     val throttle: FailedLoginThrottle = FailedLoginThrottle()
 ) {
+    // One backup at a time: it reads every photo, and the free plan has a tenth of a CPU.
+    internal val exportRunning = AtomicBoolean(false)
+
     internal fun nowText(): String =
         ZonedDateTime.ofInstant(clock.instant(), SHELTER_ZONE).truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 
@@ -156,10 +164,53 @@ fun Route.adminRoutes(admin: AdminSetup) {
             }
         }
 
+        // A POST with the form's token, not a plain link: it makes the server read every photo, so a page on another
+        // site must not be able to start it by sending the person's browser to a link.
+        post("/export") {
+            admin.withForm(call) { session, _ -> sendBackup(admin, call, session) }
+        }
+
         petRoutes(admin, catKind(admin))
         petRoutes(admin, dogKind(admin))
     }
 }
+
+private suspend fun sendBackup(admin: AdminSetup, call: ApplicationCall, session: AdminSession) {
+    if (!admin.exportRunning.compareAndSet(false, true)) {
+        call.respondHtml(HttpStatusCode.TooManyRequests) {
+            adminMessagePage(
+                "Копия уже собирается",
+                "Кто-то уже скачивает копию. Подождите минуту и нажмите кнопку снова.",
+                "/admin",
+                "К списку",
+                session.csrf
+            )
+        }
+        return
+    }
+    try {
+        // Read before the answer starts: a database that cannot be reached becomes an error page, not a broken file.
+        val cats = admin.cats.findAll()
+        val dogs = admin.dogs.findAll()
+        val names = admin.photos.names()
+        val today = admin.today()
+        call.response.header(
+            HttpHeaders.ContentDisposition,
+            ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, "proanima-backup-$today.zip").toString()
+        )
+        call.respondOutputStream(ContentType.Application.Zip) {
+            val report = writeBackup(this, cats, dogs, names, admin.photos, today)
+            backupLog.info(
+                "Backup sent: {} cats, {} dogs, {} photo files, {} missing",
+                report.cats, report.dogs, report.photos, report.missingPhotos.size
+            )
+        }
+    } finally {
+        admin.exportRunning.set(false)
+    }
+}
+
+private val backupLog = LoggerFactory.getLogger("org.proanima.shelter.admin.Backup")
 
 private fun Route.loginRoutes(admin: AdminSetup) {
     get("/login") {

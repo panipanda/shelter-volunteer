@@ -214,6 +214,19 @@ fun HTML.adminDashboardPage(cats: List<Cat>, dogs: List<Dog>, csrf: String, flas
         }
 
         storageNote(photoBytes)
+
+        section(classes = "admin-section") {
+            h2 { +"Резервная копия" }
+            p(classes = "admin-note") {
+                +"Один архив: тексты всех кошек и собак (на трёх языках, с черновиками) и все их фото. "
+                +"Сохраните его у себя раз в месяц и после больших правок: по нему сайт можно восстановить. "
+                +"Архив собирается на ходу и может занять минуту, не закрывайте вкладку."
+            }
+            form(action = "/admin/export", method = FormMethod.post) {
+                csrfField(csrf)
+                button(type = ButtonType.submit, classes = "button button-secondary") { +"Скачать копию (zip)" }
+            }
+        }
     }
 
 private fun photoCount(photoUrls: List<String>) = if (photoUrls.isEmpty()) "без фото" else "фото: ${photoUrls.size}"

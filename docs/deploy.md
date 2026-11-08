@@ -107,8 +107,8 @@ It is **off unless `ADMIN_PASSWORD` and `SESSION_SECRET` are set as well**, and 
 **Setup.** Add two more environment variables in Render:
 
 - `ADMIN_PASSWORD`: the one shared password, at least 12 characters (a few random words is fine and easy to type).
-  Whoever knows it can change everything on the site's cats and dogs. To change it or to lock someone out, change the
-  variable; every session ends at the next restart.
+  Whoever knows it can change everything on the site's cats and dogs. See "Who knows the password" below for what to
+  do when someone must be locked out.
 - `SESSION_SECRET`: at least 32 random characters, used to sign the login cookie. Never typed by anyone. To make one
   in PowerShell: `[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))`.
 
@@ -146,6 +146,33 @@ how much of the database's 1 GB the photos take.
   (checked with the same JVM limits as `render.yaml`: a 24-megapixel photo takes about a second here). The free plan has
   a tenth of a CPU, so expect it to be several times slower on Render; upload three or four photos at a time at first.
 
+**Backup.** The button "Скачать копию (zip)" at the bottom of the list page downloads one archive: `cats.json` and
+`dogs.json` (all three languages, drafts included, marked `"published": false`), `images/` (every photo, original and
+card copy) and a `README.txt` that says what is inside, how many of each, and names any photo that a record points at
+but the database lacks. The layout is the one the site uses without a database, so the archive can be unpacked into
+`data/` (and `data/images/`) of the repository, or the same files can seed a new empty database. The site's own
+pictures (`home-*`, `default-*`) are not in it: they are in the repository. Neon keeps a history of its own for a
+short time on the free plan, but a copy kept by the people does not depend on the account, so ask the volunteers to
+download one about once a month and after big changes (new cats, many photos).
+- It is a POST with the form's token, not a plain link, so a page on another site cannot start it. One backup runs at
+  a time; a second press meanwhile gets a "Копия уже собирается" page.
+- The archive is streamed photo by photo (about the size of one photo in memory, whatever the total), and the JPEGs
+  are stored as they are rather than compressed again, because the free plan has a tenth of a CPU. A zip's
+  index is written last, so an archive cut short by a broken connection is reported as damaged by zip programs
+  instead of quietly opening with photos missing. If that happens, download it again.
+- Each backup reads every photo from Neon, so it counts against the free plan's 5 GB of transfer a month: with the
+  photos near the 1 GB limit that is a few backups a month, with a few hundred MB of photos it is many more.
+  The list page shows how much the photos take.
+
+**Who knows the password.** The password is shared by a few senior volunteers, and the panel has no accounts. This
+is a decision, not an oversight (see `docs/decisions.md`), with consequences to keep in mind:
+- Nothing records who changed what. If something is lost, the backup is the way back, not a history.
+- Two people editing the same record at once: the last save wins and the first person's changes are gone. Agree who
+  edits what, or look at the list for a change before starting.
+- When someone should lose access, change **both** variables in Render: a new `ADMIN_PASSWORD` stops new logins, and
+  a new `SESSION_SECRET` ends the sessions that are open (the password alone does not: a session lasts 12 hours and a
+  restart does not end it). Then tell the others the new password in person, not in a group chat.
+
 **Trying it locally.** `./gradlew devAdmin` starts the site with the panel on a throwaway in-memory database
 (it starts with the content of `data/`) at <http://localhost:8095>, password `dev-password-123`. Nothing real is
 connected. Set `ADMIN_COOKIE_SECURE=false` when running over plain http with your own variables.
@@ -155,4 +182,4 @@ connected. Set `ADMIN_COOKIE_SECURE=false` when running over plain http with you
 Without `DATABASE_URL`, photos and JSON/Markdown data live inside the Docker image rather than on a persistent
 volume or database, matching the MVP's file-based storage decision (see `docs/decisions.md`, "Media
 storage"). Every content update triggers a rebuild and redeploy. The database mode above is the way out of
-this; the admin panel that edits its content is being built on top of it.
+this; the admin panel (above) edits its content.

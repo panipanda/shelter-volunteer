@@ -40,27 +40,34 @@ Features:
   internal; a cat without a name (or whose name has no usable characters) falls back to the
   numeric id, same as before this change
 
-## Phase 2 — SQLite storage
+## Phase 2 — Database storage (done for cats, dogs and photos)
 
-Goal: replace JSON storage with SQLite without rewriting routes and services.
+Goal: replace JSON storage without rewriting routes and services. The plan said SQLite; it became PostgreSQL
+(Neon, free plan) because the free Render plan wipes the disk on every deploy, which would wipe a SQLite file too
+(see `docs/decisions.md` "Data storage").
 
-Tasks:
+Done:
 
-- Add SQLite database
-- Create tables for cats, visits and visit participants
-- Write migration script from JSON to SQLite
-- Implement SQLite repositories
-- Keep existing service and route contracts
-- Add backup process
+- Cats, dogs and their photos in PostgreSQL when `DATABASE_URL` is set; files stay the default
+- First start copies `data/` into an empty database, once
+- Same repository interfaces, same routes and services
+- Backup: one button in the admin (a zip with the texts and the photos)
+
+Left: visits and visit participants have no storage at all yet (visits are organised in the volunteer chat, see
+`docs/decisions.md` "Visit data").
 
 ## Phase 3 — Simple content management
 
-- Add password-protected admin area
-- Edit cats
-- Edit visit availability and status
+Done (2026-11): a password-protected admin area at `/admin` (database mode only) that edits cats and dogs with
+their photos, with drafts, preview, validation of required fields and a backup. See `docs/decisions.md` "Admin
+panel" and `docs/deploy.md`.
+
+Left:
+
+- Edit visit availability and status (the next-visit overrides are still `data/visit-overrides.json`)
 - Edit volunteer guide content
-- Validate required fields
-- Prevent accidental public exposure of participant data
+- Prevent accidental public exposure of participant data (relevant once participants are stored)
+- Possibly: personal logins and a "who changed what" record, if one shared password stops being enough
 
 ## Phase 4 — Dog volunteering support
 

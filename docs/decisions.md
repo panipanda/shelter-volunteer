@@ -64,21 +64,35 @@ These features may be added in later phases.
 
 ## Data storage
 
-The MVP stores public content in JSON and Markdown files.
+There are two storage modes, chosen at startup by the `DATABASE_URL` environment variable.
 
-This is a deliberate temporary choice to keep the first version simple, free, and deployable.
+- **Files (the default, and what runs without `DATABASE_URL`):** cats and dogs in `data/cats.json` and
+  `data/dogs.json`, photos in `data/images/`, the guide in `content/*.md`. Nothing to set up; this is also what
+  every automated test of the public site runs on.
+- **Database (when `DATABASE_URL` is set):** cats, dogs and their photos live in PostgreSQL (Neon free plan in
+  production). This is what the admin panel needs: the free Render plan wipes the disk on every deploy, so files
+  cannot be the source of truth for something people edit while the site is running. The first start on an empty
+  database copies `data/` into it once (a mark in `app_meta` records that, so a removed last dog does not come back
+  after a restart); from then on `data/cats.json` and `data/dogs.json` are no longer read.
 
-Application code must access data through repository interfaces, not directly through JSON or Markdown files. This should allow replacing JSON storage with SQLite later without rewriting routes and services.
+SQLite, the earlier plan for this step, was dropped for the same reason: a SQLite file on Render's free disk
+would be wiped too. A database outside the host, with a free plan, is the cheapest thing that survives a deploy.
 
-Planned migration path:
+Application code accesses data through repository interfaces (`CatRepository`, `DogRepository` and their mutable
+versions), never directly through files or SQL, so routes and services are the same in both modes. The guide
+(`content/*.md`) and the next-visit overrides (`data/visit-overrides.json`) are still files in both modes: the admin
+panel does not edit them yet.
 
-- MVP: JSON and Markdown files
-- Phase 2: SQLite
-- Later, if needed: PostgreSQL
+Not an accident, but worth knowing: in database mode a content mistake made in the admin must not take the site
+down, so the startup validation of the data only logs a warning there (the strict check still runs on `data/` for
+the first seeding).
 
 ## Database migration readiness
 
-JSON structures should stay close to future database tables.
+A cat or a dog is one row holding the same JSON document that the files hold (a `text` column, not `jsonb`, so
+the same SQL runs on H2 in the tests). A new field in the model therefore needs no migration: documents saved
+earlier simply lack it and get the default. `encodeDefaults` is on, so a default that changes in the code later
+does not silently change a record saved before.
 
 Participants should be stored separately from visits to make future migration to relational tables easier.
 
@@ -100,11 +114,36 @@ Participant names and contacts must not be rendered publicly in MVP unless expli
 
 ## Admin panel
 
-The MVP does not include an admin panel.
+The MVP shipped without one, and content changed through a commit and a deploy. That was painful for the people
+who actually add cats and photos, so an admin panel was built after the site went live (2026-11). It exists
+only in database mode (see "Data storage"): without `DATABASE_URL` there is no `/admin` at all.
 
-Data is updated manually through JSON and Markdown files.
+What it does: edits cats and dogs with their photos. Every text (name, description, health, adoption instruction,
+a dog's age) has its own `ru`, `en` and `sr` field, so one save updates the site in all three languages; `ru` is
+required and the list shows which translations are missing (the site then falls back as it always did). Each
+record is a draft or published; a new record starts as a draft, and a draft is visible only in the admin, where
+a preview shows the public page in each language. Deleting asks first, and so does deleting a single photo.
 
-A simple admin interface may be added later after the MVP is deployed and real content-management needs are clearer.
+Decisions behind it:
+
+- **One shared password** (`ADMIN_PASSWORD`, at least 12 characters), no accounts. It is known to a few senior
+  volunteers. The price is accepted on purpose: no record of who changed what, and two people editing the same
+  record at once means the last save wins. When someone leaves, the password and `SESSION_SECRET` are changed in
+  Render, which also ends every session.
+- **The panel is in Russian only**; the site's languages are content, not the admin's interface.
+- **A published record is edited in place.** A hidden second copy of "the draft of a published record" was judged
+  too costly for the value; to rework a published record at leisure, set it back to a draft first.
+- **Photos have a page of their own**, not a field in the form: every photo step reloads the page and would throw
+  away text typed but not saved.
+- **Nothing links to `/admin` from the public pages**; its pages are `noindex`, never cached and cannot be framed.
+  Every change needs the form's own token. Wrong passwords go through one gate, a second each, with no lockout (a
+  lockout would let anyone lock the volunteers out).
+- **A backup is one button** (`/admin/export`): a zip with `cats.json`, `dogs.json` and the photos, in the layout
+  of the file mode, so it can be unpacked into `data/`. Neon keeps its own history for a short time only; the
+  volunteers are asked to keep a copy of their own.
+
+Still files, and still changed through the repository: the volunteer guide, the next-visit overrides, the UI
+strings. They can move into the admin later in the same pattern.
 
 ## Google Calendar
 
@@ -159,6 +198,23 @@ working with JS disabled, and a script should only add a convenience layer on to
 only way a feature works.
 
 ## Media storage
+
+**In database mode the photos of cats and dogs are rows in the same database** (`bytea`), served by the site at
+`/images/...` with an ETag (the content hash) and a one-day cache. A separate image store (S3 and similar) was
+considered and rejected: one more account, one more secret and one more thing to break, for a few dozen photos
+that fit in the free 1 GB (the admin shows how much is used and warns above 80%).
+
+The admin turns every upload into two JPEGs on the server, replacing what `tools/make-card-images.py` did by hand:
+the picture itself (at most 1600 px on the long side, the camera's rotation applied, all metadata including the
+shooting place removed) and the card copy (440x550, never scaled up). Only JPEG and PNG are accepted, checked by
+their content; the limits (8 MB a file, 30 megapixels, 5 files an upload, 12 photos a record) are there because the
+free plan has 512 MB of memory. Every photo gets a new random name (`/images/cat-12-3fa9c1d2.jpg`), so a browser
+cache never shows an old picture in the place of a new one.
+
+The pictures of the site's own pages (`home-*`) and the placeholders (`default-*`) are part of the code and are
+not owned by the admin: they stay in `data/images/` and are refreshed in the database on every start.
+
+**In file mode** (below) nothing changed.
 
 Cat/visit photos are served from a real directory on disk (`data/images/`, via Ktor's
 `staticFiles`), not from `src/main/resources/static/images` on the classpath (`staticResources`).

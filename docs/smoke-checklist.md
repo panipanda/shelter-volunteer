@@ -484,6 +484,66 @@ Acceptance criteria:
 - every page's `<head>` links it (`<link rel="stylesheet" href="/styles/main.css">`);
 - narrow/mobile viewport does not visibly break (nav wraps, content stays within viewport width).
 
+## Database mode and the admin panel
+
+Only when `DATABASE_URL` is set (production, or locally against a separate database; `./gradlew devAdmin` is the
+quick way to look without one: <http://localhost:8095>, password `dev-password-123`). Run this after the first
+deploy that switches the site to the database, and after any change to `admin/`, `repository/Pg*`, `Seeder.kt` or
+`ImageProcessing.kt`. Use a test cat and delete it at the end.
+
+Site on the database:
+
+- `/health` answers; the home page, `/ru/cats`, a cat page and `/ru/dogs` show the same cats and dogs as before
+  the switch (the first start copies `data/` into the database, 20-30 s on the free plan, and a sleeping Neon
+  database wakes in a few seconds).
+- A photo opens at `/images/<name>.jpg`; a second request with `If-None-Match` set to the ETag gets `304`.
+- `HEAD` on a page and on an image returns the same headers as `GET`, with no body (not 404 or 405).
+- Restarting the service does not copy `data/` again: a cat deleted in the admin stays deleted.
+
+Without the setting:
+
+- Without `DATABASE_URL`, `/admin` is a 404 and the site runs on the files, as before.
+- With `DATABASE_URL` but without `ADMIN_PASSWORD` and `SESSION_SECRET` (or with only one of them, or with short
+  values), the deploy fails with a message that names the variable, and the old version keeps running.
+
+Login:
+
+- `/admin` without a session goes to `/admin/login`; a wrong password says so and takes about a second.
+- The right password opens the list. Nothing on a public page links to `/admin`.
+- "Выйти" ends the session; the browser's back button then shows no admin data.
+
+Editing:
+
+- A new cat starts as a draft: it is in the admin list but in no public list and `/ru/cats/<slug>` is a 404.
+- A form with an empty Russian name or description is refused with the mistake marked and the typed text kept.
+- "Как на сайте: RU · EN · SR" opens the preview with the banner "Предпросмотр" (a draft says it is a draft); the
+  language links stay in the preview; "Вернуться к редактированию" returns to the form.
+- Switching the status to "Опубликовано" and saving puts the cat on the public list and on its own page, in all
+  three languages (an empty `en` or `sr` text falls back to another language, and the list marks it `нет en` / `нет sr`).
+
+Photos (page "Фотографии" of a record):
+
+- Upload 2-3 phone photos at once: they appear in the order chosen, and the first one is the cover (the card in the
+  list). A photo taken sideways comes out upright. A HEIC, a GIF or a renamed text file is refused with a message that
+  names the file; the other files of the same upload still go in.
+- "Раньше", "Позже", "Сделать обложкой" change the order and the public card at once.
+- "Удалить" asks first, shows the photo, and says so when it is the cover or the only photo. "Нет, вернуться" changes
+  nothing; "Да, удалить" removes the photo, and `/images/<its name>.jpg` is a 404.
+- The list page shows how much of the database's 1 GB the photos take.
+
+Backup:
+
+- "Скачать копию (zip)" on the list page downloads `proanima-backup-<date>.zip`. It contains `cats.json`,
+  `dogs.json`, `images/` and `README.txt`; drafts are in `cats.json` with `"published": false`; no `home-*` or
+  `default-*` files. The `README.txt` says how many cats, dogs and files, and names any photo a record points at
+  that the database lacks.
+- Pressing the button twice quickly gives the second request a "Копия уже собирается" page, not a second archive.
+
+Deleting:
+
+- "Удалить" on a record asks first; confirming removes the record and its photos, and the public pages no longer
+  show it.
+
 ## Automated tests
 
 Run automated tests after changing repositories, services, routes, views, models, or Gradle dependencies.
