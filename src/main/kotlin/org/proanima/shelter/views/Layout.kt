@@ -39,7 +39,7 @@ const val SVORA_LINKTREE_URL = "https://linktr.ee/svora.volunteers"
 
 // Applies the saved theme, or the system one if nothing is saved, to <html data-theme>.
 // Storage access is wrapped in try/catch: it throws when site data is blocked.
-private const val THEME_INIT_SCRIPT = """
+internal const val THEME_INIT_SCRIPT = """
 try {
     var saved = localStorage.getItem("theme");
     var dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;

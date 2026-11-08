@@ -69,9 +69,74 @@ Then set the environment variable `PUBLIC_BASE_URL` (for example `https://volunt
 slash) on the service. Pages put it in the canonical link, the language alternates and the link preview
 (`og:url`, `og:image`); without it they point at `https://shelter-volunteer.onrender.com`.
 
+## Database for cats, dogs and their photos (optional)
+
+Without a database, the cats, the dogs and their photos are the files in `data/`, baked into the image
+(see "Known limitation" below). Setting the environment variable `DATABASE_URL` moves them into a PostgreSQL
+database; nothing else about the site changes, and every page and picture comes out the same
+(`DatabaseModeTest` checks this against the file-based site).
+
+**Setup.** Create a free project on [neon.tech](https://neon.tech), copy its connection string
+(`postgresql://user:password@host/dbname?sslmode=require`) and add it in Render as the `DATABASE_URL`
+environment variable of the service. Never commit it: it contains the password. Removing the variable
+brings the file-based site back (the files in `data/` are untouched).
+
+**First start.** The server creates the tables and, once, copies `data/cats.json`, `data/dogs.json` and the
+photos from `data/images/` into the database. A mark in the `app_meta` table records that this happened, so
+a later restart never copies again, even if every dog has been removed. From then on **the database is the
+source of truth**: editing `data/cats.json` or adding a photo to `data/images/` no longer changes the site.
+
+**Exception: pictures that belong to the site.** Files whose names start with `home-` or `default-` (the
+photos on the home page and the guide, the placeholders for pets without a photo) are part of the code. On
+every start the server compares them with the database and replaces the ones that differ, so a new hero
+photo still goes live with a commit and a deploy.
+
+**Failures.** The list of cats and dogs is cached in memory for 30 seconds. If the database cannot be reached
+while an older copy exists, the older copy is served; with no copy, a visitor gets the 500 page. A free Neon
+database sleeps after about five minutes without queries and wakes up in a second or two.
+
+**Tests.** `./gradlew test` needs no database (it uses an in-memory H2). To also run the checks against a real
+PostgreSQL, set `TEST_DATABASE_URL` to a connection string; the test works in a schema of its own and removes it.
+
+## Admin panel (needs the database)
+
+With `DATABASE_URL` set, the cats and dogs can be added, edited and removed at `/admin` instead of editing files
+and redeploying. The panel is in Russian; every text of a cat or dog has its own Russian, English and Serbian field.
+It is **off unless `ADMIN_PASSWORD` and `SESSION_SECRET` are set as well**, and then `/admin` is a plain 404.
+
+**Setup.** Add two more environment variables in Render:
+
+- `ADMIN_PASSWORD`: the one shared password, at least 12 characters (a few random words is fine and easy to type).
+  Whoever knows it can change everything on the site's cats and dogs. To change it or to lock someone out, change the
+  variable; every session ends at the next restart.
+- `SESSION_SECRET`: at least 32 random characters, used to sign the login cookie. Never typed by anyone. To make one
+  in PowerShell: `[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))`.
+
+If only one of the two is set, or one is too short, the start fails with a message (the previous version keeps
+running), so a half-configured panel never goes live.
+
+**What it does.** Every cat and dog is a *draft* or *published*. Drafts are in no list, no page and not on the
+home page; only the admin sees them, and "Как на сайте" shows a draft the way visitors will see it, in each
+language. A new record starts as a draft. Editing a published record changes the site at once. Deleting asks
+first and removes the record together with its photos (unless another cat or dog uses the same photo). The list
+marks records that lack a translation (`нет en`, `нет sr`): the site then shows another language for them.
+
+**Security notes.**
+- One session lasts 12 hours. The cookie is signed, `HttpOnly`, `SameSite=Lax`, `Secure` and limited to `/admin`.
+  A server restart does not log anyone out (the cookie is self-contained).
+- Every change needs the form's own token (CSRF) and a body below 200 KB.
+- A wrong password costs a second, and all wrong attempts go through one gate, so guessing is limited to about one a
+  second however many requests arrive; the right password never waits.
+- No public page links to `/admin`; its pages say `noindex`, are never cached and cannot be framed.
+- Photos can not be uploaded from the panel yet. Existing photos are kept when a record is edited.
+
+**Trying it locally.** `./gradlew devAdmin` starts the site with the panel on a throwaway in-memory database
+(it starts with the content of `data/`) at <http://localhost:8095>, password `dev-password-123`. Nothing real is
+connected. Set `ADMIN_COOKIE_SECURE=false` when running over plain http with your own variables.
+
 ## Known limitation
 
-Photos and JSON/Markdown data live inside the Docker image rather than on a persistent volume
-or database, matching the MVP's file-based storage decision (see `docs/decisions.md`, "Media
-storage"). Every content update triggers a rebuild and redeploy. This is deferred until Phase 2
-(SQLite) or real content-update frequency makes it worth the added complexity.
+Without `DATABASE_URL`, photos and JSON/Markdown data live inside the Docker image rather than on a persistent
+volume or database, matching the MVP's file-based storage decision (see `docs/decisions.md`, "Media
+storage"). Every content update triggers a rebuild and redeploy. The database mode above is the way out of
+this; the admin panel that edits its content is being built on top of it.

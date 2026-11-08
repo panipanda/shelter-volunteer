@@ -4,6 +4,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.content.CachingOptions
 import io.ktor.http.CacheControl
 import io.ktor.server.application.Application
+import io.ktor.server.application.ApplicationStopped
 import io.ktor.server.application.call
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
@@ -19,15 +20,30 @@ import io.ktor.server.routing.IgnoreTrailingSlash
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import org.proanima.shelter.admin.AdminSetup
+import org.proanima.shelter.admin.adminConfigFromEnv
+import org.proanima.shelter.admin.adminRoutes
+import org.proanima.shelter.admin.installAdminSessions
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.repository.JsonCatRepository
 import org.proanima.shelter.repository.JsonDogRepository
 import org.proanima.shelter.repository.JsonVisitOverridesRepository
 import org.proanima.shelter.repository.MarkdownGuideRepository
+import org.proanima.shelter.repository.PgCatRepository
+import org.proanima.shelter.repository.PgDogRepository
+import org.proanima.shelter.repository.PgPhotoStore
+import org.proanima.shelter.repository.PhotoStore
+import org.proanima.shelter.repository.createDataSource
+import org.proanima.shelter.repository.createSchema
+import org.proanima.shelter.repository.loadSeedData
+import org.proanima.shelter.repository.parseDatabaseUrl
+import org.proanima.shelter.repository.seedIfNeeded
+import org.proanima.shelter.repository.syncSiteAssets
 import org.proanima.shelter.routes.catRoutes
 import org.proanima.shelter.routes.dogRoutes
 import org.proanima.shelter.routes.healthRoutes
 import org.proanima.shelter.routes.helpRoutes
+import org.proanima.shelter.routes.imageRoutes
 import org.proanima.shelter.routes.visitRoutes
 import org.proanima.shelter.routes.guideRoutes
 import org.proanima.shelter.routes.homeRoutes
@@ -57,12 +73,22 @@ fun main() {
     ).start(wait = true)
 }
 
+// DATABASE_URL decides where the cats, dogs and their photos live. Without it they are the files in data/, as
+// they always were (local runs, tests and the Docker build need no database). With it they live in the database.
 fun Application.module() {
+    val databaseUrl = System.getenv("DATABASE_URL")?.trim().orEmpty()
+    if (databaseUrl.isEmpty()) {
+        moduleWithFiles()
+    } else {
+        moduleWithDatabase(databaseUrl)
+    }
+}
+
+internal fun Application.moduleWithFiles() {
     val catRepository = JsonCatRepository()
     val dogRepository = JsonDogRepository()
     // Fail at startup, not on the first request to the broken page.
-    val problems = validatePets(catRepository.findAll(), dogRepository.findAll(), IMAGES_DIR)
-    check(problems.isEmpty()) { "Invalid content data:\n" + problems.joinToString("\n") { "  - $it" } }
+    failOnProblems(validatePets(catRepository.findAll(), dogRepository.findAll(), IMAGES_DIR))
 
     configureRoutes(
         catService = CatService(catRepository),
@@ -72,14 +98,68 @@ fun Application.module() {
     )
 }
 
+internal fun Application.moduleWithDatabase(databaseUrl: String) {
+    val dataSource = createDataSource(parseDatabaseUrl(databaseUrl))
+    environment.monitor.subscribe(ApplicationStopped) { dataSource.close() }
+    createSchema(dataSource)
+
+    val clock = Clock.systemUTC()
+    val seeded = seedIfNeeded(dataSource, clock) {
+        // The first start copies data/ into the database, so it must be sound; after that the database is the truth.
+        loadSeedData(File("data/cats.json"), File("data/dogs.json"), IMAGES_DIR).also { seed ->
+            val photoNames = seed.photos.map { it.name }.toSet()
+            failOnProblems(validatePets(seed.cats, seed.dogs, IMAGES_DIR.path) { it in photoNames })
+        }
+    }
+    if (seeded) {
+        environment.log.info("The database was empty: cats, dogs and photos were copied into it from data/")
+    }
+
+    val photoStore = PgPhotoStore(dataSource, clock)
+    syncSiteAssets(photoStore, IMAGES_DIR).takeIf { it.isNotEmpty() }?.let { environment.log.info("Site pictures refreshed in the database: {}", it) }
+
+    val catRepository = PgCatRepository(dataSource, clock)
+    val dogRepository = PgDogRepository(dataSource, clock)
+    // A mistake made in the admin panel must not take the whole site down, so here problems are only reported.
+    val photoNames = photoStore.names()
+    validatePets(catRepository.findAll(), dogRepository.findAll(), "the database") { it in photoNames }
+        .forEach { environment.log.warn("Content problem: {}", it) }
+
+    // The admin panel needs ADMIN_PASSWORD and SESSION_SECRET; without them the site runs and /admin does not exist.
+    val admin = adminConfigFromEnv()?.let { AdminSetup(it, catRepository, dogRepository, photoStore, clock) }
+    if (admin == null) {
+        environment.log.warn("ADMIN_PASSWORD and SESSION_SECRET are not set: the admin panel is off")
+    }
+
+    configureRoutes(
+        catService = CatService(catRepository),
+        guideService = GuideService(MarkdownGuideRepository()),
+        dogService = DogService(dogRepository),
+        visitOverrides = JsonVisitOverridesRepository().load(),
+        photoStore = photoStore,
+        admin = admin
+    )
+}
+
+private fun failOnProblems(problems: List<String>) {
+    check(problems.isEmpty()) { "Invalid content data:\n" + problems.joinToString("\n") { "  - $it" } }
+}
+
+// With a photoStore the pictures come from it; without one they are served from data/images.
+// With an AdminSetup the admin panel is served under /admin; without one there is no such address.
 fun Application.configureRoutes(
     catService: CatService,
     guideService: GuideService,
     clock: Clock = Clock.system(SHELTER_ZONE),
     dogService: DogService = DogService(JsonDogRepository()),
-    visitOverrides: VisitOverrides = VisitOverrides()
+    visitOverrides: VisitOverrides = VisitOverrides(),
+    photoStore: PhotoStore? = null,
+    admin: AdminSetup? = null
 ) {
     configureErrorPages()
+    if (admin != null) {
+        installAdminSessions(admin.config)
+    }
     // "/ru/cats/" works the same as "/ru/cats".
     install(IgnoreTrailingSlash)
     // Text only: images and fonts are already compressed.
@@ -109,7 +189,14 @@ fun Application.configureRoutes(
         }
 
         healthRoutes()
-        staticFiles("/images", IMAGES_DIR)
+        if (admin != null) {
+            adminRoutes(admin)
+        }
+        if (photoStore == null) {
+            staticFiles("/images", IMAGES_DIR)
+        } else {
+            imageRoutes(photoStore)
+        }
         staticResources("/icons", "static/icons")
         staticResources("/fonts", "static/fonts")
         staticResources("/styles", "static/styles")

@@ -10,5 +10,7 @@ data class Dog(
     val age: LocalizedText? = null,
     val description: LocalizedText,
     val photoUrls: List<String> = emptyList(),
-    val location: CatLocation = CatLocation.IN_SHELTER
+    val location: CatLocation = CatLocation.IN_SHELTER,
+    // A draft is seen only in the admin panel: the public pages leave it out.
+    val published: Boolean = true
 )

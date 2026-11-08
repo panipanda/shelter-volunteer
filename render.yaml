@@ -8,3 +8,13 @@ services:
     envVars:
       - key: JAVA_OPTS
         value: -Xmx256m -Xss256k -XX:MaxMetaspaceSize=128m
+      # Connection string of the PostgreSQL database (see docs/deploy.md). Entered in the Render dashboard, never
+      # committed. Without it the site serves the cats, dogs and photos from the files in data/.
+      - key: DATABASE_URL
+        sync: false
+      # Admin panel at /admin (see docs/deploy.md). It needs DATABASE_URL too and is off unless both are set.
+      # Entered in the Render dashboard, never committed.
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        sync: false

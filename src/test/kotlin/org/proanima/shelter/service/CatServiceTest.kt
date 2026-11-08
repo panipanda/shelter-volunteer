@@ -89,4 +89,26 @@ class CatServiceTest {
 
         assertNull(result)
     }
+    @Test
+    fun `a draft is in none of the answers`() {
+        val draft = cats[0].copy(id = 3, name = LocalizedText(en = "Hidden"), published = false)
+        val withDraft = CatService(object : CatRepository {
+            override fun findAll(): List<Cat> = cats + draft
+            override fun findById(id: Int): Cat? = (cats + draft).firstOrNull { it.id == id }
+        })
+
+        assertEquals(listOf(1, 2), withDraft.getAllCats().map { it.id })
+        assertEquals(listOf(1), withDraft.getAvailableCats().map { it.id })
+        assertNull(withDraft.getCatBySlug("hidden"))
+        assertNull(withDraft.getCatById(3))
+    }
+
+    @Test
+    fun `a record saved before drafts existed counts as published`() {
+        val old = kotlinx.serialization.json.Json.decodeFromString<Cat>(
+            """{"id":9,"name":{"en":"Old"},"description":{"en":"d"},"location":"IN_SHELTER","adoptionStage":"NONE","createdAt":"x","updatedAt":"x"}"""
+        )
+
+        assertEquals(true, old.published)
+    }
 }

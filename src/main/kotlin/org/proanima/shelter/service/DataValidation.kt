@@ -10,7 +10,12 @@ private const val IMAGES_URL_PREFIX = "/images/"
 // affected page: duplicate ids or slugs (the second pet becomes unreachable), a month outside 1..12,
 // and photos that are not on disk or have no card copy. Returns human-readable problems; an empty list
 // means the data is fine.
-fun validatePets(cats: List<Cat>, dogs: List<Dog>, imagesDir: File): List<String> {
+fun validatePets(cats: List<Cat>, dogs: List<Dog>, imagesDir: File): List<String> =
+    validatePets(cats, dogs, imagesDir.path) { name -> File(imagesDir, name).isFile }
+
+// The same checks for photos kept somewhere other than a folder (the database): `photosAt` names the place
+// in the messages, `hasPhoto` says whether a file name (the part of the URL after /images/) is there.
+fun validatePets(cats: List<Cat>, dogs: List<Dog>, photosAt: String, hasPhoto: (String) -> Boolean): List<String> {
     val problems = mutableListOf<String>()
 
     problems += duplicates("cats.json", "id", cats.map { it.id.toString() })
@@ -25,10 +30,10 @@ fun validatePets(cats: List<Cat>, dogs: List<Dog>, imagesDir: File): List<String
         if (cat.birthMonth != null && cat.birthYear == null) {
             problems += "cats.json: cat ${cat.id} has birthMonth but no birthYear"
         }
-        problems += missingPhotos("cats.json", "cat ${cat.id}", cat.photoUrls, imagesDir)
+        problems += missingPhotos("cats.json", "cat ${cat.id}", cat.photoUrls, photosAt, hasPhoto)
     }
     dogs.forEach { dog ->
-        problems += missingPhotos("dogs.json", "dog ${dog.id}", dog.photoUrls, imagesDir)
+        problems += missingPhotos("dogs.json", "dog ${dog.id}", dog.photoUrls, photosAt, hasPhoto)
     }
 
     return problems
@@ -38,18 +43,24 @@ private fun duplicates(file: String, field: String, values: List<String>): List<
     values.groupingBy { it }.eachCount().filterValues { it > 1 }.keys
         .map { "$file: duplicate $field \"$it\"" }
 
-private fun missingPhotos(file: String, owner: String, photoUrls: List<String>, imagesDir: File): List<String> =
+private fun missingPhotos(
+    file: String,
+    owner: String,
+    photoUrls: List<String>,
+    photosAt: String,
+    hasPhoto: (String) -> Boolean
+): List<String> =
     photoUrls.mapNotNull { url ->
         when {
             !url.startsWith(IMAGES_URL_PREFIX) -> "$file: $owner has photo \"$url\" outside $IMAGES_URL_PREFIX"
-            !File(imagesDir, url.removePrefix(IMAGES_URL_PREFIX)).isFile -> "$file: $owner photo \"$url\" is not in ${imagesDir.path}"
-            !hasCardCopy(url, imagesDir) ->
-                "$file: $owner photo \"$url\" has no card copy \"${cardPhotoUrl(url)}\" in ${imagesDir.path}; run tools/make-card-images.py"
+            !hasPhoto(url.removePrefix(IMAGES_URL_PREFIX)) -> "$file: $owner photo \"$url\" is not in $photosAt"
+            !hasCardCopy(url, hasPhoto) ->
+                "$file: $owner photo \"$url\" has no card copy \"${cardPhotoUrl(url)}\" in $photosAt; run tools/make-card-images.py"
             else -> null
         }
     }
 
-private fun hasCardCopy(url: String, imagesDir: File): Boolean {
+private fun hasCardCopy(url: String, hasPhoto: (String) -> Boolean): Boolean {
     val card = cardPhotoUrl(url)
-    return card == url || File(imagesDir, card.removePrefix(IMAGES_URL_PREFIX)).isFile
+    return card == url || hasPhoto(card.removePrefix(IMAGES_URL_PREFIX))
 }

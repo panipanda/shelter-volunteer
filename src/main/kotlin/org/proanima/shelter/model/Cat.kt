@@ -15,5 +15,8 @@ data class Cat(
     val adoptionStage: AdoptionStage,
     val adoptionInstruction: LocalizedText? = null,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
+    // A draft is seen only in the admin panel: the public pages leave it out. Older records have no such
+    // field and are published.
+    val published: Boolean = true
 )

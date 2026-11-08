@@ -30,4 +30,14 @@ class DogServiceTest {
     fun `getDogBySlug returns null for an unknown slug`() {
         assertNull(service.getDogBySlug("nobody"))
     }
+
+    @Test
+    fun `a draft dog is in none of the answers`() {
+        val withDraft = DogService(object : DogRepository {
+            override fun findAll() = listOf(dog(1, "Sava"), dog(2, "Hidden").copy(published = false))
+        })
+
+        assertEquals(listOf(1), withDraft.getAllDogs().map { it.id })
+        assertNull(withDraft.getDogBySlug("hidden"))
+    }
 }

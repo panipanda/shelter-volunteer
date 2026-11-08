@@ -3,13 +3,16 @@ package org.proanima.shelter.service
 import org.proanima.shelter.model.Dog
 import org.proanima.shelter.repository.DogRepository
 
+// What the public pages may show: drafts stay out of every answer here.
 class DogService(private val repository: DogRepository) {
 
     fun getAllDogs(): List<Dog> {
-        return repository.findAll()
+        return published()
     }
 
     fun getDogBySlug(slug: String): Dog? {
-        return repository.findAll().firstOrNull { petSlug(it.name.en, it.id) == slug }
+        return published().firstOrNull { petSlug(it.name.en, it.id) == slug }
     }
+
+    private fun published(): List<Dog> = repository.findAll().filter { it.published }
 }
