@@ -2,6 +2,7 @@ package org.proanima.shelter.repository
 
 import com.zaxxer.hikari.HikariDataSource
 import org.junit.jupiter.api.Assumptions.assumeTrue
+import org.proanima.shelter.service.ContentKey
 import org.proanima.shelter.service.validatePets
 import java.io.File
 import java.util.UUID
@@ -84,4 +85,17 @@ private fun runChecks(dataSource: HikariDataSource) {
     assertTrue(cats.delete(newCat.id))
     assertNull(cats.findById(newCat.id))
     assertTrue(photos.delete("felix.jpg"))
+
+    // The texts of the pages: written, replaced, read back (Cyrillic, a long guide, a value for every language),
+    // removed, and put in by the seeder from a backup.
+    val content = PgSiteContentRepository(dataSource, clock)
+    val headline = ContentKey("home.hero.headline", "ru")
+    val guide = "# Гайд\n\n" + "Строка гайда.\n".repeat(5_000)
+    content.update(mapOf(headline to "Первый", ContentKey("guide.markdown", "ru") to guide, ContentKey("contact.nata.telegram") to "New_Nata"))
+    content.update(mapOf(headline to "Второй"))
+    assertEquals("Второй", content.load().text("home.hero.headline", "ru"))
+    assertEquals(guide, content.load().text("guide.markdown", "ru"))
+    assertEquals("New_Nata", content.load().plain("contact.nata.telegram"))
+    content.update(mapOf(headline to null, ContentKey("guide.markdown", "ru") to null))
+    assertEquals(mapOf(ContentKey("contact.nata.telegram") to "New_Nata"), content.load().entries)
 }

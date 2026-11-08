@@ -11,11 +11,13 @@ import io.ktor.http.parameters
 import io.ktor.server.testing.ApplicationTestBuilder
 import org.proanima.shelter.configureRoutes
 import org.proanima.shelter.model.AppLocale
+import org.proanima.shelter.repository.EditableGuideRepository
 import org.proanima.shelter.repository.GuideContent
 import org.proanima.shelter.repository.GuideRepository
 import org.proanima.shelter.repository.PgCatRepository
 import org.proanima.shelter.repository.PgDogRepository
 import org.proanima.shelter.repository.PgPhotoStore
+import org.proanima.shelter.repository.PgSiteContentRepository
 import org.proanima.shelter.repository.TestClock
 import org.proanima.shelter.repository.newTestDataSource
 import org.proanima.shelter.service.CatService
@@ -33,6 +35,7 @@ abstract class AdminTestBase {
     protected val cats = PgCatRepository(dataSource, clock, Duration.ofSeconds(30))
     protected val dogs = PgDogRepository(dataSource, clock, Duration.ofSeconds(30))
     protected val photos = PgPhotoStore(dataSource, clock)
+    protected val siteContent = PgSiteContentRepository(dataSource, clock, Duration.ofSeconds(30))
     protected val password = "correct horse battery"
 
     protected val guideRepository = object : GuideRepository {
@@ -42,13 +45,15 @@ abstract class AdminTestBase {
     protected fun adminSetup(secureCookie: Boolean = false) = AdminSetup(
         AdminConfig(password, "s".repeat(40), secureCookie),
         cats, dogs, photos, clock,
-        FailedLoginThrottle(penaltyMillis = 0, maxWaiting = 5)
+        FailedLoginThrottle(penaltyMillis = 0, maxWaiting = 5),
+        content = siteContent,
+        shippedGuide = guideRepository
     )
 
     protected fun ApplicationTestBuilder.start(admin: AdminSetup? = adminSetup()) {
         application {
             configureRoutes(
-                CatService(cats), GuideService(guideRepository),
+                CatService(cats), GuideService(EditableGuideRepository(guideRepository, siteContent)),
                 dogService = DogService(dogs), photoStore = photos, admin = admin
             )
         }

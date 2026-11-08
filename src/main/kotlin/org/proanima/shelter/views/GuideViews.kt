@@ -16,20 +16,29 @@ import kotlinx.html.nav
 import kotlinx.html.p
 import kotlinx.html.ul
 import org.proanima.shelter.i18n.messagesFor
+import org.proanima.shelter.i18n.plain
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.service.GuideBlock
+import org.proanima.shelter.service.isSafeGuideLink
+import java.util.ResourceBundle
 
 // contentLang comes from GuideService/GuideRepository, not from the route's locale:
 // until an sr translation of content/volunteer-guide.md exists, the real content language
 // for /sr/guide is en, and lang must reflect that — see docs/decisions.md
-fun HTML.guidePage(locale: AppLocale, blocks: List<GuideBlock>, contentLang: String, currentPath: String) {
-    val messages = messagesFor(locale)
+fun HTML.guidePage(
+    locale: AppLocale,
+    blocks: List<GuideBlock>,
+    contentLang: String,
+    currentPath: String,
+    messages: ResourceBundle = messagesFor(locale)
+) {
     pageLayout(
         locale,
         pageTitle = messages.t("nav.guide"),
         currentPath = currentPath,
-        contentLang = contentLang
+        contentLang = contentLang,
+        messages = messages
     ) {
         div(classes = "guide") {
             blocks.forEach { block ->
@@ -38,7 +47,7 @@ fun HTML.guidePage(locale: AppLocale, blocks: List<GuideBlock>, contentLang: Str
                         1 -> {
                             h1 { +block.text }
                             tableOfContents(blocks, messages.t("guide.toc"))
-                            img(src = "/images/home-guide.jpg", alt = messages.t("guide.photo.alt"), classes = "guide-photo")
+                            img(src = messages.plain(SiteSettings.GUIDE_PHOTO), alt = messages.t("guide.photo.alt"), classes = "guide-photo")
                         }
                         2 -> h2 {
                             block.id?.let { id = it }
@@ -80,7 +89,12 @@ private fun FlowOrPhrasingContent.inlineText(text: String) {
     var position = 0
     INLINE_LINK.findAll(text).forEach { match ->
         +text.substring(position, match.range.first)
-        a(href = match.groupValues[2]) { +match.groupValues[1] }
+        val href = match.groupValues[2]
+        if (isSafeGuideLink(href)) {
+            a(href = href) { +match.groupValues[1] }
+        } else {
+            +match.groupValues[1]
+        }
         position = match.range.last + 1
     }
     +text.substring(position)

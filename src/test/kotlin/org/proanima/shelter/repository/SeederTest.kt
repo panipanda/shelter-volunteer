@@ -1,5 +1,6 @@
 package org.proanima.shelter.repository
 
+import org.proanima.shelter.service.ContentKey
 import org.proanima.shelter.service.validatePets
 import java.io.File
 import kotlin.io.path.createTempDirectory
@@ -94,6 +95,40 @@ class SeederTest {
         File(dir, "home-hero.jpg").writeBytes(byteArrayOf(4, 5, 6))
         assertEquals(listOf("home-hero.jpg"), syncSiteAssets(photos, dir))
         assertEquals(setOf("default-cat.svg", "home-hero.jpg"), photos.names())
+    }
+
+    @Test
+    fun `the edited page texts of a backup are put in the database with the rest`() {
+        val headline = ContentKey("home.hero.headline", "ru")
+        val seed = realData().let { SeedData(it.cats, it.dogs, it.photos, mapOf(headline to "Из копии", ContentKey("contact.nata.telegram") to "New_Nata")) }
+
+        assertTrue(seedIfNeeded(dataSource, clock) { seed })
+
+        val content = PgSiteContentRepository(dataSource, clock).load()
+        assertEquals("Из копии", content.text("home.hero.headline", "ru"))
+        assertEquals("New_Nata", content.plain("contact.nata.telegram"))
+    }
+
+    @Test
+    fun `a seeding that fails halfway leaves no page texts behind either`() {
+        val broken = realData().let { SeedData(it.cats + it.cats.first(), it.dogs, it.photos, mapOf(ContentKey("home.hero.headline", "ru") to "Из копии")) }
+
+        assertFailsWith<Exception> { seedIfNeeded(dataSource, clock) { broken } }
+
+        assertEquals(emptyMap(), PgSiteContentRepository(dataSource, clock).load().entries)
+    }
+
+    @Test
+    fun `the page text file is optional, and a broken one is an error, not a silent gap`() {
+        val dir = createTempDirectory("site-content").toFile().also { it.deleteOnExit() }
+
+        assertEquals(emptyMap(), readSiteContentFile(File(dir, "site-content.json")))
+
+        File(dir, "site-content.json").writeText("""{"texts": [{"key": "home.hero.headline", "language": "ru", "text": "Текст"}]}""")
+        assertEquals(mapOf(ContentKey("home.hero.headline", "ru") to "Текст"), readSiteContentFile(File(dir, "site-content.json")))
+
+        File(dir, "site-content.json").writeText("{ not json")
+        assertFailsWith<Exception> { readSiteContentFile(File(dir, "site-content.json")) }
     }
 
     @Test

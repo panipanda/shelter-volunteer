@@ -7,15 +7,19 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import org.proanima.shelter.model.AppLocale
+import org.proanima.shelter.repository.NoSiteContent
+import org.proanima.shelter.repository.SiteContentRepository
 import org.proanima.shelter.service.DogService
 import org.proanima.shelter.views.dogDetailsPage
 import org.proanima.shelter.views.dogsPage
 import org.proanima.shelter.views.respondPage
 
-fun Route.dogRoutes(dogService: DogService, locale: AppLocale) {
+fun Route.dogRoutes(dogService: DogService, locale: AppLocale, siteContent: SiteContentRepository = NoSiteContent) {
     get("/dogs") {
+        val messages = siteContent.load().bundle(locale)
+
         call.respondPage(locale) {
-            dogsPage(dogService.getAllDogs(), locale, call.request.path())
+            dogsPage(dogService.getAllDogs(), locale, call.request.path(), messages)
         }
     }
 
@@ -25,8 +29,10 @@ fun Route.dogRoutes(dogService: DogService, locale: AppLocale) {
         if (dog == null) {
             call.respond(HttpStatusCode.NotFound)
         } else {
+            val messages = siteContent.load().bundle(locale)
+
             call.respondPage(locale) {
-                dogDetailsPage(dog, locale, call.request.path())
+                dogDetailsPage(dog, locale, call.request.path(), messages = messages)
             }
         }
     }

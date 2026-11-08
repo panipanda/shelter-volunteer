@@ -101,8 +101,9 @@ content/volunteer-guide.ru.md
 
 At `/admin`, only when `DATABASE_URL` is set. Russian interface, one shared password. Edits cats and dogs (texts in
 `ru`, `en` and `sr`), their photos (upload, order, cover, delete), drafts and publishing, a preview of any record
-as visitors see it, and a one-button backup (a zip of the texts and photos). Nothing on the public pages links
-to it. How to switch it on and what each setting means: [docs/deploy.md](docs/deploy.md) "Admin panel". To look at
+as visitors see it, the texts and photos of the home, visits, guide and help pages ("Страницы сайта"; what is not
+edited stays the text that comes with the code), and a one-button backup (a zip of the texts and photos). Nothing on
+the public pages links to it. How to switch it on and what each setting means: [docs/deploy.md](docs/deploy.md) "Admin panel". To look at
 it locally with no setup: `./gradlew devAdmin` (see [SETUP.md](SETUP.md)).
 
 ### Internal data

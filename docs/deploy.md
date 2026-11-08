@@ -124,6 +124,18 @@ language links stay inside the preview, because a draft has no public address. A
 first and removes the record together with its photos (unless another cat or dog uses the same photo). The list
 marks records that lack a translation (`нет en`, `нет sr`): the site then shows another language for them.
 
+**Page texts and photos ("Страницы сайта").** The second item of the panel's menu edits the home page, the visits
+page, the volunteer guide and the help page: their texts in Russian, English and Serbian, and the home and guide
+photos. Whatever was not edited stays the text that ships with the code, and an emptied field (or one set back to the
+shipped text) goes back to it; edited fields have a "Вернуть исходный текст" box. Edits are on the site at once, with
+no draft step. The guide is one markdown text per language; the form explains the five marks it understands. The
+Telegram names of the coordinators and the donation address are here too. Nothing needs setting up: the table is
+created at start, and until something is edited the pages are what they were. The visits form says what it does not
+change (the dates and times of trips, which are still `data/visit-overrides.json` and the schedule in the code).
+- A page form is bigger than a cat's (three copies of the whole guide), so the body limit for it is 900 KB.
+- A page photo is one resized JPEG (long side at most 1600 px) with the same checks as the cat photos; the new
+  one is stored first, the page points at it, and the old uploaded one is deleted. The committed `home-*.jpg` stay.
+
 **Security notes.**
 - One session lasts 12 hours. The cookie is signed, `HttpOnly`, `SameSite=Lax`, `Secure` and limited to `/admin`.
   A server restart does not log anyone out (the cookie is self-contained).
@@ -149,11 +161,13 @@ how much of the database's 1 GB the photos take.
   a tenth of a CPU, so expect it to be several times slower on Render; upload three or four photos at a time at first.
 
 **Backup.** The button "Скачать копию (zip)" at the bottom of the list page downloads one archive: `cats.json` and
-`dogs.json` (all three languages, drafts included, marked `"published": false`), `images/` (every photo, original and
-card copy) and a `README.txt` that says what is inside, how many of each, and names any photo that a record points at
-but the database lacks. The layout is the one the site uses without a database, so the archive can be unpacked into
-`data/` (and `data/images/`) of the repository, or the same files can seed a new empty database. The site's own
-pictures (`home-*`, `default-*`) are not in it: they are in the repository. Neon keeps a history of its own for a
+`dogs.json` (all three languages, drafts included, marked `"published": false`), `site-content.json` (the edited texts
+of the pages, only what differs from the code), `images/` (every photo, original and card copy, and the page photos
+that were uploaded, `page-...`) and a `README.txt` that says what is inside, how many of each, and names any photo
+that a record or a page points at but the database lacks. The layout is the one the site uses without a database, so
+the archive can be unpacked into `data/` (and `data/images/`) of the repository, or the same files can seed a new
+empty database (the page texts are read from `data/site-content.json` in both modes). The site's own pictures
+(`home-*`, `default-*`) are not in it: they are in the repository. Neon keeps a history of its own for a
 short time on the free plan, but a copy kept by the people does not depend on the account, so ask the volunteers to
 download one about once a month and after big changes (new cats, many photos).
 - It is a POST with the form's token, not a plain link, so a page on another site cannot start it. One backup runs at

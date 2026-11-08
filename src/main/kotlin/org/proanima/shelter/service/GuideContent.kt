@@ -82,6 +82,12 @@ fun parseGuideMarkdown(markdown: String): List<GuideBlock> {
     return blocks
 }
 
+private val SAFE_LINK_STARTS = listOf("https://", "http://", "mailto:", "/", "#")
+
+// The address of a link in the guide: a web or mail address, or a place on this site. Anything else (a
+// "javascript:" address above all) is not a link, wherever the text came from.
+fun isSafeGuideLink(href: String): Boolean = SAFE_LINK_STARTS.any { href.startsWith(it) }
+
 private val HEADING_ANCHOR = Regex("""\s*\{#([A-Za-z0-9_-]+)}\s*$""")
 
 private fun heading(level: Int, rawText: String): GuideBlock.Heading {

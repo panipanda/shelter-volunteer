@@ -40,10 +40,37 @@
 
 .admin-header-row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 0 20px;
     min-height: 56px;
+}
+
+/* The two parts of the panel. On a narrow screen the menu drops under the name, and the actions stay on the right. */
+.admin-nav {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 0 20px;
+}
+
+.admin-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    border-bottom: 2px solid transparent;
+    color: var(--color-ink);
+    text-decoration: none;
+}
+
+.admin-nav a:hover {
+    border-bottom-color: var(--color-line);
+}
+
+.admin-nav a[aria-current="page"] {
+    border-bottom-color: var(--color-accent);
+    font-weight: 600;
 }
 
 .admin-brand {
@@ -425,6 +452,70 @@ input[type="file"] {
     max-width: 100%;
     margin-bottom: 4px;
     font: inherit;
+}
+
+/* The photo of a page, in the frame the site shows it in. */
+.admin-page-photo {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 16 / 10;
+    margin: 6px 0 10px;
+    object-fit: cover;
+    background: var(--color-surface);
+}
+
+/* "Bring back the shipped text": a checkbox with a label in normal weight (labels in a field are bold). */
+.field .reset-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    margin: 0;
+    font-weight: 400;
+}
+
+.reset-option input {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+}
+
+/* The guide is long: a tall field in a fixed-width font shows the markup characters plainly. */
+.field textarea.markdown-field {
+    min-height: 320px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.markdown-help {
+    margin: 0 0 1.5rem;
+    color: var(--color-muted);
+}
+
+.markdown-help summary {
+    min-height: 44px;
+    padding: 10px 0;
+    color: var(--color-accent);
+    cursor: pointer;
+}
+
+.markdown-help ul {
+    margin: 0;
+    padding-left: 1.25em;
+}
+
+.markdown-help li {
+    margin-bottom: 6px;
+}
+
+.markdown-help code {
+    padding: 0 4px;
+    border-radius: 3px;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-size: 15px;
 }
 
 .admin-form + h2 {

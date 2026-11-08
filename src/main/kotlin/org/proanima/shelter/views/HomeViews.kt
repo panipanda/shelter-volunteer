@@ -17,7 +17,9 @@ import kotlinx.html.section
 import kotlinx.html.span
 import kotlinx.html.strong
 import kotlinx.html.ul
+import org.proanima.shelter.i18n.lines
 import org.proanima.shelter.i18n.messagesFor
+import org.proanima.shelter.i18n.plain
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Cat
@@ -27,21 +29,24 @@ import java.time.format.TextStyle
 import java.util.Locale
 import java.util.ResourceBundle
 
-private const val NATA_TELEGRAM = "Nata_Rogava"
-private const val ALINA_TELEGRAM = "Trikcsy"
-
-fun HTML.homePage(cats: List<Cat>, nextVisit: NextVisit, locale: AppLocale, currentPath: String) {
-    val messages = messagesFor(locale)
-
+// messages: the texts of the site with the edits made in the admin panel (the same for every page below).
+fun HTML.homePage(
+    cats: List<Cat>,
+    nextVisit: NextVisit,
+    locale: AppLocale,
+    currentPath: String,
+    messages: ResourceBundle = messagesFor(locale)
+) {
     pageLayout(
         locale,
         pageTitle = messages.t("home.page.title"),
         currentPath = currentPath,
-        description = messages.t("home.page.description")
+        description = messages.t("home.page.description"),
+        messages = messages
     ) {
         heroSection(locale, messages)
         nextVisitSection(nextVisit, locale, messages)
-        img(src = "/images/home-hero.jpg", alt = messages.t("home.hero.photo.alt"), classes = "hero-photo")
+        img(src = messages.plain(SiteSettings.HERO_PHOTO), alt = messages.t("home.hero.photo.alt"), classes = "hero-photo")
         // The visit button leads to the join steps, so they come right after the photo, before the cats.
         joinSection(locale, messages) { founderQuote(messages) }
         catsSection(cats, locale, messages)
@@ -113,14 +118,14 @@ internal fun FlowContent.joinSection(
             li { textWithLink(messages.t("home.join.step1"), "$prefix/guide", messages.t("home.join.step1.link")) }
             li {
                 +"${messages.t("home.join.step2")} "
-                contactLink(NATA_TELEGRAM, messages.t("home.contact.nata"))
+                contactLink(messages.plain(SiteSettings.NATA_TELEGRAM), messages.t("home.contact.nata"))
                 +", "
-                contactLink(ALINA_TELEGRAM, messages.t("home.contact.alina"))
+                contactLink(messages.plain(SiteSettings.ALINA_TELEGRAM), messages.t("home.contact.alina"))
             }
             // The trips to the dogs are organised by Svora and have their own chat and moderator.
             li {
                 +"${messages.t("home.join.dogs")} "
-                contactLink(DASHA_TELEGRAM, messages.t("home.contact.dasha"))
+                contactLink(messages.plain(SiteSettings.DASHA_TELEGRAM_NAME), messages.t("home.contact.dasha"))
             }
             li { +messages.t("home.join.step3") }
         }
@@ -134,15 +139,11 @@ private fun FlowContent.volunteersSection(messages: ResourceBundle) {
         h2 { +messages.t("home.volunteers.title") }
         h3 { +messages.t("home.volunteers.cats.title") }
         ul {
-            li { +messages.t("home.volunteers.cleaning.text") }
-            li { +messages.t("home.volunteers.feeding.text") }
-            li { +messages.t("home.volunteers.socialization.text") }
+            messages.lines(SiteSettings.VOLUNTEER_CAT_TASKS).forEach { li { +it } }
         }
         h3 { +messages.t("home.volunteers.dogs.title") }
         ul {
-            li { +messages.t("home.volunteers.dogs.walking") }
-            li { +messages.t("home.volunteers.dogs.cleaning") }
-            li { +messages.t("home.volunteers.dogs.socialization") }
+            messages.lines(SiteSettings.VOLUNTEER_DOG_TASKS).forEach { li { +it } }
         }
     }
 }
@@ -159,12 +160,15 @@ private fun FlowContent.aboutSection(messages: ResourceBundle) {
 private const val LINK_PLACEHOLDER = "{link}"
 
 // A sentence with a link in the middle: the message holds {link} where the link goes, so the word order
-// stays the translator's business and the link text is its own message.
+// stays the translator's business and the link text is its own message. The admin panel refuses a text without
+// {link}, but a page must not fail because of one, so the sentence is then followed by the link.
 private fun FlowContent.textWithLink(pattern: String, href: String, linkText: String) {
-    val (before, after) = pattern.split(LINK_PLACEHOLDER, limit = 2)
-    +before
+    val parts = pattern.split(LINK_PLACEHOLDER, limit = 2)
+    +parts.first()
     a(href = href) { +linkText }
-    +after
+    if (parts.size > 1) {
+        +parts[1]
+    }
 }
 
 private fun FlowContent.founderQuote(messages: ResourceBundle) {

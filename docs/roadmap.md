@@ -62,10 +62,16 @@ Done (2026-11): a password-protected admin area at `/admin` (database mode only)
 their photos, with drafts, preview, validation of required fields and a backup. See `docs/decisions.md` "Admin
 panel" and `docs/deploy.md`.
 
+Done (2026-11, second part): the texts and photos of the home, visits, guide and help pages are edited in the same
+panel ("Страницы сайта"), over the texts that ship with the code. See `docs/decisions.md` "Admin panel".
+
 Left:
 
-- Edit visit availability and status (the next-visit overrides are still `data/visit-overrides.json`)
-- Edit volunteer guide content
+- Sections: pages the admin adds and fills (useful articles about animals) and a visit archive, built on the same
+  pattern as cats and dogs (list, drafts, preview, photos), shown in the menu only when they have something published
+- Edit the trip schedule, cancelled and extra trips (still `data/visit-overrides.json` and the schedule in the code);
+  natural to do together with the visit archive, as both are visit data
+- Hiding or reordering a block on a page (the page forms change what blocks say, not which blocks exist)
 - Prevent accidental public exposure of participant data (relevant once participants are stored)
 - Possibly: personal logins and a "who changed what" record, if one shared password stops being enough
 

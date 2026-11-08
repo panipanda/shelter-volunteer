@@ -138,12 +138,50 @@ Decisions behind it:
 - **Nothing links to `/admin` from the public pages**; its pages are `noindex`, never cached and cannot be framed.
   Every change needs the form's own token. Wrong passwords go through one gate, a second each, with no lockout (a
   lockout would let anyone lock the volunteers out).
-- **A backup is one button** (`/admin/export`): a zip with `cats.json`, `dogs.json` and the photos, in the layout
-  of the file mode, so it can be unpacked into `data/`. Neon keeps its own history for a short time only; the
-  volunteers are asked to keep a copy of their own.
+- **A backup is one button** (`/admin/export`): a zip with `cats.json`, `dogs.json`, `site-content.json` (the edited
+  page texts) and the photos, in the layout of the file mode, so it can be unpacked into `data/`. Neon keeps its
+  own history for a short time only; the volunteers are asked to keep a copy of their own.
 
-Still files, and still changed through the repository: the volunteer guide, the next-visit overrides, the UI
-strings. They can move into the admin later in the same pattern.
+### Texts and photos of the other pages (home, visits, guide, help)
+
+Added the same month, as the second part of the admin panel ("Страницы сайта" next to "Кошки и собаки").
+
+- **The texts that come with the code stay the defaults; the database holds only what was edited.** The pages still
+  read `messages_*.properties` and `content/volunteer-guide*.md`; a table `site_content` (key, language, text) is laid
+  on top of them (`OverlayBundle`). A site nobody has edited is byte for byte the site it was, nothing needed a
+  migration, and a text that was never touched follows the code when a developer improves it. A field that is emptied,
+  or given the shipped text again, deletes its row; every edited field also has a "Вернуть исходный текст" box.
+- **The structure of a page stays the code's business; the admin changes what the blocks say.** Each page has a fixed
+  set of fields (`admin/ContentCatalog.kt`), each in `ru`, `en` and `sr`. A list (what volunteers do, what the shelter
+  needs, what Svora does) is one text with one item per line, so items can be added and removed without a block
+  editor. What this cannot do: add or hide a whole block, change the order of blocks, or add a page. That is the next
+  stage ("sections").
+- **The guide is one markdown text per language**, the small subset `parseGuideMarkdown` understands (`#`, `##` with an
+  optional `{#anchor}`, `###`, `- `, `> `, `[text](url)`), with a short how-to under the field. A visual editor was
+  judged out of proportion. A guide without a `# ` title is refused (the table of contents and the photo hang on it)
+  and so is a link that does not start with `https://`, `http://`, `mailto:`, `/` or `#`.
+- **Values that are not texts live in the same table with the language `all`:** the Telegram names of the three
+  coordinators (a coordinator changes more often than a deploy), the donation address on the help page, and the
+  addresses of the two page photos. A Telegram name is cleaned (`@name` and `t.me/name` are accepted) and checked; the
+  donation address must be `https://`.
+- **Sentences with a placeholder keep it.** "Выезд ... в {0}." gets the time put in by the site and "Прочитайте {link}"
+  gets the guide link; a text without the placeholder (or with it twice, or with other braces) is refused, and a page
+  still renders if such a text is somehow stored. A single quote in a text that takes an argument is doubled on the
+  way into `MessageFormat`, so "We're" does not swallow the rest of the sentence.
+- **Edits apply at once, like the edit of a published cat.** There are no drafts or previews for page texts: the page
+  on the site is the preview, and the way back is the reset box (or the backup).
+- **Page photos are replaced, not added.** Two slots (the home photo and the guide photo); the site shows the photo in
+  a 16:10 frame and crops the rest, so the upload is kept as one resized JPEG and not cropped. Each upload gets a new
+  address (`/images/page-home-hero-3fa9c1d2.jpg`) for the same reason as the cat photos, the previous uploaded file is
+  deleted, "Вернуть исходное фото" goes back to the committed `home-*.jpg` (which is still synced from the
+  repository on every start and never deleted). Link previews of pages without a photo of their own use the current
+  home photo.
+- **The shared texts are edited in one place.** "Ближайший визит" and "Как присоединиться" appear on the home page
+  and on the visits page from the same messages; the admin has them on the "Визиты" form only, with a note on the
+  home form.
+- **What is still code:** the regular schedule of trips (Wednesday 9:00, Saturday 10:00) and the cancelled or extra
+  trips in `data/visit-overrides.json`, the navigation and footer texts, the error pages, the cat and dog labels.
+  The visit schedule belongs with the visit archive (below in the roadmap), as both are the same data.
 
 ## Google Calendar
 

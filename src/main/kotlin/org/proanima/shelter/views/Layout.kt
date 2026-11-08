@@ -21,8 +21,10 @@ import kotlinx.html.strong
 import kotlinx.html.title
 import kotlinx.html.unsafe
 import org.proanima.shelter.i18n.messagesFor
+import org.proanima.shelter.i18n.plain
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
+import java.util.ResourceBundle
 
 const val SITE_NAME = "Pro Anima"
 
@@ -32,8 +34,8 @@ val PUBLIC_BASE_URL: String =
     (System.getenv("PUBLIC_BASE_URL") ?: "https://shelter-volunteer.onrender.com").trimEnd('/')
 
 // A link preview needs a raster picture, so pages without a photo of their own (and the SVG
-// placeholders) share the home page photo.
-private const val DEFAULT_SHARE_IMAGE = "/images/home-hero.jpg"
+// placeholders) share the home page photo, whichever one the home page has at the moment
+// (SiteSettings.HERO_PHOTO).
 
 const val TELEGRAM_CHANNEL_URL = "https://t.me/proanima_belgrade"
 const val DASHA_TELEGRAM = "dashafirman"
@@ -78,6 +80,7 @@ private fun HEAD.pageMetadata(
     currentPath: String,
     description: String?,
     ogImage: String?,
+    defaultImage: String,
     indexable: Boolean
 ) {
     title { +fullTitle }
@@ -91,7 +94,7 @@ private fun HEAD.pageMetadata(
 
     val pathSuffix = currentPath.removePrefix("/${locale.code}")
     val canonical = "$PUBLIC_BASE_URL/${locale.code}$pathSuffix"
-    val image = (ogImage?.takeUnless { it.endsWith(".svg") } ?: DEFAULT_SHARE_IMAGE).let { "$PUBLIC_BASE_URL$it" }
+    val image = (ogImage?.takeUnless { it.endsWith(".svg") } ?: defaultImage).let { "$PUBLIC_BASE_URL$it" }
 
     link(rel = "canonical", href = canonical)
     AppLocale.entries.forEach { alternate ->
@@ -153,9 +156,11 @@ fun HTML.pageLayout(
     ogImage: String? = null,
     indexable: Boolean = true,
     preview: PagePreview? = null,
+    // The texts of the site with the edits made in the admin panel; a page that does not pass them shows the
+    // texts that come with the code.
+    messages: ResourceBundle = messagesFor(locale),
     content: MAIN.() -> Unit
 ) {
-    val messages = messagesFor(locale)
     // The brand goes after the page name, so a row of open tabs says where each one is from.
     val fullTitle = if (SITE_NAME in pageTitle) pageTitle else "$pageTitle · $SITE_NAME"
 
@@ -164,7 +169,7 @@ fun HTML.pageLayout(
         meta(charset = "UTF-8")
         meta(name = "viewport", content = "width=device-width, initial-scale=1")
         meta(name = "color-scheme", content = "light dark")
-        pageMetadata(locale, fullTitle, currentPath, description, ogImage, indexable && preview == null)
+        pageMetadata(locale, fullTitle, currentPath, description, ogImage, messages.plain(SiteSettings.HERO_PHOTO), indexable && preview == null)
         link(rel = "icon", href = "/icons/favicon-32.png", type = "image/png") {
             attributes["sizes"] = "32x32"
         }

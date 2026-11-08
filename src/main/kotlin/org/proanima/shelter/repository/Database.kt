@@ -98,6 +98,17 @@ private val SCHEMA = listOf(
         meta_key VARCHAR(100) PRIMARY KEY,
         meta_value TEXT NOT NULL
     )
+    """,
+    // The texts of the site's pages that were edited in the admin panel; a key with no row here has the text that
+    // comes with the code. lang is "ru", "en", "sr", or "all" for a value that is the same in every language.
+    """
+    CREATE TABLE IF NOT EXISTS site_content (
+        content_key VARCHAR(120) NOT NULL,
+        lang VARCHAR(8) NOT NULL,
+        body TEXT NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+        PRIMARY KEY (content_key, lang)
+    )
     """
 )
 

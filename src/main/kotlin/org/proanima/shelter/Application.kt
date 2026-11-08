@@ -26,17 +26,24 @@ import org.proanima.shelter.admin.adminConfigFromEnv
 import org.proanima.shelter.admin.adminRoutes
 import org.proanima.shelter.admin.installAdminSessions
 import org.proanima.shelter.model.AppLocale
+import org.proanima.shelter.repository.EditableGuideRepository
+import org.proanima.shelter.repository.InMemorySiteContentRepository
 import org.proanima.shelter.repository.JsonCatRepository
 import org.proanima.shelter.repository.JsonDogRepository
 import org.proanima.shelter.repository.JsonVisitOverridesRepository
 import org.proanima.shelter.repository.MarkdownGuideRepository
+import org.proanima.shelter.repository.NoSiteContent
 import org.proanima.shelter.repository.PgCatRepository
 import org.proanima.shelter.repository.PgDogRepository
 import org.proanima.shelter.repository.PgPhotoStore
+import org.proanima.shelter.repository.PgSiteContentRepository
 import org.proanima.shelter.repository.PhotoStore
+import org.proanima.shelter.repository.SITE_CONTENT_FILE_NAME
+import org.proanima.shelter.repository.SiteContentRepository
 import org.proanima.shelter.repository.createDataSource
 import org.proanima.shelter.repository.createSchema
 import org.proanima.shelter.repository.loadSeedData
+import org.proanima.shelter.repository.readSiteContentFile
 import org.proanima.shelter.repository.parseDatabaseUrl
 import org.proanima.shelter.repository.seedIfNeeded
 import org.proanima.shelter.repository.syncSiteAssets
@@ -91,11 +98,16 @@ internal fun Application.moduleWithFiles() {
     // Fail at startup, not on the first request to the broken page.
     failOnProblems(validatePets(catRepository.findAll(), dogRepository.findAll(), IMAGES_DIR))
 
+    // Page texts edited in the admin panel and put back from a backup (data/site-content.json). There is no admin
+    // panel without a database, so here the file is only read.
+    val siteContent = InMemorySiteContentRepository(readSiteContentFile(File("data/$SITE_CONTENT_FILE_NAME")))
+
     configureRoutes(
         catService = CatService(catRepository),
-        guideService = GuideService(MarkdownGuideRepository()),
+        guideService = GuideService(EditableGuideRepository(MarkdownGuideRepository(), siteContent)),
         dogService = DogService(dogRepository),
-        visitOverrides = JsonVisitOverridesRepository().load()
+        visitOverrides = JsonVisitOverridesRepository().load(),
+        siteContent = siteContent
     )
 }
 
@@ -107,7 +119,7 @@ internal fun Application.moduleWithDatabase(databaseUrl: String) {
     val clock = Clock.systemUTC()
     val seeded = seedIfNeeded(dataSource, clock) {
         // The first start copies data/ into the database, so it must be sound; after that the database is the truth.
-        loadSeedData(File("data/cats.json"), File("data/dogs.json"), IMAGES_DIR).also { seed ->
+        loadSeedData(File("data/cats.json"), File("data/dogs.json"), IMAGES_DIR, File("data/$SITE_CONTENT_FILE_NAME")).also { seed ->
             val photoNames = seed.photos.map { it.name }.toSet()
             failOnProblems(validatePets(seed.cats, seed.dogs, IMAGES_DIR.path) { it in photoNames })
         }
@@ -126,19 +138,27 @@ internal fun Application.moduleWithDatabase(databaseUrl: String) {
     validatePets(catRepository.findAll(), dogRepository.findAll(), "the database") { it in photoNames }
         .forEach { environment.log.warn("Content problem: {}", it) }
 
+    // The texts of the pages (home, guide, visits, help) as edited in the admin panel; the pages show the texts that
+    // come with the code wherever nothing was edited.
+    val siteContent = PgSiteContentRepository(dataSource, clock)
+    val shippedGuide = MarkdownGuideRepository()
+
     // The admin panel needs ADMIN_PASSWORD and SESSION_SECRET; without them the site runs and /admin does not exist.
-    val admin = adminConfigFromEnv()?.let { AdminSetup(it, catRepository, dogRepository, photoStore, clock) }
+    val admin = adminConfigFromEnv()?.let {
+        AdminSetup(it, catRepository, dogRepository, photoStore, clock, content = siteContent, shippedGuide = shippedGuide)
+    }
     if (admin == null) {
         environment.log.warn("ADMIN_PASSWORD and SESSION_SECRET are not set: the admin panel is off")
     }
 
     configureRoutes(
         catService = CatService(catRepository),
-        guideService = GuideService(MarkdownGuideRepository()),
+        guideService = GuideService(EditableGuideRepository(shippedGuide, siteContent)),
         dogService = DogService(dogRepository),
         visitOverrides = JsonVisitOverridesRepository().load(),
         photoStore = photoStore,
-        admin = admin
+        admin = admin,
+        siteContent = siteContent
     )
 }
 
@@ -155,7 +175,9 @@ fun Application.configureRoutes(
     dogService: DogService = DogService(JsonDogRepository()),
     visitOverrides: VisitOverrides = VisitOverrides(),
     photoStore: PhotoStore? = null,
-    admin: AdminSetup? = null
+    admin: AdminSetup? = null,
+    // The edited texts of the pages. With an admin panel they are the ones it edits.
+    siteContent: SiteContentRepository = admin?.content ?: NoSiteContent
 ) {
     configureErrorPages()
     if (admin != null) {
@@ -208,12 +230,12 @@ fun Application.configureRoutes(
 
         AppLocale.entries.forEach { locale ->
             route("/${locale.code}") {
-                homeRoutes(catService, locale, clock, visitOverrides)
-                catRoutes(catService, locale)
-                dogRoutes(dogService, locale)
-                visitRoutes(locale, clock, visitOverrides)
-                guideRoutes(guideService, locale)
-                helpRoutes(locale)
+                homeRoutes(catService, locale, clock, visitOverrides, siteContent)
+                catRoutes(catService, locale, siteContent)
+                dogRoutes(dogService, locale, siteContent)
+                visitRoutes(locale, clock, visitOverrides, siteContent)
+                guideRoutes(guideService, locale, siteContent)
+                helpRoutes(locale, siteContent)
             }
         }
     }

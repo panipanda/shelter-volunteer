@@ -19,17 +19,17 @@ import org.proanima.shelter.model.Dog
 import org.proanima.shelter.service.displayCatLocation
 import org.proanima.shelter.service.displayDogAge
 import org.proanima.shelter.service.petSlug
+import java.util.ResourceBundle
 
 private const val DEFAULT_PHOTO = "/images/default-dog.svg"
 
-fun HTML.dogsPage(dogs: List<Dog>, locale: AppLocale, currentPath: String) {
-    val messages = messagesFor(locale)
-
+fun HTML.dogsPage(dogs: List<Dog>, locale: AppLocale, currentPath: String, messages: ResourceBundle = messagesFor(locale)) {
     pageLayout(
         locale,
         pageTitle = messages.t("dogs.page.title"),
         currentPath = currentPath,
-        description = messages.t("dogs.page.description")
+        description = messages.t("dogs.page.description"),
+        messages = messages
     ) {
         // Just like the list of cats: the heading and the cards. How to sign up for the dog trips is on the
         // home page, who Svora is is on the help page.
@@ -71,8 +71,13 @@ private fun FlowContent.dogList(dogs: List<Dog>, locale: AppLocale) {
     }
 }
 
-fun HTML.dogDetailsPage(dog: Dog, locale: AppLocale, currentPath: String, preview: PagePreview? = null) {
-    val messages = messagesFor(locale)
+fun HTML.dogDetailsPage(
+    dog: Dog,
+    locale: AppLocale,
+    currentPath: String,
+    preview: PagePreview? = null,
+    messages: ResourceBundle = messagesFor(locale)
+) {
     val name = dog.name.forLocale(locale)
     val photoUrls = dog.photoUrls.ifEmpty { listOf(DEFAULT_PHOTO) }
     val description = dog.description.forLocale(locale)
@@ -92,7 +97,8 @@ fun HTML.dogDetailsPage(dog: Dog, locale: AppLocale, currentPath: String, previe
         mainClass = "page cat-page",
         description = description,
         ogImage = photoUrls.first(),
-        preview = preview
+        preview = preview,
+        messages = messages
     ) {
         p(classes = "back") { a(href = "/${locale.code}/dogs") { +messages.t("dog.backToDogs") } }
 

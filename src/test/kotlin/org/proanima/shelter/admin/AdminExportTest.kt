@@ -15,6 +15,8 @@ import org.proanima.shelter.model.CatLocation
 import org.proanima.shelter.model.Dog
 import org.proanima.shelter.model.LocalizedText
 import org.proanima.shelter.repository.loadSeedData
+import org.proanima.shelter.repository.readSiteContentFile
+import org.proanima.shelter.service.ContentKey
 import java.io.ByteArrayInputStream
 import java.nio.file.Files
 import java.util.zip.ZipInputStream
@@ -112,13 +114,13 @@ class AdminExportTest : AdminTestBase() {
 
         val files = response.entries()
         assertEquals(
-            setOf("cats.json", "dogs.json", "README.txt", "images/cat-1-aaaa1111.jpg", "images/cat-1-aaaa1111-card.jpg"),
+            setOf("cats.json", "dogs.json", "site-content.json", "README.txt", "images/cat-1-aaaa1111.jpg", "images/cat-1-aaaa1111-card.jpg"),
             files.keys
         )
         assertContentEquals(photos.get("cat-1-aaaa1111.jpg")!!.bytes, files.getValue("images/cat-1-aaaa1111.jpg"))
         val readme = files.getValue("README.txt").decodeToString()
         assertContains(readme, "2026-11-08")
-        assertContains(readme, "Кошек: 1. Собак: 1. Файлов в images/: 2.")
+        assertContains(readme, "Кошек: 1. Собак: 1. Изменённых текстов страниц: 0. Файлов в images/: 2.")
         assertFalse("ВНИМАНИЕ" in readme)
     }
 
@@ -203,9 +205,10 @@ class AdminExportTest : AdminTestBase() {
 
         val files = browser.post("/admin/export", emptyMap(), csrf).entries()
 
-        assertEquals(setOf("cats.json", "dogs.json", "README.txt"), files.keys)
+        assertEquals(setOf("cats.json", "dogs.json", "site-content.json", "README.txt"), files.keys)
         assertEquals("[]", files.getValue("cats.json").decodeToString().trim())
-        assertContains(files.getValue("README.txt").decodeToString(), "Кошек: 0. Собак: 0. Файлов в images/: 0.")
+        assertContains(files.getValue("site-content.json").decodeToString(), "\"texts\": []")
+        assertContains(files.getValue("README.txt").decodeToString(), "Кошек: 0. Собак: 0. Изменённых текстов страниц: 0. Файлов в images/: 0.")
     }
 
     @Test
@@ -242,6 +245,63 @@ class AdminExportTest : AdminTestBase() {
 
         assertEquals(24, files.keys.count { it.startsWith("images/") })
         assertContains(files.getValue("README.txt").decodeToString(), "Файлов в images/: 24.")
+    }
+
+
+    // ---- the texts and photos of the pages
+
+    @Test
+    fun `the edited page texts and the uploaded page photos are in the backup and come back from it`() = testApplication {
+        start()
+        val browser = browser()
+        val csrf = browser.logIn()
+        val heroName = "page-home-hero-1a2b3c4d"
+        photos.put("$heroName.jpg", "image/jpeg", jpegBytes(900, 560))
+        siteContent.update(
+            mapOf(
+                ContentKey("home.hero.headline", "ru") to "Новый заголовок",
+                ContentKey("home.hero.headline", "en") to "We're new",
+                ContentKey("contact.nata.telegram") to "New_Nata",
+                ContentKey("image.home.hero") to "/images/$heroName.jpg",
+                ContentKey("guide.markdown", "sr") to "# Vodič\n\n## Deo {#deo}\n\nTekst"
+            )
+        )
+
+        val files = browser.post("/admin/export", emptyMap(), csrf).entries()
+
+        assertEquals(setOf("cats.json", "dogs.json", "site-content.json", "README.txt", "images/$heroName.jpg"), files.keys)
+        assertContentEquals(photos.get("$heroName.jpg")!!.bytes, files.getValue("images/$heroName.jpg"))
+        val readme = files.getValue("README.txt").decodeToString()
+        assertContains(readme, "Изменённых текстов страниц: 5.")
+        assertFalse("ВНИМАНИЕ" in readme)
+
+        val dir = Files.createTempDirectory("backup-pages")
+        try {
+            val file = dir.resolve("site-content.json").toFile().also { it.writeBytes(files.getValue("site-content.json")) }
+            assertEquals(siteContent.load().entries, readSiteContentFile(file))
+            val seed = loadSeedData(dir.resolve("cats.json").also { it.writeBytes(byteArrayOf('['.code.toByte(), ']'.code.toByte())) }.toFile(),
+                dir.resolve("dogs.json").also { it.writeBytes(byteArrayOf('['.code.toByte(), ']'.code.toByte())) }.toFile(),
+                dir.resolve("images").also { it.createDirectories() }.also { images -> images.resolve("$heroName.jpg").writeBytes(files.getValue("images/$heroName.jpg")) }.toFile(),
+                file)
+            assertEquals(siteContent.load().entries, seed.siteContent)
+            assertEquals(setOf("$heroName.jpg"), seed.photos.map { it.name }.toSet())
+        } finally {
+            dir.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `a page photo that the store lacks is named in the readme`() = testApplication {
+        start()
+        val browser = browser()
+        val csrf = browser.logIn()
+        siteContent.update(mapOf(ContentKey("image.home.hero") to "/images/page-home-hero-gone0000.jpg"))
+
+        val files = browser.post("/admin/export", emptyMap(), csrf).entries()
+
+        val readme = files.getValue("README.txt").decodeToString()
+        assertContains(readme, "ВНИМАНИЕ")
+        assertContains(readme, "page-home-hero-gone0000.jpg")
     }
 
     // ---- one at a time, and the button

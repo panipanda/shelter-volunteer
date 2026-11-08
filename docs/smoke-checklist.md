@@ -545,15 +545,41 @@ Photos (page "Фотографии" of a record):
 Backup:
 
 - "Скачать копию (zip)" on the list page downloads `proanima-backup-<date>.zip`. It contains `cats.json`,
-  `dogs.json`, `images/` and `README.txt`; drafts are in `cats.json` with `"published": false`; no `home-*` or
-  `default-*` files. The `README.txt` says how many cats, dogs and files, and names any photo a record points at
-  that the database lacks.
+  `dogs.json`, `site-content.json`, `images/` and `README.txt`; drafts are in `cats.json` with `"published": false`;
+  no `home-*` or `default-*` files. The `README.txt` says how many cats, dogs, edited page texts and files, and names
+  any photo a record or a page points at that the database lacks. After editing a page text, the backup's
+  `site-content.json` has exactly that text and nothing else.
 - Pressing the button twice quickly gives the second request a "Копия уже собирается" page, not a second archive.
 
 Deleting:
 
 - "Удалить" on a record asks first; confirming removes the record and its photos, and the public pages no longer
   show it.
+
+Page texts and photos ("Страницы сайта" in the menu; use a test edit and put it back at the end):
+
+- The list shows Главная, Визиты, Гайд волонтёра, Как помочь, each with "Как на сайте: RU · EN · SR". Every form opens
+  with the texts the site shows now in all three languages; saving a form without touching anything changes nothing
+  (no "изменено" badge appears in the list).
+- Change the Russian headline of Главная and save: the flash says it is on the site, `/ru` shows it at once, `/en`
+  and `/sr` still show their own headlines. The field is marked "Изменено. Исходный текст: «…»" with a
+  "Вернуть исходный текст" box; ticking it and saving brings the shipped text back, and so does typing it again or
+  emptying the field.
+- A text over its limit is refused with the field marked and everything typed still in the form; nothing is saved.
+- Визиты: the time sentence without `{0}` and the first join step without `{link}` are refused; with `{0}` the time
+  of the next trip shows in it, and an apostrophe in an English sentence is kept ("We're leaving at 9:00."). A
+  coordinator's Telegram name typed as `@name` or `t.me/name` is saved as `name` and the link on `/ru` and `/visits`
+  goes to `t.me/name`; a name with spaces is refused.
+- Как помочь: a donation address that does not start with `https://` is refused; a good one is the button's link.
+  A list (what the shelter needs) takes one item per line and the page shows exactly those items.
+- Гайд волонтёра: the three guide texts open as markdown; a new `## Раздел {#metka}` appears on `/ru/guide` and in
+  the table of contents; a guide without a `# ` title and a `[x](javascript:...)` link are refused; the languages
+  not edited keep their shipped guide.
+- Photo ("Заменить фото" on Главная and on Гайд): a new horizontal photo is on `/ru` (or `/ru/guide`) at once and the
+  old uploaded one is gone; "Вернуть исходное фото" brings the committed one back; a text file is refused with a
+  message. The "Описание фото" field is the picture's alt text.
+- A link preview (`og:image` in the page source) of `/ru/cats` uses the current home photo.
+- HTML typed into a text (`<b>`) shows as text on the site, not as markup.
 
 ## Automated tests
 

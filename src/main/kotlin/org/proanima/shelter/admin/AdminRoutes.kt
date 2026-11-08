@@ -29,8 +29,12 @@ import kotlinx.html.HTML
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.model.Dog
+import org.proanima.shelter.repository.GuideRepository
+import org.proanima.shelter.repository.InMemorySiteContentRepository
+import org.proanima.shelter.repository.MarkdownGuideRepository
 import org.proanima.shelter.repository.MutableCatRepository
 import org.proanima.shelter.repository.MutableDogRepository
+import org.proanima.shelter.repository.MutableSiteContentRepository
 import org.proanima.shelter.repository.PhotoStore
 import org.proanima.shelter.repository.isSiteAsset
 import org.proanima.shelter.service.cardPhotoUrl
@@ -54,7 +58,7 @@ private val SHELTER_ZONE = ZoneId.of("Europe/Belgrade")
 // A login form is a few bytes and an edit form a few kilobytes. A bigger or length-less body is refused
 // before it is read, so nobody can fill the memory by posting to the admin addresses.
 private const val MAX_LOGIN_BYTES = 4_096L
-private const val MAX_FORM_BYTES = 200_000L
+internal const val MAX_FORM_BYTES = 200_000L
 
 private const val IMAGES_PREFIX = "/images/"
 
@@ -65,7 +69,11 @@ class AdminSetup(
     val dogs: MutableDogRepository,
     val photos: PhotoStore,
     val clock: Clock = Clock.systemUTC(),
-    val throttle: FailedLoginThrottle = FailedLoginThrottle()
+    val throttle: FailedLoginThrottle = FailedLoginThrottle(),
+    // The texts and photos of the home, guide, visits and help pages, and the guide that comes with the code (what
+    // the guide's form shows until someone edits it).
+    val content: MutableSiteContentRepository = InMemorySiteContentRepository(),
+    val shippedGuide: GuideRepository = MarkdownGuideRepository()
 ) {
     // One backup at a time: it reads every photo, and the free plan has a tenth of a CPU.
     internal val exportRunning = AtomicBoolean(false)
@@ -172,6 +180,7 @@ fun Route.adminRoutes(admin: AdminSetup) {
 
         petRoutes(admin, catKind(admin))
         petRoutes(admin, dogKind(admin))
+        pageRoutes(admin)
     }
 }
 
@@ -193,13 +202,14 @@ private suspend fun sendBackup(admin: AdminSetup, call: ApplicationCall, session
         val cats = admin.cats.findAll()
         val dogs = admin.dogs.findAll()
         val names = admin.photos.names()
+        val content = admin.content.load()
         val today = admin.today()
         call.response.header(
             HttpHeaders.ContentDisposition,
             ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, "proanima-backup-$today.zip").toString()
         )
         call.respondOutputStream(ContentType.Application.Zip) {
-            val report = writeBackup(this, cats, dogs, names, admin.photos, today)
+            val report = writeBackup(this, cats, dogs, names, admin.photos, today, content)
             backupLog.info(
                 "Backup sent: {} cats, {} dogs, {} photo files, {} missing",
                 report.cats, report.dogs, report.photos, report.missingPhotos.size
@@ -576,7 +586,7 @@ private fun removeUnusedPhotos(admin: AdminSetup, urls: List<String>) {
     }
 }
 
-private suspend inline fun AdminSetup.withSession(call: ApplicationCall, block: (AdminSession) -> Unit) {
+internal suspend inline fun AdminSetup.withSession(call: ApplicationCall, block: (AdminSession) -> Unit) {
     val session = currentSession(call)
     if (session == null) {
         call.seeOther("/admin/login")
@@ -587,14 +597,18 @@ private suspend inline fun AdminSetup.withSession(call: ApplicationCall, block: 
 
 // Every change goes through here: a logged-in person, a body of sane size, and the form's own token, which a
 // page on another site cannot know.
-private suspend inline fun AdminSetup.withForm(call: ApplicationCall, block: (AdminSession, Map<String, String>) -> Unit) {
+internal suspend inline fun AdminSetup.withForm(
+    call: ApplicationCall,
+    maxBytes: Long = MAX_FORM_BYTES,
+    block: (AdminSession, Map<String, String>) -> Unit
+) {
     val session = currentSession(call)
     if (session == null) {
         call.seeOther("/admin/login")
         return
     }
     val length = call.request.contentLength()
-    if (length == null || length > MAX_FORM_BYTES) {
+    if (length == null || length > maxBytes) {
         call.respond(HttpStatusCode.PayloadTooLarge)
         return
     }
@@ -624,7 +638,7 @@ private suspend inline fun <T : Any> withPet(call: ApplicationCall, kind: PetKin
     }
 }
 
-private suspend fun ApplicationCall.seeOther(location: String) {
+internal suspend fun ApplicationCall.seeOther(location: String) {
     response.header(HttpHeaders.Location, location)
     respond(HttpStatusCode.SeeOther)
 }

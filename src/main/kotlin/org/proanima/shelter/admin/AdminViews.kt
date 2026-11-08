@@ -27,6 +27,7 @@ import kotlinx.html.li
 import kotlinx.html.link
 import kotlinx.html.main
 import kotlinx.html.meta
+import kotlinx.html.nav
 import kotlinx.html.option
 import kotlinx.html.p
 import kotlinx.html.script
@@ -54,8 +55,14 @@ import java.util.Locale
 // The admin panel is for the people who run the site, in Russian only. Its pages are plain: the colours,
 // fonts and buttons of the site, forms that work without JavaScript, nothing for search engines.
 
+// The two parts of the admin panel, as the menu at the top shows them.
+enum class AdminSection(val title: String, val href: String) {
+    ANIMALS("Кошки и собаки", "/admin"),
+    PAGES("Страницы сайта", "/admin/pages")
+}
+
 // csrf == null: nobody is logged in (the login page), so there is no menu.
-fun HTML.adminPage(pageTitle: String, csrf: String?, content: MAIN.() -> Unit) {
+fun HTML.adminPage(pageTitle: String, csrf: String?, section: AdminSection = AdminSection.ANIMALS, content: MAIN.() -> Unit) {
     lang = "ru"
     head {
         meta(charset = "UTF-8")
@@ -73,6 +80,15 @@ fun HTML.adminPage(pageTitle: String, csrf: String?, content: MAIN.() -> Unit) {
             div(classes = "wrap admin-header-row") {
                 a(href = "/admin", classes = "admin-brand") { +"Pro Anima · админка" }
                 if (csrf != null) {
+                    nav(classes = "admin-nav") {
+                        attributes["aria-label"] = "Разделы админки"
+                        AdminSection.entries.forEach { entry ->
+                            a(href = entry.href) {
+                                if (entry == section) attributes["aria-current"] = "page"
+                                +entry.title
+                            }
+                        }
+                    }
                     div(classes = "admin-header-actions") {
                         a(href = "/ru") { +"На сайт" }
                         form(action = "/admin/logout", method = FormMethod.post) {
@@ -87,7 +103,7 @@ fun HTML.adminPage(pageTitle: String, csrf: String?, content: MAIN.() -> Unit) {
     }
 }
 
-private fun FlowContent.csrfField(csrf: String) {
+internal fun FlowContent.csrfField(csrf: String) {
     input(type = InputType.hidden, name = "_csrf") { value = csrf }
 }
 
@@ -143,8 +159,8 @@ private val FLASH_MESSAGES = mapOf(
     "deleted" to "Запись удалена."
 )
 
-private fun FlowContent.flash(code: String?) {
-    FLASH_MESSAGES[code]?.let { message ->
+internal fun FlowContent.flash(code: String?, messages: Map<String, String> = FLASH_MESSAGES) {
+    messages[code]?.let { message ->
         p(classes = "admin-flash") {
             attributes["role"] = "status"
             +message
@@ -261,7 +277,7 @@ private fun megabytes(bytes: Long): String = String.format(Locale.forLanguageTag
 
 // The free database holds 1 GB for everything. The pictures are almost all of it, so the number is shown where
 // someone adding photos will see it, before the day it runs out.
-private fun FlowContent.storageNote(photoBytes: Long) {
+internal fun FlowContent.storageNote(photoBytes: Long) {
     if (photoBytes <= 0) return
     val nearlyFull = photoBytes > DATABASE_LIMIT_BYTES * 8 / 10
     p(classes = if (nearlyFull) "admin-alert" else "admin-note") {
@@ -291,21 +307,21 @@ class FormPage<T>(
     val flashCode: String? = null
 )
 
-private val LANGUAGE_NAMES = mapOf("ru" to "Русский", "en" to "English", "sr" to "Srpski")
+internal val LANGUAGE_NAMES = mapOf("ru" to "Русский", "en" to "English", "sr" to "Srpski")
 
 private val MONTHS = listOf(
     "январь", "февраль", "март", "апрель", "май", "июнь",
     "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"
 )
 
-private fun markInvalid(input: kotlinx.html.CommonAttributeGroupFacade, errors: Map<String, String>, name: String) {
+internal fun markInvalid(input: kotlinx.html.CommonAttributeGroupFacade, errors: Map<String, String>, name: String) {
     if (name in errors) {
         input.attributes["aria-invalid"] = "true"
         input.attributes["aria-describedby"] = "err-$name"
     }
 }
 
-private fun FlowContent.fieldError(errors: Map<String, String>, name: String) {
+internal fun FlowContent.fieldError(errors: Map<String, String>, name: String) {
     errors[name]?.let { message ->
         p(classes = "field-error") {
             id = "err-$name"

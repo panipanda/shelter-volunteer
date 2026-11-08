@@ -8,32 +8,30 @@ import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.section
 import kotlinx.html.ul
+import org.proanima.shelter.i18n.lines
 import org.proanima.shelter.i18n.messagesFor
+import org.proanima.shelter.i18n.plain
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
+import java.util.ResourceBundle
 
 // Ways to help that are not visits. They are for a different reader than the volunteer sign-up, so they
 // are not on the home page; the home page and the footer link here.
-fun HTML.helpPage(locale: AppLocale, currentPath: String) {
-    val messages = messagesFor(locale)
-
+fun HTML.helpPage(locale: AppLocale, currentPath: String, messages: ResourceBundle = messagesFor(locale)) {
     pageLayout(
         locale,
         pageTitle = messages.t("help.title"),
         currentPath = currentPath,
-        description = messages.t("help.page.description")
+        description = messages.t("help.page.description"),
+        messages = messages
     ) {
         h1 { +messages.t("help.title") }
         p { +messages.t("help.intro") }
         // The donation link is the one thing this page asks for, so it is the page's primary button, above the list.
-        p { a(href = SVORA_LINKTREE_URL, classes = "button") { +messages.t("help.link.donate") } }
+        p { a(href = messages.plain(SiteSettings.DONATE_URL), classes = "button") { +messages.t("help.link.donate") } }
         p { +messages.t("help.needs") }
         ul(classes = "help-list") {
-            li { +messages.t("help.item.donations") }
-            li { +messages.t("help.item.food") }
-            li { +messages.t("help.item.catThings") }
-            li { +messages.t("help.item.supplies") }
-            li { +messages.t("help.item.foster") }
+            messages.lines(SiteSettings.HELP_NEEDS).forEach { li { +it } }
         }
         // The coordinators' contacts live in the "join" section of the home page; here they are only a link to it.
         p {
@@ -47,10 +45,7 @@ fun HTML.helpPage(locale: AppLocale, currentPath: String) {
             h2 { +messages.t("help.svora.title") }
             p { +messages.t("help.svora.text") }
             ul {
-                li { +messages.t("help.svora.item.trips") }
-                li { +messages.t("help.svora.item.supplies") }
-                li { +messages.t("help.svora.item.donations") }
-                li { +messages.t("help.svora.item.events") }
+                messages.lines(SiteSettings.SVORA_ACTIVITIES).forEach { li { +it } }
             }
         }
     }

@@ -61,7 +61,25 @@ object ImageProcessing {
         withContext(Dispatchers.Default) { processNow(bytes) }
     }
 
-    internal fun processNow(bytes: ByteArray): ProcessedPhoto {
+    // The photo of one of the site's pages (the home page, the guide): the big copy only. The page shows it in a
+    // 16:10 frame and crops what does not fit, so there is no card copy and no cropping here.
+    suspend fun processForPage(bytes: ByteArray): ByteArray = gate.withLock {
+        withContext(Dispatchers.Default) { processForPageNow(bytes) }
+    }
+
+    internal fun processNow(bytes: ByteArray): ProcessedPhoto = withOriginal(bytes) { original ->
+        val card = scaleDown(
+            original,
+            max(PhotoLimits.CARD_WIDTH.toDouble() / original.width, PhotoLimits.CARD_HEIGHT.toDouble() / original.height)
+        )
+        ProcessedPhoto(encodeJpeg(original, PhotoLimits.ORIGINAL_QUALITY), encodeJpeg(card, PhotoLimits.CARD_QUALITY))
+    }
+
+    internal fun processForPageNow(bytes: ByteArray): ByteArray =
+        withOriginal(bytes) { original -> encodeJpeg(original, PhotoLimits.ORIGINAL_QUALITY) }
+
+    // Checks the file, reads it upright and scaled down to the big size, and hands that picture to `block`.
+    private fun <T> withOriginal(bytes: ByteArray, block: (BufferedImage) -> T): T {
         if (bytes.isEmpty()) {
             throw PhotoRejected("Файл пустой.")
         }
@@ -73,11 +91,7 @@ object ImageProcessing {
         try {
             val upright = decodeUpright(bytes, format)
             val original = scaleDown(upright, PhotoLimits.ORIGINAL_LONG_SIDE.toDouble() / max(upright.width, upright.height))
-            val card = scaleDown(
-                original,
-                max(PhotoLimits.CARD_WIDTH.toDouble() / original.width, PhotoLimits.CARD_HEIGHT.toDouble() / original.height)
-            )
-            return ProcessedPhoto(encodeJpeg(original, PhotoLimits.ORIGINAL_QUALITY), encodeJpeg(card, PhotoLimits.CARD_QUALITY))
+            return block(original)
         } catch (e: OutOfMemoryError) {
             throw PhotoRejected("Изображение слишком большое для обработки. Уменьшите его и загрузите снова.")
         }

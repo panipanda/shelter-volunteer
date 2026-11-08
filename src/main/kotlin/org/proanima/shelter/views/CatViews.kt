@@ -31,10 +31,8 @@ import org.proanima.shelter.service.displayCatName
 import org.proanima.shelter.service.displayPhotoUrls
 import java.util.ResourceBundle
 
-fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String) {
-    val messages = messagesFor(locale)
-
-    pageLayout(locale, pageTitle = messages.t("cat.page.title"), currentPath = currentPath) {
+fun HTML.catsListPage(cats: List<Cat>, locale: AppLocale, currentPath: String, messages: ResourceBundle = messagesFor(locale)) {
+    pageLayout(locale, pageTitle = messages.t("cat.page.title"), currentPath = currentPath, messages = messages) {
         h1 { +messages.t("cat.page.title") }
         p(classes = "list-note") { +messages.t("cat.list.note") }
 
@@ -103,9 +101,14 @@ private val TELEGRAM_HANDLE = Regex("@([A-Za-z0-9_]{5,32})")
 internal fun telegramHandle(instruction: String?): String? =
     instruction?.let { TELEGRAM_HANDLE.find(it)?.groupValues?.get(1) }
 
-fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String, preview: PagePreview? = null) {
+fun HTML.catDetailsPage(
+    cat: Cat,
+    locale: AppLocale,
+    currentPath: String,
+    preview: PagePreview? = null,
+    messages: ResourceBundle = messagesFor(locale)
+) {
     val prefix = "/${locale.code}"
-    val messages = messagesFor(locale)
     val name = displayCatName(cat.name, locale)
     val age = displayCatAge(cat.birthYear, cat.birthMonth, locale)
     val location = displayCatLocation(cat.location, locale)
@@ -123,7 +126,8 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String, previe
         mainClass = "page cat-page",
         description = description,
         ogImage = photoUrls.first(),
-        preview = preview
+        preview = preview,
+        messages = messages
     ) {
         p(classes = "back") { a(href = "$prefix/cats") { +messages.t("cat.backToCats") } }
 

@@ -7,17 +7,20 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import org.proanima.shelter.model.AppLocale
+import org.proanima.shelter.repository.NoSiteContent
+import org.proanima.shelter.repository.SiteContentRepository
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.views.catDetailsPage
 import org.proanima.shelter.views.catsListPage
 import org.proanima.shelter.views.respondPage
 
-fun Route.catRoutes(catService: CatService, locale: AppLocale) {
+fun Route.catRoutes(catService: CatService, locale: AppLocale, siteContent: SiteContentRepository = NoSiteContent) {
     get("/cats") {
         val cats = catService.getAllCats()
+        val messages = siteContent.load().bundle(locale)
 
         call.respondPage(locale) {
-            catsListPage(cats, locale, call.request.path())
+            catsListPage(cats, locale, call.request.path(), messages)
         }
     }
 
@@ -28,8 +31,10 @@ fun Route.catRoutes(catService: CatService, locale: AppLocale) {
         if (cat == null) {
             call.respond(HttpStatusCode.NotFound)
         } else {
+            val messages = siteContent.load().bundle(locale)
+
             call.respondPage(locale) {
-                catDetailsPage(cat, locale, call.request.path())
+                catDetailsPage(cat, locale, call.request.path(), messages = messages)
             }
         }
     }
