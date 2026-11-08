@@ -165,6 +165,15 @@ class AdminExportTest : AdminTestBase() {
         newCat("Скрытая", published = false)
         newDog("Рекс", listOf(storedPhoto("dog-1-cccc3333")))
         newDog("Без фото")
+        // A dog with all the fields of a cat: they are in the backup too.
+        dogs.save(
+            Dog(
+                id = 0, name = LocalizedText(ru = "Полный", en = "Full"), description = LocalizedText(ru = "Пёс"),
+                birthYear = 2022, birthMonth = 9, age = LocalizedText(ru = "Около 4 лет"),
+                medicalStatus = LocalizedText(ru = "Здоров", en = "Healthy"),
+                adoptionStage = AdoptionStage.FOR_ADOPTION, adoptionInstruction = LocalizedText(ru = "Пишите @Nata_Rogava")
+            )
+        )
 
         val files = browser.post("/admin/export", emptyMap(), csrf).entries()
         val root = Files.createTempDirectory("backup-test")

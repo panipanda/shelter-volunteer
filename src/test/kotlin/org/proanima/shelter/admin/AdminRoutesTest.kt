@@ -53,7 +53,7 @@ class AdminRoutesTest : AdminTestBase() {
     private fun dogForm(vararg changes: Pair<String, String>): Map<String, String> = mapOf(
         "name_ru" to "Рекс", "name_en" to "Rex", "name_sr" to "Reks",
         "description_ru" to "Весёлый пёс", "description_en" to "A cheerful dog", "description_sr" to "Veseo pas",
-        "location" to "IN_SHELTER", "published" to "false"
+        "location" to "IN_SHELTER", "adoptionStage" to "FOR_ADOPTION", "published" to "false"
     ) + changes
 
     private fun storedCat(name: String = "Tom", photoUrls: List<String> = emptyList(), published: Boolean = true) = cats.save(
@@ -589,6 +589,130 @@ class AdminRoutesTest : AdminTestBase() {
     }
 
     // ---- dogs
+
+    private fun fieldNames(html: String): Set<String> =
+        Regex("""<(?:input|select|textarea)[^>]*\sname="([^"]+)"""").findAll(html).map { it.groupValues[1] }.toSet() - "_csrf"
+
+    @Test
+    fun `the form of a dog has the same fields as the form of a cat, and the age in words besides`() = testApplication {
+        start()
+        val browser = browser()
+        browser.logIn()
+
+        val cat = browser.get("/admin/cats/new").bodyAsText()
+        val dog = browser.get("/admin/dogs/new").bodyAsText()
+
+        assertEquals(fieldNames(cat) + setOf("age_ru", "age_en", "age_sr"), fieldNames(dog))
+        listOf(
+            "Год рождения", "Месяц рождения", "Возраст словами", "Описание", "Здоровье", "Где живёт",
+            "Пристройство", "Как забрать собаку", "Статус"
+        ).forEach { assertContains(dog, it) }
+        // A new dog is up for adoption, as a new cat is.
+        assertTrue(Regex("""<option value="FOR_ADOPTION"[^>]*selected""").containsMatchIn(dog))
+        listOf("NONE", "FOR_ADOPTION", "RESERVED", "ADOPTED").forEach { assertContains(dog, """<option value="$it"""") }
+        // The stage names are the dog's, and the hint says where an adopted dog goes.
+        assertContains(dog, "Ждёт свою семью")
+        assertContains(dog, "переносит собаку в отдельный раздел")
+    }
+
+    @Test
+    fun `what is filled in a dog's form is saved, shown in the form again, and shown on the site`() = testApplication {
+        start()
+        val browser = browser()
+        val csrf = browser.logIn()
+        val fields = dogForm(
+            "published" to "true", "birthYear" to "2023", "birthMonth" to "4",
+            "medicalStatus_ru" to "Привит, стерилизован", "medicalStatus_en" to "Vaccinated, neutered",
+            "adoptionStage" to "FOR_ADOPTION", "adoptionInstruction_ru" to "Пишите @Nata_Rogava",
+            "adoptionInstruction_en" to "Write to @Nata_Rogava"
+        )
+
+        val created = browser.post("/admin/dogs", fields, csrf)
+
+        val dog = dogs.findAll().single()
+        assertEquals("/admin/dogs/${dog.id}?msg=created", created.headers[HttpHeaders.Location])
+        assertEquals(2023, dog.birthYear)
+        assertEquals(4, dog.birthMonth)
+        assertEquals(AdoptionStage.FOR_ADOPTION, dog.adoptionStage)
+        assertEquals(LocalizedText(ru = "Привит, стерилизован", en = "Vaccinated, neutered"), dog.medicalStatus)
+
+        val form = browser.get("/admin/dogs/${dog.id}").bodyAsText()
+        assertContains(form, "Привит, стерилизован")
+        assertContains(form, """value="2023"""")
+        assertContains(form, "Пишите @Nata_Rogava")
+        assertTrue(Regex("""<option value="4"[^>]*selected""").containsMatchIn(form))
+        assertTrue(Regex("""<option value="FOR_ADOPTION"[^>]*selected""").containsMatchIn(form))
+
+        val page = client.get("/en/dogs/rex").plainText()
+        assertContains(page, "Available for adoption")
+        assertContains(page, "Vaccinated, neutered")
+        assertContains(page, """href="https://t.me/Nata_Rogava"""")
+        assertContains(client.get("/ru/dogs/rex").plainText(), "Привит, стерилизован")
+
+        // Changing the stage in the form changes the site: the dog is adopted and moves to the bottom section.
+        browser.post("/admin/dogs/${dog.id}", fields + ("adoptionStage" to "ADOPTED"), csrf)
+        assertContains(client.get("/en/dogs").plainText(), "Dogs who found a home")
+        assertFalse("t.me/Nata_Rogava" in client.get("/en/dogs/rex").plainText())
+    }
+
+    @Test
+    fun `a mistake in the new dog fields is shown with a link to the field, and nothing is saved`() = testApplication {
+        start()
+        val browser = browser()
+        val csrf = browser.logIn()
+
+        val response = browser.post("/admin/dogs", dogForm("birthYear" to "1999", "medicalStatus_ru" to "x".repeat(1501)), csrf)
+
+        assertEquals(HttpStatusCode.UnprocessableEntity, response.status)
+        val html = response.bodyAsText()
+        assertContains(html, """<a href="#f-birthYear">Год рождения: Укажите число от 2000 до 2026.</a>""")
+        assertContains(html, """href="#f-medicalStatus_ru">Здоровье (Русский): Слишком длинный текст""")
+        assertContains(html, """aria-invalid="true"""")
+        // What was typed is still in the form.
+        assertContains(html, """value="1999"""")
+        assertTrue(dogs.findAll().isEmpty())
+    }
+
+    @Test
+    fun `the list shows a dog's stage and age, and marks a missing translation of its health`() = testApplication {
+        start()
+        val browser = browser()
+        val csrf = browser.logIn()
+        browser.post(
+            "/admin/dogs",
+            dogForm("published" to "true", "birthYear" to "2024", "adoptionStage" to "RESERVED", "medicalStatus_ru" to "Здоров"),
+            csrf
+        )
+
+        val id = dogs.findAll().single().id
+        val row = browser.get("/admin").bodyAsText().substringAfter("""href="/admin/dogs/$id"""").substringBefore("</li>")
+
+        assertContains(row, "Забронирована")
+        assertContains(row, "2 года")
+        assertContains(row, "нет en")
+        assertContains(row, "нет sr")
+    }
+
+    @Test
+    fun `a dog is previewed with its status, health and the contact`() = testApplication {
+        start()
+        val browser = browser()
+        val csrf = browser.logIn()
+        browser.post(
+            "/admin/dogs",
+            dogForm("medicalStatus_en" to "Healthy", "adoptionStage" to "FOR_ADOPTION", "adoptionInstruction_en" to "Write to @Nata_Rogava"),
+            csrf
+        )
+        val dog = dogs.findAll().single()
+        assertFalse(dog.published)
+
+        val html = browser.get("/admin/dogs/${dog.id}/preview?lang=en").plainText()
+
+        assertContains(html, "Это черновик")
+        assertContains(html, "Healthy")
+        assertContains(html, "Available for adoption")
+        assertContains(html, """href="https://t.me/Nata_Rogava"""")
+    }
 
     @Test
     fun `a dog goes through the same steps as a cat`() = testApplication {

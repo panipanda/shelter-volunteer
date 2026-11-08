@@ -87,20 +87,20 @@ internal fun FlowContent.cardPhoto(photoUrl: String, alt: String, position: Int)
 }
 
 // The marker shape (CSS, ::before) carries the meaning, the text always comes with it.
-internal fun FlowContent.adoptionStatus(stage: AdoptionStage, locale: AppLocale, extraClass: String = "") {
+internal fun FlowContent.adoptionStatus(stage: AdoptionStage, locale: AppLocale, extraClass: String = "", forDog: Boolean = false) {
     if (stage == AdoptionStage.NONE) {
         return
     }
     span(classes = "status status-${stage.name.lowercase().replace('_', '-')} $extraClass".trim()) {
-        +displayAdoptionStage(stage, locale)
+        +displayAdoptionStage(stage, locale, forDog)
     }
 }
 
 private val TELEGRAM_HANDLE = Regex("@([A-Za-z0-9_]{5,32})")
 
 // The adoption instruction is free text that names the coordinator ("... @Nata_Rogava"); the link
-// for the button is taken from it so the contact lives in one place, the data.
-private fun telegramHandle(instruction: String?): String? =
+// for the button is taken from it so the contact lives in one place, the data. Dogs use it the same way.
+internal fun telegramHandle(instruction: String?): String? =
     instruction?.let { TELEGRAM_HANDLE.find(it)?.groupValues?.get(1) }
 
 fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String, preview: PagePreview? = null) {

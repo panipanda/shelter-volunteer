@@ -115,7 +115,9 @@ It is **off unless `ADMIN_PASSWORD` and `SESSION_SECRET` are set as well**, and 
 If only one of the two is set, or one is too short, the start fails with a message (the previous version keeps
 running), so a half-configured panel never goes live.
 
-**What it does.** Every cat and dog is a *draft* or *published*. Drafts are in no list, no page and not on the
+**What it does.** A cat's and a dog's form have the same fields: name, birth year and month, description, health, where it
+lives, adoption stage and how to take it (a dog also has "Возраст словами", for a dog whose birth year nobody knows; the
+birth year wins when both are given). The site shows each field only when it is filled in. Every cat and dog is a *draft* or *published*. Drafts are in no list, no page and not on the
 home page; only the admin sees them, and "Как на сайте" shows a draft the way visitors will see it, in each
 language. That preview is the public page under a banner ("Предпросмотр", with a link back to editing); its
 language links stay inside the preview, because a draft has no public address. A new record starts as a draft. Editing a published record changes the site at once. Deleting asks

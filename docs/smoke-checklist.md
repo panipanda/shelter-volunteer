@@ -288,7 +288,15 @@ Expected result:
 - the sign-up for the dog trips (a sentence ending with a colon and one link to the moderator Даша, like the cats' step) is in the
   "Как присоединиться" section of the home page, as its third step (after the cats' chat, before "pick a visit");
 - a dog's page (`/ru/dogs/sava`) is built like a cat's: back link, name, photo with thumbnails, description, facts;
-  the tab reads "Сава · Pro Anima".
+  the tab reads "Сава · Pro Anima";
+- a dog has the same fields as a cat (age, health, where now, adoption stage, how to take it) and the page shows each one only
+  when it is filled in: Sava, who has only a name, age words and a description, has no status line, no health row and no
+  contact button;
+- with the stage "Ждёт свою семью" and an instruction that names `@someone`, the dog's page has the status line and the
+  button "Написать координатору в Telegram"; without a name in the instruction the text is shown as a call-out; with no
+  instruction nothing is shown (no stock sentence, unlike a cat);
+- "Забронирована" is on the dog's card in the list; an adopted dog is in the section "Собаки, нашедшие дом" at the bottom,
+  which exists only when there is such a dog; in Serbian the stages are masculine ("Rezervisan", "Udomljen").
 
 ## Page titles and link previews
 

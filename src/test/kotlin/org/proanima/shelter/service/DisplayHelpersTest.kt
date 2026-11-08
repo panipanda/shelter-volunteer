@@ -1,10 +1,14 @@
 package org.proanima.shelter.service
 
+import org.proanima.shelter.model.AdoptionStage
 import org.proanima.shelter.model.AppLocale
+import org.proanima.shelter.model.Dog
 import org.proanima.shelter.model.LocalizedText
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class DisplayHelpersTest {
 
@@ -117,5 +121,57 @@ class DisplayHelpersTest {
     @Test
     fun `petSlug falls back to the numeric id when name has no usable characters`() {
         assertEquals("5", petSlug("!!!", 5))
+    }
+
+    private fun dog(birthYear: Int? = null, birthMonth: Int? = null, age: LocalizedText? = null) = Dog(
+        id = 1, name = LocalizedText(en = "Rex"), description = LocalizedText(en = "d"),
+        birthYear = birthYear, birthMonth = birthMonth, age = age
+    )
+
+    @Test
+    fun `a dog's age is counted from the birth year like a cat's`() {
+        assertEquals("2 years old", displayDogAge(dog(2024), AppLocale.EN, today))
+        assertEquals("8 months old", displayDogAge(dog(2026, 1), AppLocale.EN, today))
+        assertEquals("2 года", displayDogAge(dog(2024), AppLocale.RU, today))
+        assertEquals("2 godine", displayDogAge(dog(2024), AppLocale.SR, today))
+    }
+
+    @Test
+    fun `a dog's age falls back to the words, and the birth year wins over them`() {
+        val words = LocalizedText(ru = "Около 3 лет", en = "About 3 years")
+
+        assertEquals("About 3 years", displayDogAge(dog(age = words), AppLocale.EN, today))
+        assertEquals("Около 3 лет", displayDogAge(dog(age = words), AppLocale.RU, today))
+        // The language that has no words takes another one, like every localized text.
+        assertEquals("About 3 years", displayDogAge(dog(age = words), AppLocale.SR, today))
+        assertEquals("5 лет", displayDogAge(dog(2021, age = words), AppLocale.RU, today))
+    }
+
+    @Test
+    fun `a dog with no age known has none, not an invented one`() {
+        assertNull(displayDogAge(dog(), AppLocale.RU, today))
+        assertNull(displayDogAge(dog(age = LocalizedText(ru = "  ")), AppLocale.RU, today))
+        assertNull(displayDogAge(dog(age = LocalizedText()), AppLocale.RU, today))
+    }
+
+    @Test
+    fun `the adoption stages are worded for a dog, masculine in Serbian`() {
+        assertEquals("Reserved", displayAdoptionStage(AdoptionStage.RESERVED, AppLocale.EN, forDog = true))
+        assertEquals("Забронирована", displayAdoptionStage(AdoptionStage.RESERVED, AppLocale.RU, forDog = true))
+        assertEquals("Rezervisan", displayAdoptionStage(AdoptionStage.RESERVED, AppLocale.SR, forDog = true))
+        assertEquals("Udomljen", displayAdoptionStage(AdoptionStage.ADOPTED, AppLocale.SR, forDog = true))
+        // The cats' wording is unchanged.
+        assertEquals("Rezervisana", displayAdoptionStage(AdoptionStage.RESERVED, AppLocale.SR))
+        assertEquals("Udomljena", displayAdoptionStage(AdoptionStage.ADOPTED, AppLocale.SR))
+    }
+
+    @Test
+    fun `every stage has a dog wording in every language`() {
+        AppLocale.entries.forEach { locale ->
+            AdoptionStage.entries.forEach { stage ->
+                val text = displayAdoptionStage(stage, locale, forDog = true)
+                assertTrue(text.isNotBlank() && !text.startsWith("dog."), "$locale $stage: $text")
+            }
+        }
     }
 }

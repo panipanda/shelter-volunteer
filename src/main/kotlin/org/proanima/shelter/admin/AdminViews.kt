@@ -46,6 +46,7 @@ import org.proanima.shelter.service.cardPhotoUrl
 import org.proanima.shelter.service.displayAdoptionStage
 import org.proanima.shelter.service.displayCatAge
 import org.proanima.shelter.service.displayCatLocation
+import org.proanima.shelter.service.displayDogAge
 import org.proanima.shelter.views.THEME_INIT_SCRIPT
 import java.net.URLEncoder
 import java.util.Locale
@@ -217,10 +218,18 @@ fun HTML.adminDashboardPage(cats: List<Cat>, dogs: List<Dog>, csrf: String, flas
                     li(classes = "admin-row") {
                         div(classes = "admin-row-main") {
                             a(href = "/admin/dogs/${dog.id}", classes = "admin-row-title") { +dogTitle(dog) }
-                            statusBadges(dog.published, translationGaps(listOf(dog.name, dog.age, dog.description)))
+                            statusBadges(
+                                dog.published,
+                                translationGaps(listOf(dog.name, dog.age, dog.description, dog.medicalStatus, dog.adoptionInstruction))
+                            )
                         }
                         p(classes = "admin-row-meta") {
-                            +listOf(displayCatLocation(dog.location, AppLocale.RU), photoCount(dog.photoUrls)).joinToString(" · ")
+                            +listOfNotNull(
+                                displayCatLocation(dog.location, AppLocale.RU),
+                                displayAdoptionStage(dog.adoptionStage, AppLocale.RU, forDog = true),
+                                displayDogAge(dog, AppLocale.RU),
+                                photoCount(dog.photoUrls)
+                            ).joinToString(" · ")
                         }
                         previewLinks("/admin/dogs/${dog.id}/preview")
                     }
@@ -307,10 +316,10 @@ private fun FlowContent.fieldError(errors: Map<String, String>, name: String) {
 
 private val FIELD_LABELS = mapOf(
     "name" to "Имя",
-    "age" to "Возраст",
+    "age" to "Возраст словами",
     "description" to "Описание",
     "medicalStatus" to "Здоровье",
-    "adoptionInstruction" to "Как забрать кошку",
+    "adoptionInstruction" to "Как забрать",
     "birthYear" to "Год рождения",
     "birthMonth" to "Месяц рождения",
     "location" to "Где живёт",
@@ -474,6 +483,49 @@ private fun FlowContent.photosSummary(kindPath: String, id: Int?, photoUrls: Lis
     }
 }
 
+private const val DESCRIPTION_HINT = "Одним абзацем: переносы строк на сайте не сохраняются."
+private const val HEALTH_HINT = "Прививки, анализы, стерилизация. Можно не заполнять."
+
+// The fields that a cat's and a dog's form share, so the two forms cannot drift apart.
+private fun FlowContent.birthFields(values: Map<String, String>, errors: Map<String, String>) {
+    div(classes = "field-row") {
+        div(classes = "field") {
+            label { htmlFor = "f-birthYear"; +"Год рождения" }
+            input(type = InputType.number, name = "birthYear") {
+                id = "f-birthYear"
+                value = values["birthYear"].orEmpty()
+                attributes["inputmode"] = "numeric"
+                markInvalid(this, errors, "birthYear")
+            }
+            fieldError(errors, "birthYear")
+        }
+        selectField(
+            "Месяц рождения",
+            "birthMonth",
+            listOf("" to "не указан") + MONTHS.mapIndexed { index, month -> (index + 1).toString() to month },
+            values,
+            errors
+        )
+    }
+}
+
+private fun FlowContent.locationField(values: Map<String, String>, errors: Map<String, String>) {
+    selectField(
+        "Где живёт", "location",
+        CatLocation.entries.map { it.name to displayCatLocation(it, AppLocale.RU) },
+        values, errors
+    )
+}
+
+private fun FlowContent.adoptionStageField(values: Map<String, String>, errors: Map<String, String>, hint: String, forDog: Boolean) {
+    selectField(
+        "Пристройство", "adoptionStage",
+        AdoptionStage.entries.map { it.name to displayAdoptionStage(it, AppLocale.RU, forDog) },
+        values, errors,
+        hint = hint
+    )
+}
+
 fun HTML.catFormPage(page: FormPage<Cat>) {
     val cat = page.existing
     val heading = if (cat == null) "Новая кошка" else catTitle(cat)
@@ -486,38 +538,11 @@ fun HTML.catFormPage(page: FormPage<Cat>) {
             previewBase = cat?.let { "/admin/cats/${it.id}/preview" }
         ) {
             localizedField("Имя", "name", page.values, page.errors, multiline = false, hint = "Можно оставить пустым, если у кошки пока нет имени. Адрес страницы делается из английского имени.")
-            div(classes = "field-row") {
-                div(classes = "field") {
-                    label { htmlFor = "f-birthYear"; +"Год рождения" }
-                    input(type = InputType.number, name = "birthYear") {
-                        id = "f-birthYear"
-                        value = page.values["birthYear"].orEmpty()
-                        attributes["inputmode"] = "numeric"
-                        markInvalid(this, page.errors, "birthYear")
-                    }
-                    fieldError(page.errors, "birthYear")
-                }
-                selectField(
-                    "Месяц рождения",
-                    "birthMonth",
-                    listOf("" to "не указан") + MONTHS.mapIndexed { index, month -> (index + 1).toString() to month },
-                    page.values,
-                    page.errors
-                )
-            }
-            localizedField("Описание", "description", page.values, page.errors, multiline = true, required = true, rows = 5, hint = "Одним абзацем: переносы строк на сайте не сохраняются.")
-            localizedField("Здоровье", "medicalStatus", page.values, page.errors, multiline = true, hint = "Прививки, анализы, стерилизация. Можно не заполнять.")
-            selectField(
-                "Где живёт", "location",
-                CatLocation.entries.map { it.name to displayCatLocation(it, AppLocale.RU) },
-                page.values, page.errors
-            )
-            selectField(
-                "Пристройство", "adoptionStage",
-                AdoptionStage.entries.map { it.name to displayAdoptionStage(it, AppLocale.RU) },
-                page.values, page.errors,
-                hint = "«Пристроена» переносит кошку в отдельный раздел внизу списка."
-            )
+            birthFields(page.values, page.errors)
+            localizedField("Описание", "description", page.values, page.errors, multiline = true, required = true, rows = 5, hint = DESCRIPTION_HINT)
+            localizedField("Здоровье", "medicalStatus", page.values, page.errors, multiline = true, hint = HEALTH_HINT)
+            locationField(page.values, page.errors)
+            adoptionStageField(page.values, page.errors, hint = "«Пристроена» переносит кошку в отдельный раздел внизу списка.", forDog = false)
             localizedField("Как забрать кошку", "adoptionInstruction", page.values, page.errors, multiline = true, hint = "Если пусто, на сайте будет общая фраза «порядок пока не определён».")
             photosSummary("cats", cat?.id, cat?.photoUrls.orEmpty(), heading)
         }
@@ -536,12 +561,18 @@ fun HTML.dogFormPage(page: FormPage<Dog>) {
             previewBase = dog?.let { "/admin/dogs/${it.id}/preview" }
         ) {
             localizedField("Имя", "name", page.values, page.errors, multiline = false, required = true, hint = "Адрес страницы делается из английского имени.")
-            localizedField("Возраст", "age", page.values, page.errors, multiline = false, hint = "Словами, например «Около 3 лет». Можно не заполнять.")
-            localizedField("Описание", "description", page.values, page.errors, multiline = true, required = true, rows = 5, hint = "Одним абзацем: переносы строк на сайте не сохраняются.")
-            selectField(
-                "Где живёт", "location",
-                CatLocation.entries.map { it.name to displayCatLocation(it, AppLocale.RU) },
-                page.values, page.errors
+            birthFields(page.values, page.errors)
+            localizedField(
+                "Возраст словами", "age", page.values, page.errors, multiline = false,
+                hint = "Нужен, только если год рождения неизвестен: например «Около 3 лет». Если год указан, на сайте показывается возраст, посчитанный по нему."
+            )
+            localizedField("Описание", "description", page.values, page.errors, multiline = true, required = true, rows = 5, hint = DESCRIPTION_HINT)
+            localizedField("Здоровье", "medicalStatus", page.values, page.errors, multiline = true, hint = HEALTH_HINT)
+            locationField(page.values, page.errors)
+            adoptionStageField(page.values, page.errors, hint = "«Пристроена» переносит собаку в отдельный раздел внизу списка.", forDog = true)
+            localizedField(
+                "Как забрать собаку", "adoptionInstruction", page.values, page.errors, multiline = true,
+                hint = "Видно на странице, пока выбрано «Ждёт свою семью». Если в тексте есть @ник в Telegram, на странице будет кнопка «Написать координатору». Если пусто, на сайте ничего не показывается."
             )
             photosSummary("dogs", dog?.id, dog?.photoUrls.orEmpty(), heading)
         }

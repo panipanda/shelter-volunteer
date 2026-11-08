@@ -80,6 +80,26 @@ private class FormReader(private val values: Map<String, String>) {
         "false" -> false
         else -> false.also { fail("published", "Выберите статус из списка.") }
     }
+
+    // The birth year and month of a cat or a dog; both may be empty, a month needs a year, and neither may be in the
+    // future. A mistake is recorded under the field it belongs to and the value comes back null.
+    fun birth(today: LocalDate): Pair<Int?, Int?> {
+        val year = text("birthYear").takeIf { it.isNotEmpty() }?.let { entered ->
+            entered.toIntOrNull()?.takeIf { it in EARLIEST_BIRTH_YEAR..today.year }
+                ?: null.also { fail("birthYear", "Укажите число от $EARLIEST_BIRTH_YEAR до ${today.year}.") }
+        }
+        val month = text("birthMonth").takeIf { it.isNotEmpty() }?.let { entered ->
+            entered.toIntOrNull()?.takeIf { it in 1..12 }
+                ?: null.also { fail("birthMonth", "Выберите месяц из списка.") }
+        }
+        if (month != null && year == null && "birthYear" !in errors) {
+            fail("birthMonth", "Месяц без года указать нельзя.")
+        }
+        if (year != null && month != null && (year > today.year || (year == today.year && month > today.monthValue))) {
+            fail("birthMonth", "Дата рождения не может быть в будущем.")
+        }
+        return year to month
+    }
 }
 
 private fun localizedValues(base: String, text: LocalizedText?): List<Pair<String, String>> =
@@ -130,21 +150,7 @@ object CatForm {
         val stage = form.choice("adoptionStage", AdoptionStage.NONE)
         val published = form.published()
         form.checkSlug(name, others.map { petSlug(it.name?.en, it.id) }, existing?.id ?: 0, "name_en")
-
-        val year = form.text("birthYear").takeIf { it.isNotEmpty() }?.let { entered ->
-            entered.toIntOrNull()?.takeIf { it in EARLIEST_BIRTH_YEAR..today.year }
-                ?: null.also { form.fail("birthYear", "Укажите число от $EARLIEST_BIRTH_YEAR до ${today.year}.") }
-        }
-        val month = form.text("birthMonth").takeIf { it.isNotEmpty() }?.let { entered ->
-            entered.toIntOrNull()?.takeIf { it in 1..12 }
-                ?: null.also { form.fail("birthMonth", "Выберите месяц из списка.") }
-        }
-        if (month != null && year == null && "birthYear" !in form.errors) {
-            form.fail("birthMonth", "Месяц без года указать нельзя.")
-        }
-        if (year != null && month != null && (year > today.year || (year == today.year && month > today.monthValue))) {
-            form.fail("birthMonth", "Дата рождения не может быть в будущем.")
-        }
+        val (year, month) = form.birth(today)
 
         if (form.errors.isNotEmpty()) {
             return FormResult(null, form.errors)
@@ -170,26 +176,41 @@ object CatForm {
     }
 }
 
+// The same fields as a cat's, in the same order; the differences are that a dog's name is required (its page
+// address is made from it) and that a dog also has its age in words, for a dog whose birth year nobody knows.
 object DogForm {
 
-    fun newValues(): Map<String, String> = valuesOf(null) + ("published" to "false")
+    fun newValues(): Map<String, String> = valuesOf(null) + mapOf(
+        "location" to CatLocation.IN_SHELTER.name,
+        "adoptionStage" to AdoptionStage.FOR_ADOPTION.name,
+        "published" to "false"
+    )
 
     fun valuesOf(dog: Dog?): Map<String, String> = buildMap {
         putAll(localizedValues("name", dog?.name))
+        put("birthYear", dog?.birthYear?.toString().orEmpty())
+        put("birthMonth", dog?.birthMonth?.toString().orEmpty())
         putAll(localizedValues("age", dog?.age))
         putAll(localizedValues("description", dog?.description))
+        putAll(localizedValues("medicalStatus", dog?.medicalStatus))
+        putAll(localizedValues("adoptionInstruction", dog?.adoptionInstruction))
         put("location", (dog?.location ?: CatLocation.IN_SHELTER).name)
+        put("adoptionStage", (dog?.adoptionStage ?: AdoptionStage.NONE).name)
         put("published", (dog?.published ?: true).toString())
     }
 
-    fun validate(values: Map<String, String>, existing: Dog?, others: List<Dog>): FormResult<Dog> {
+    fun validate(values: Map<String, String>, existing: Dog?, others: List<Dog>, today: LocalDate): FormResult<Dog> {
         val form = FormReader(values)
         val name = form.localized("name", MAX_NAME, requireRu = true)
         val age = form.localized("age", MAX_AGE_TEXT, requireRu = false)
         val description = form.localized("description", MAX_DESCRIPTION, requireRu = true)
+        val medicalStatus = form.localized("medicalStatus", MAX_FACT, requireRu = false)
+        val adoptionInstruction = form.localized("adoptionInstruction", MAX_FACT, requireRu = false)
         val location = form.choice("location", CatLocation.IN_SHELTER)
+        val stage = form.choice("adoptionStage", AdoptionStage.NONE)
         val published = form.published()
         form.checkSlug(name, others.map { petSlug(it.name.en, it.id) }, existing?.id ?: 0, "name_en")
+        val (year, month) = form.birth(today)
 
         if (form.errors.isNotEmpty()) {
             return FormResult(null, form.errors)
@@ -198,10 +219,15 @@ object DogForm {
             Dog(
                 id = existing?.id ?: 0,
                 name = name ?: LocalizedText(),
+                birthYear = year,
+                birthMonth = month,
                 age = age,
                 description = description ?: LocalizedText(),
+                medicalStatus = medicalStatus,
                 photoUrls = existing?.photoUrls.orEmpty(),
                 location = location,
+                adoptionStage = stage,
+                adoptionInstruction = adoptionInstruction,
                 published = published
             ),
             emptyMap()

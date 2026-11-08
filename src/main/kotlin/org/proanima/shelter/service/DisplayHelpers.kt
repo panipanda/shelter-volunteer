@@ -5,6 +5,7 @@ import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AdoptionStage
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.CatLocation
+import org.proanima.shelter.model.Dog
 import org.proanima.shelter.model.LocalizedText
 import java.time.LocalDate
 
@@ -69,6 +70,15 @@ fun displayCatAge(birthYear: Int?, birthMonth: Int?, locale: AppLocale, today: L
     }
 }
 
+// A dog's age: counted from the birth year when there is one (as for a cat), otherwise the words the admin wrote
+// ("About 3 years"), otherwise nothing: a dog page shows only what is known.
+fun displayDogAge(dog: Dog, locale: AppLocale, today: LocalDate = LocalDate.now()): String? {
+    if (dog.birthYear != null) {
+        return displayCatAge(dog.birthYear, dog.birthMonth, locale, today)
+    }
+    return dog.age?.forLocale(locale)?.takeIf { it.isNotBlank() }
+}
+
 fun displayCatLocation(location: CatLocation, locale: AppLocale): String {
     val key = when (location) {
         CatLocation.IN_SHELTER -> "cat.location.inShelter"
@@ -100,12 +110,14 @@ fun typographicText(text: String, locale: AppLocale): String {
     return glued.replace(" —", "$NO_BREAK_SPACE—")
 }
 
-fun displayAdoptionStage(stage: AdoptionStage, locale: AppLocale): String {
+// forDog: the same stages worded for a dog (in Serbian "pas" is masculine, "mačka" feminine: Udomljen, not Udomljena).
+fun displayAdoptionStage(stage: AdoptionStage, locale: AppLocale, forDog: Boolean = false): String {
+    val animal = if (forDog) "dog" else "cat"
     val key = when (stage) {
-        AdoptionStage.NONE -> "cat.adoptionStage.none"
-        AdoptionStage.FOR_ADOPTION -> "cat.adoptionStage.forAdoption"
-        AdoptionStage.RESERVED -> "cat.adoptionStage.reserved"
-        AdoptionStage.ADOPTED -> "cat.adoptionStage.adopted"
+        AdoptionStage.NONE -> "$animal.adoptionStage.none"
+        AdoptionStage.FOR_ADOPTION -> "$animal.adoptionStage.forAdoption"
+        AdoptionStage.RESERVED -> "$animal.adoptionStage.reserved"
+        AdoptionStage.ADOPTED -> "$animal.adoptionStage.adopted"
     }
     return messagesFor(locale).t(key)
 }

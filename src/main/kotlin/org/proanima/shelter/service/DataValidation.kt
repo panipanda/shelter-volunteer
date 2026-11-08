@@ -33,6 +33,12 @@ fun validatePets(cats: List<Cat>, dogs: List<Dog>, photosAt: String, hasPhoto: (
         problems += missingPhotos("cats.json", "cat ${cat.id}", cat.photoUrls, photosAt, hasPhoto)
     }
     dogs.forEach { dog ->
+        if (dog.birthMonth != null && dog.birthMonth !in 1..12) {
+            problems += "dogs.json: dog ${dog.id} has birthMonth ${dog.birthMonth}, expected 1..12"
+        }
+        if (dog.birthMonth != null && dog.birthYear == null) {
+            problems += "dogs.json: dog ${dog.id} has birthMonth but no birthYear"
+        }
         problems += missingPhotos("dogs.json", "dog ${dog.id}", dog.photoUrls, photosAt, hasPhoto)
     }
 

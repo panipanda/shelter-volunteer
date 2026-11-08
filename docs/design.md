@@ -111,9 +111,16 @@ Running text (typesetting):
   flex row, not a breakpoint: the text keeps at least 280 px, otherwise it drops below the photo.
 - Facts are a `dl`: `110px` label column, 1 px line between rows, labels without the colon. Rows: age, where now, health.
   The adoption stage is not a row: it is the status line under the title.
-- Dogs use the same page without the button and the status: the same markup (`cat-head`, `cat-profile`, class `cat-page`),
-  the same title rule (`{name} · Pro Anima`), and the list of dogs is the same as the list of cats: the heading, one muted note
-  and the cards, nothing else. Sign-up for the dog trips is on the home page, who Svora is is on the help page.
+- Dogs use the same page: the same markup (`cat-head`, `cat-profile`, class `cat-page`), the same title rule
+  (`{name} · Pro Anima`), the same status line, contact button, facts list and call-out. A dog has the same facts as a cat
+  (age, health, where now, adoption stage, how to take it) and the page shows each one **only when it is filled in**: a
+  dog with nothing but a name and a description looks as it always did. Two differences from a cat: there is no stock
+  sentence for "how to take it" (nothing is shown unless the admin wrote it), and a dog's age is counted from the birth year
+  when there is one, otherwise it is the words the admin typed ("About 3 years"). The stage labels are worded for a dog
+  (`dog.adoptionStage.*`: in Serbian masculine, "Rezervisan", "Udomljen").
+- The list of dogs is the same as the list of cats: the heading, one muted note and the cards; a reserved dog says so on its
+  card, and adopted dogs go to a section of their own at the bottom ("Dogs who found a home"), which exists only when there
+  is one. Sign-up for the dog trips is on the home page, who Svora is is on the help page.
 
 ### Home page order
 

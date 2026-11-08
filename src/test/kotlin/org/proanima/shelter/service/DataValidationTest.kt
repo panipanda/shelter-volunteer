@@ -66,6 +66,19 @@ class DataValidationTest {
     }
 
     @Test
+    fun `a dog's birth month is checked like a cat's`() {
+        val bad = dog(1).copy(birthYear = 2024, birthMonth = 13)
+        val noYear = dog(2).copy(birthYear = null, birthMonth = 3)
+        val fine = dog(3).copy(birthYear = 2024, birthMonth = 5)
+
+        val problems = validatePets(emptyList(), listOf(bad, noYear, fine), imagesDir)
+
+        assertEquals(2, problems.size, problems.toString())
+        assertTrue(problems.any { "dog 1" in it && "birthMonth 13" in it && "dogs.json" in it }, problems.toString())
+        assertTrue(problems.any { "dog 2" in it && "no birthYear" in it }, problems.toString())
+    }
+
+    @Test
     fun `birth month without a year is reported`() {
         val problems = validatePets(listOf(cat(1, birthYear = null, birthMonth = 3)), emptyList(), imagesDir)
 
