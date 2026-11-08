@@ -120,7 +120,7 @@ the other pages». Главное:
 ## Мелкие хвосты (известные, не блокируют)
 
 - описание кошки одним абзацем: на сайте абзацев нет, переводы строк при сохранении склеиваются в пробел;
-- CSS (`main.css`, `admin.css`) кэшируется на час, правки стилей доходят до людей не сразу. У скриптов (`theme-toggle.js`,
+- CSS (`main.css`, `admin.css`) кэшируется на час, но адрес стилей несёт отпечаток файла (`/styles/main.css?v=b5885aa2`, `views/StaticAssets.kt`), поэтому изменённый файл доходит до людей сразу (до этого после релиза старый `admin.css` в кэше ломал новую вёрстку меню). У скриптов (`theme-toggle.js`,
   `cat-gallery.js`, `admin-password.js`) заголовка `Cache-Control` нет совсем: они отдаются как `text/javascript`, а правило в
   `Application.kt` (`CachingHeaders`) ждёт `application/javascript`. Вреда нет (правки доходят сразу, файлы маленькие), это
   давнее расхождение, не от админки; исправить можно одной строкой, если захотят кэшировать скрипты;
@@ -211,7 +211,7 @@ the other pages». Главное:
   его вслепую; обход: свой скрипт на `playwright-core` из кэша npx (`C:/Users/panipanda/AppData/Local/npm-cache/_npx/…/node_modules/playwright-core`)
   с `chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true })` и временным
   профилем. Подробности в памяти (`reference_playwright-profile-locked`).
-- Playwright: CSS кэшируется на час, перед скриншотом в общем профиле сбросить через `fetch('/styles/admin.css', {cache: 'reload'})`;
+- Playwright: адрес CSS теперь с отпечатком, сбрасывать кэш перед скриншотом не нужно;
   `browser_file_upload` принимает файлы только из папки проекта (класть в `.playwright-mcp/`, потом удалять).
 - В PowerShell нет `python - <<EOF`; Windows-Python не видит `/tmp` из Git Bash. Для патчей писать скрипт файлом.
 - Проверка боевого сайта снаружи (без пароля): `/health`, страницы, `/images/…` (ETag, 304), `HEAD`, `/admin` без входа даёт 303

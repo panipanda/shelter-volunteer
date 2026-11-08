@@ -48,6 +48,7 @@ import org.proanima.shelter.service.displayAdoptionStage
 import org.proanima.shelter.service.displayCatAge
 import org.proanima.shelter.service.displayCatLocation
 import org.proanima.shelter.service.displayDogAge
+import org.proanima.shelter.views.StaticAssets
 import org.proanima.shelter.views.THEME_INIT_SCRIPT
 import java.net.URLEncoder
 import java.util.Locale
@@ -71,8 +72,8 @@ fun HTML.adminPage(pageTitle: String, csrf: String?, section: AdminSection = Adm
         meta(name = "robots", content = "noindex, nofollow")
         title { +"$pageTitle · Админка" }
         link(rel = "icon", href = "/icons/favicon-32.png", type = "image/png")
-        link(rel = "stylesheet", href = "/styles/main.css", type = "text/css")
-        link(rel = "stylesheet", href = "/styles/admin.css", type = "text/css")
+        link(rel = "stylesheet", href = StaticAssets.versioned("/styles/main.css"), type = "text/css")
+        link(rel = "stylesheet", href = StaticAssets.versioned("/styles/admin.css"), type = "text/css")
         script { unsafe { +THEME_INIT_SCRIPT } }
     }
     body {

@@ -183,9 +183,9 @@ fun HTML.pageLayout(
                 attributes["crossorigin"] = "anonymous"
             }
         }
-        link(rel = "stylesheet", href = "/styles/main.css", type = "text/css")
+        link(rel = "stylesheet", href = StaticAssets.versioned("/styles/main.css"), type = "text/css")
         if (preview != null) {
-            link(rel = "stylesheet", href = "/styles/admin.css", type = "text/css")
+            link(rel = "stylesheet", href = StaticAssets.versioned("/styles/admin.css"), type = "text/css")
         }
         // Inline and blocking on purpose: the theme must be set before the first paint,
         // otherwise a dark-theme user sees a light flash on every page load.

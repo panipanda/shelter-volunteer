@@ -1,17 +1,22 @@
 /* Admin panel. It reuses the tokens, fonts and buttons of main.css; only what the public pages do not have
    (forms, rows, badges) is here. */
 
+/* The arrow of a drop-down list is drawn here, not by the browser, so that it sits a normal distance from the edge. It
+   is a picture, so its colour is set per theme (the same ink colour as main.css). */
 :root {
     --admin-danger: #b42318;
+    --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1.5l6 6 6-6' fill='none' stroke='%2318181b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 :root[data-theme="dark"] {
     --admin-danger: #ff8a80;
+    --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1.5l6 6 6-6' fill='none' stroke='%23f0f2f5' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
         --admin-danger: #ff8a80;
+        --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1.5l6 6 6-6' fill='none' stroke='%23f0f2f5' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     }
 }
 
@@ -297,6 +302,15 @@
 .field textarea {
     min-height: 88px;
     resize: vertical;
+}
+
+.field select {
+    padding-right: 48px;
+    appearance: none;
+    background-image: var(--select-chevron);
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 14px 9px;
 }
 
 /* The login field and its "show password" button in one row; the button wraps under the field on a very narrow screen. */
