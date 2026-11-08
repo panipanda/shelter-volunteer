@@ -509,6 +509,9 @@ Without the setting:
 Login:
 
 - `/admin` without a session goes to `/admin/login`; a wrong password says so and takes about a second.
+- Next to the password field there is a "Показать пароль" button: it shows the typed text and then says "Скрыть
+  пароль"; after a click the focus is back in the field (Enter logs in), after a keyboard press it stays on the
+  button. With JavaScript off the button is not on the page at all. The wrong-password page has it again.
 - The right password opens the list. Nothing on a public page links to `/admin`.
 - "Выйти" ends the session; the browser's back button then shows no admin data.
 

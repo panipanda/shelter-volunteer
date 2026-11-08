@@ -25,6 +25,7 @@ import org.proanima.shelter.repository.PgDogRepository
 import org.proanima.shelter.repository.PgPhotoStore
 import org.proanima.shelter.repository.TestClock
 import org.proanima.shelter.repository.newTestDataSource
+import org.proanima.shelter.routes.hasTag
 import org.proanima.shelter.routes.plainText
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.service.DogService
@@ -103,6 +104,8 @@ class AdminRoutesTest : AdminTestBase() {
         val wrong = browser.post("/admin/login", mapOf("password" to "not the password"))
         assertEquals(HttpStatusCode.Forbidden, wrong.status)
         assertContains(wrong.bodyAsText(), "Неверный пароль")
+        // The page that comes back after a mistake still has the show-password button.
+        assertContains(wrong.bodyAsText(), "data-password-toggle")
         assertFalse(wrong.headers.contains(HttpHeaders.SetCookie))
         assertEquals("/admin/login", browser.get("/admin").headers[HttpHeaders.Location])
 
@@ -110,6 +113,54 @@ class AdminRoutesTest : AdminTestBase() {
         assertEquals(HttpStatusCode.SeeOther, right.status)
         assertEquals("/admin", right.headers[HttpHeaders.Location])
         assertEquals(HttpStatusCode.OK, browser.get("/admin").status)
+    }
+
+    @Test
+    fun `the password field has a show-password button that stays hidden until the script reveals it`() = testApplication {
+        start()
+
+        val html = client.get("/admin/login").bodyAsText()
+
+        // The field is still a password field, with nothing typed into it.
+        assertTrue(hasTag(html, "input", """type="password"""", """id="f-password"""", """autocomplete="current-password""""))
+        assertFalse(Regex("""<input[^>]*type="password"[^>]*value=""").containsMatchIn(html))
+        // The button does not submit the form, points at the field, and is hidden in the HTML: without JavaScript
+        // nobody sees a button that does nothing. Both labels are on the page, not in the script.
+        assertTrue(
+            hasTag(
+                html, "button", """type="button"""", """aria-controls="f-password"""", """hidden="hidden"""",
+                """data-password-toggle="true"""", """data-label-show="Показать пароль"""", """data-label-hide="Скрыть пароль""""
+            )
+        )
+        assertContains(html, ">Показать пароль</button>")
+        assertTrue(hasTag(html, "script", """src="/scripts/admin-password.js"""", """defer="defer""""))
+        // Next to the field, before the button that sends the form.
+        assertTrue(html.indexOf("""id="f-password"""") < html.indexOf("data-password-toggle"))
+        assertTrue(html.indexOf("data-password-toggle") < html.indexOf(">Войти</button>"))
+    }
+
+    @Test
+    fun `the show-password script is served and finds its button by the data attribute`() = testApplication {
+        start()
+
+        val response = client.get("/scripts/admin-password.js")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertContains(response.headers[HttpHeaders.ContentType].orEmpty(), "javascript")
+        val script = response.bodyAsText()
+        assertContains(script, "[data-password-toggle]")
+        assertContains(script, "data-label-show")
+        assertContains(script, "data-label-hide")
+    }
+
+    @Test
+    fun `only the login page loads the show-password script`() = testApplication {
+        start()
+        val browser = browser()
+        browser.logIn()
+
+        assertFalse("admin-password.js" in browser.get("/admin").bodyAsText())
+        assertFalse("data-password-toggle" in browser.get("/admin/cats/new").bodyAsText())
     }
 
     @Test

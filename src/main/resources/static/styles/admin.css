@@ -272,6 +272,29 @@
     resize: vertical;
 }
 
+/* The login field and its "show password" button in one row; the button wraps under the field on a very narrow screen. */
+.password-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+}
+
+.field .password-row input[type="password"],
+.field .password-row input[type="text"] {
+    flex: 1 1 10rem;
+    width: auto;
+    min-width: 0;
+}
+
+.password-toggle {
+    white-space: nowrap;
+}
+
+.password-toggle[hidden] {
+    display: none;
+}
+
 /* main.css styles .button for links; a real <button> also needs its browser border and font removed. */
 button.button {
     border: 0;

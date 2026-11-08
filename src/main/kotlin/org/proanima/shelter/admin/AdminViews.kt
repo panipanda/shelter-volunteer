@@ -101,18 +101,33 @@ fun HTML.adminLoginPage(error: String?) = adminPage("Вход", csrf = null) {
     form(action = "/admin/login", method = FormMethod.post, classes = "admin-form") {
         div(classes = "field") {
             label { htmlFor = "f-password"; +"Пароль" }
-            input(type = InputType.password, name = "password") {
-                id = "f-password"
-                attributes["autocomplete"] = "current-password"
-                attributes["required"] = "required"
-                attributes["autofocus"] = "autofocus"
+            div(classes = "password-row") {
+                input(type = InputType.password, name = "password") {
+                    id = "f-password"
+                    attributes["autocomplete"] = "current-password"
+                    attributes["required"] = "required"
+                    attributes["autofocus"] = "autofocus"
+                }
+                // Hidden until /scripts/admin-password.js reveals it: without JavaScript the button could do nothing.
+                button(type = ButtonType.button, classes = "link-button password-toggle") {
+                    attributes["hidden"] = "hidden"
+                    attributes["aria-controls"] = "f-password"
+                    attributes["data-password-toggle"] = "true"
+                    attributes["data-label-show"] = SHOW_PASSWORD
+                    attributes["data-label-hide"] = HIDE_PASSWORD
+                    +SHOW_PASSWORD
+                }
             }
         }
         div(classes = "form-actions") {
             button(type = ButtonType.submit, classes = "button") { +"Войти" }
         }
     }
+    script(src = "/scripts/admin-password.js") { attributes["defer"] = "defer" }
 }
+
+private const val SHOW_PASSWORD = "Показать пароль"
+private const val HIDE_PASSWORD = "Скрыть пароль"
 
 fun HTML.adminMessagePage(heading: String, text: String, backHref: String, backLabel: String, csrf: String?) =
     adminPage(heading, csrf) {
