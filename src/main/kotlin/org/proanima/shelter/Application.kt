@@ -11,6 +11,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.http.content.staticFiles
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.autohead.AutoHeadResponse
 import io.ktor.server.plugins.cachingheaders.CachingHeaders
 import io.ktor.server.plugins.compression.Compression
 import io.ktor.server.plugins.compression.gzip
@@ -160,6 +161,9 @@ fun Application.configureRoutes(
     if (admin != null) {
         installAdminSessions(admin.config)
     }
+    // A HEAD request (link previews, uptime monitors, some crawlers) is answered by the GET route of the same
+    // address, without the body. Without this only files served from a folder understood HEAD.
+    install(AutoHeadResponse)
     // "/ru/cats/" works the same as "/ru/cats".
     install(IgnoreTrailingSlash)
     // Text only: images and fonts are already compressed.

@@ -41,53 +41,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class AdminRoutesTest {
-
-    private val dataSource = newTestDataSource()
-    private val clock = TestClock()
-    private val cats = PgCatRepository(dataSource, clock, Duration.ofSeconds(30))
-    private val dogs = PgDogRepository(dataSource, clock, Duration.ofSeconds(30))
-    private val photos = PgPhotoStore(dataSource, clock)
-    private val password = "correct horse battery"
-
-    private val guideRepository = object : GuideRepository {
-        override fun findGuideMarkdown(locale: AppLocale): GuideContent = GuideContent("# Guide", locale.code)
-    }
-
-    private fun adminSetup(secureCookie: Boolean = false) = AdminSetup(
-        AdminConfig(password, "s".repeat(40), secureCookie),
-        cats, dogs, photos, clock,
-        FailedLoginThrottle(penaltyMillis = 0, maxWaiting = 5)
-    )
-
-    private fun ApplicationTestBuilder.start(admin: AdminSetup? = adminSetup()) {
-        application {
-            configureRoutes(
-                CatService(cats), GuideService(guideRepository),
-                dogService = DogService(dogs), photoStore = photos, admin = admin
-            )
-        }
-    }
-
-    private fun ApplicationTestBuilder.browser(): HttpClient = createClient {
-        followRedirects = false
-        install(HttpCookies)
-    }
-
-    private suspend fun HttpClient.post(path: String, fields: Map<String, String>, csrf: String? = null): HttpResponse =
-        submitForm(path, parameters {
-            fields.forEach { (name, value) -> append(name, value) }
-            if (csrf != null) append("_csrf", csrf)
-        })
-
-    // Logs in and returns the token that the forms of the logged-in person carry.
-    private suspend fun HttpClient.logIn(): String {
-        assertEquals(HttpStatusCode.SeeOther, post("/admin/login", mapOf("password" to password)).status)
-        return csrfOf(get("/admin").bodyAsText())
-    }
-
-    private fun csrfOf(html: String): String =
-        Regex("""<input[^>]*name="_csrf"[^>]*value="([^"]+)"""").find(html)?.groupValues?.get(1) ?: error("no form token in:\n$html")
+class AdminRoutesTest : AdminTestBase() {
 
     private fun catForm(vararg changes: Pair<String, String>): Map<String, String> = mapOf(
         "name_ru" to "Барсик", "name_en" to "Barsik", "name_sr" to "Barsik",

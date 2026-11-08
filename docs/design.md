@@ -206,10 +206,12 @@ Dark: accent on surface 6.3, muted on surface 5.9. Re-check when changing any va
   first: the face visible and in focus, nothing between the lens and the animal (no fence or grille: Mila's cover is
   the known bad example), and the face in the middle of the frame, because the 4:5 crop cuts the sides and the edge.
   CSS cannot fix a bad cover, so the rule lives in the data.
-- **Card copies**: cards and gallery thumbnails load `name-card.jpg` (about 440×550, made by `tools/make-card-images.py`),
-  the big photo and the lightbox load the original. The copy is not cropped, so the 4:5 crop is still CSS. Images after
-  the first three cards, the thumbnails and the hidden lightbox photos have `loading="lazy"`; the main photo is not lazy.
-  The server does not start if a photo has no copy.
+- **Card copies**: cards and gallery thumbnails load `name-card.jpg` (about 440×550), the big photo and the lightbox load
+  the original. The copy is not cropped, so the 4:5 crop is still CSS. Images after the first three cards, the thumbnails
+  and the hidden lightbox photos have `loading="lazy"`; the main photo is not lazy. Who makes the copy depends on where
+  the photos live: with files, `tools/make-card-images.py` (and the server does not start if a photo has no copy); with
+  the database, the server makes both sizes when a photo is uploaded in the admin panel (`admin/ImageProcessing.kt`,
+  the same rules: cover 440×550, never scaled up, JPEG 82), and the original is cut to at most 1600 px on the long side.
 - **Placeholder**: an animal with no photos shows `data/images/default-cat.svg` or `default-dog.svg`: a neutral grey
   head (`#9a9ea6`, eyes and nose cut out) on a transparent ground, so the `--color-surface` under the image shows through
   in both themes. Cats and dogs have separate files and separate constants; do not reuse one for the other. The face is

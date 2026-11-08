@@ -2,11 +2,15 @@ package org.proanima.shelter.admin
 
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.PartData
+import io.ktor.http.content.forEachPart
+import io.ktor.http.content.streamProvider
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.ApplicationCallPipeline
 import io.ktor.server.application.call
 import io.ktor.server.html.respondHtml
 import io.ktor.server.request.contentLength
+import io.ktor.server.request.receiveMultipart
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.header
 import io.ktor.server.response.respond
@@ -31,6 +35,7 @@ import org.proanima.shelter.service.petSlug
 import org.proanima.shelter.views.catDetailsPage
 import org.proanima.shelter.views.dogDetailsPage
 import org.proanima.shelter.views.respondPage
+import java.security.SecureRandom
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
@@ -71,10 +76,13 @@ class AdminSetup(
 // What differs between cats and dogs: their data, their form and their page. The routes are the same.
 internal class PetKind<T : Any>(
     val urlName: String,
+    // The start of the names of this kind's photo files: "cat" -> /images/cat-12-3fa9c1d2.jpg
+    val filePrefix: String,
     val id: (T) -> Int,
     val title: (T) -> String,
     val slug: (T) -> String,
     val photoUrls: (T) -> List<String>,
+    val withPhotoUrls: (T, List<String>) -> T,
     val all: () -> List<T>,
     val save: (T) -> T,
     val delete: (Int) -> Boolean,
@@ -88,10 +96,12 @@ internal class PetKind<T : Any>(
 
 private fun catKind(admin: AdminSetup) = PetKind<Cat>(
     urlName = "cats",
+    filePrefix = "cat",
     id = Cat::id,
     title = ::catTitle,
     slug = { petSlug(it.name?.en, it.id) },
     photoUrls = Cat::photoUrls,
+    withPhotoUrls = { cat, urls -> cat.copy(photoUrls = urls, updatedAt = admin.nowText()) },
     all = admin.cats::findAll,
     save = admin.cats::save,
     delete = admin.cats::delete,
@@ -105,10 +115,12 @@ private fun catKind(admin: AdminSetup) = PetKind<Cat>(
 
 private fun dogKind(admin: AdminSetup) = PetKind<Dog>(
     urlName = "dogs",
+    filePrefix = "dog",
     id = Dog::id,
     title = ::dogTitle,
     slug = { petSlug(it.name.en, it.id) },
     photoUrls = Dog::photoUrls,
+    withPhotoUrls = { dog, urls -> dog.copy(photoUrls = urls) },
     all = admin.dogs::findAll,
     save = admin.dogs::save,
     delete = admin.dogs::delete,
@@ -135,7 +147,7 @@ fun Route.adminRoutes(admin: AdminSetup) {
         get {
             admin.withSession(call) { session ->
                 call.respondHtml {
-                    adminDashboardPage(admin.cats.findAll(), admin.dogs.findAll(), session.csrf, call.request.queryParameters["msg"])
+                    adminDashboardPage(admin.cats.findAll(), admin.dogs.findAll(), session.csrf, call.request.queryParameters["msg"], admin.photos.totalBytes())
                 }
             }
         }
@@ -235,6 +247,32 @@ private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
                 }
             }
 
+            // Photos have a page of their own: adding, moving and removing a photo reloads the page, which would
+            // throw away text typed into the form but not saved yet.
+            route("/photos") {
+                get {
+                    admin.withSession(call) { session ->
+                        withPet(call, kind) { pet ->
+                            call.respondHtml {
+                                adminPhotosPage(photosPage(admin, kind, pet, session, call.request.queryParameters["msg"]))
+                            }
+                        }
+                    }
+                }
+
+                post {
+                    admin.withSession(call) { session ->
+                        withPet(call, kind) { pet -> uploadPhotos(admin, kind, call, session, pet) }
+                    }
+                }
+
+                post("/update") {
+                    admin.withForm(call) { session, values ->
+                        withPet(call, kind) { pet -> changePhotos(admin, kind, call, session, pet, values) }
+                    }
+                }
+            }
+
             // The page as visitors will see it, in the chosen language, whatever the status: a draft has no
             // address on the site, so this is the only way to look at it.
             get("/preview") {
@@ -275,6 +313,167 @@ private suspend fun <T : Any> savePet(
         return
     }
     call.seeOther("/admin/${kind.urlName}/${kind.id(saved)}?msg=${if (existing == null) "created" else "saved"}")
+}
+
+private fun <T : Any> photosPage(
+    admin: AdminSetup,
+    kind: PetKind<T>,
+    pet: T,
+    session: AdminSession,
+    flashCode: String?,
+    problems: List<String> = emptyList(),
+    addedCount: Int = 0
+) = PhotosPage(
+    kindPath = kind.urlName,
+    id = kind.id(pet),
+    title = kind.title(pet),
+    photoUrls = kind.photoUrls(pet),
+    csrf = session.csrf,
+    flashCode = flashCode,
+    problems = problems,
+    addedCount = addedCount,
+    usedBytes = admin.photos.totalBytes()
+)
+
+private val random = SecureRandom()
+
+// /images/cat-12-3fa9c1d2.jpg: the kind and the id say whose photo it is, the random part makes the address new for
+// every photo, so a browser never shows an old picture under a new one. The name of the uploaded file is not used.
+private fun newPhotoBase(admin: AdminSetup, filePrefix: String, id: Int): String {
+    while (true) {
+        val base = "$filePrefix-$id-" + ByteArray(4).also(random::nextBytes).joinToString("") { "%02x".format(it) }
+        if (admin.photos.sha256("$base.jpg") == null) return base
+    }
+}
+
+// The name as the person knows it, for the message; never used to store anything.
+private fun shownFileName(raw: String?): String = raw.orEmpty().substringAfterLast('/').substringAfterLast('\\').take(60)
+
+// Takes the files of an upload one at a time: each is read (never more than the size limit), turned into the two
+// JPEG copies and stored, then forgotten, so the memory used does not grow with the number of files. The form's
+// token must come before the first file; a file that comes earlier is not read at all.
+private suspend fun <T : Any> uploadPhotos(
+    admin: AdminSetup,
+    kind: PetKind<T>,
+    call: ApplicationCall,
+    session: AdminSession,
+    pet: T
+) {
+    val length = call.request.contentLength()
+    if (length == null || length > PhotoLimits.MAX_UPLOAD_REQUEST_BYTES) {
+        call.respond(HttpStatusCode.PayloadTooLarge)
+        return
+    }
+    var tokenOk = false
+    var fileBeforeToken = false
+    var files = 0
+    val problems = mutableListOf<String>()
+    val stored = mutableListOf<String>()
+    val alreadyThere = kind.photoUrls(pet).size
+
+    call.receiveMultipart().forEachPart { part ->
+        try {
+            if (part is PartData.FormItem && part.name == "_csrf") {
+                tokenOk = tokensMatch(part.value, session.csrf)
+            } else if (part is PartData.FileItem && !tokenOk && !part.originalFileName.isNullOrBlank()) {
+                fileBeforeToken = true
+            } else if (part is PartData.FileItem && tokenOk && !part.originalFileName.isNullOrBlank()) {
+                files++
+                val name = shownFileName(part.originalFileName)
+                if (files > PhotoLimits.MAX_FILES_PER_UPLOAD) {
+                    problems += "$name: за один раз можно загрузить не больше ${PhotoLimits.MAX_FILES_PER_UPLOAD} файлов."
+                } else if (alreadyThere + stored.size >= PhotoLimits.MAX_PHOTOS_PER_PET) {
+                    problems += "$name: у одной записи не больше ${PhotoLimits.MAX_PHOTOS_PER_PET} фото."
+                } else {
+                    val bytes = part.streamProvider().use { it.readNBytes(PhotoLimits.MAX_FILE_BYTES + 1) }
+                    try {
+                        val processed = ImageProcessing.process(bytes)
+                        val base = newPhotoBase(admin, kind.filePrefix, kind.id(pet))
+                        admin.photos.put("$base.jpg", "image/jpeg", processed.original)
+                        admin.photos.put("$base-card.jpg", "image/jpeg", processed.card)
+                        stored += "/images/$base.jpg"
+                    } catch (e: PhotoRejected) {
+                        problems += "$name: ${e.message}"
+                    }
+                }
+            }
+        } finally {
+            part.dispose()
+        }
+    }
+
+    if (!tokenOk || fileBeforeToken) {
+        call.respondHtml(HttpStatusCode.Forbidden) {
+            adminMessagePage(
+                "Страница устарела",
+                "Форма была открыта слишком давно, и ничего не загрузилось. Откройте страницу фотографий заново.",
+                "/admin/${kind.urlName}/${kind.id(pet)}/photos",
+                "К фотографиям",
+                session.csrf
+            )
+        }
+        return
+    }
+    if (files == 0) {
+        problems += "Выберите хотя бы один файл."
+    }
+
+    // The record is read again: it may have been edited while the files were being processed.
+    val fresh = kind.all().firstOrNull { kind.id(it) == kind.id(pet) }
+    if (fresh == null) {
+        removeUnusedPhotos(admin, stored)
+        call.respond(HttpStatusCode.NotFound)
+        return
+    }
+    val current = if (stored.isEmpty()) fresh else kind.save(kind.withPhotoUrls(fresh, kind.photoUrls(fresh) + stored))
+
+    if (problems.isEmpty()) {
+        call.seeOther("/admin/${kind.urlName}/${kind.id(current)}/photos?msg=uploaded")
+    } else {
+        call.respondHtml(if (stored.isEmpty()) HttpStatusCode.UnprocessableEntity else HttpStatusCode.OK) {
+            adminPhotosPage(photosPage(admin, kind, current, session, flashCode = null, problems = problems, addedCount = stored.size))
+        }
+    }
+}
+
+// One button of one photo: earlier, later, cover (first), delete. The photo is named by its address, not by a
+// position, so a stale page cannot move or delete the wrong one.
+private suspend fun <T : Any> changePhotos(
+    admin: AdminSetup,
+    kind: PetKind<T>,
+    call: ApplicationCall,
+    session: AdminSession,
+    pet: T,
+    values: Map<String, String>
+) {
+    val urls = kind.photoUrls(pet).toMutableList()
+    val photo = values["photo"]
+    val index = urls.indexOf(photo)
+    if (photo == null || index < 0) {
+        call.respond(HttpStatusCode.NotFound)
+        return
+    }
+    val outcome = when (values["action"]) {
+        "left" -> "moved".also { if (index > 0) urls.add(index - 1, urls.removeAt(index)) }
+        "right" -> "moved".also { if (index < urls.lastIndex) urls.add(index + 1, urls.removeAt(index)) }
+        "cover" -> "moved".also { urls.add(0, urls.removeAt(index)) }
+        "delete" -> "removed".also { urls.removeAt(index) }
+        else -> {
+            call.respond(HttpStatusCode.BadRequest)
+            return
+        }
+    }
+    val saved = try {
+        kind.save(kind.withPhotoUrls(pet, urls))
+    } catch (e: NoSuchElementException) {
+        call.respond(HttpStatusCode.NotFound)
+        return
+    }
+    // The record no longer points at the photo, and only then is the picture itself removed.
+    if (outcome == "removed") {
+        removeUnusedPhotos(admin, listOf(photo))
+    }
+    call.seeOther("/admin/${kind.urlName}/${kind.id(saved)}/photos?msg=$outcome")
 }
 
 // A photo is deleted with its pet unless another cat or dog still uses it. The pictures of the site's own

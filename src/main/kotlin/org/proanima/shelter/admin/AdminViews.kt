@@ -2,6 +2,7 @@ package org.proanima.shelter.admin
 
 import kotlinx.html.ButtonType
 import kotlinx.html.FlowContent
+import kotlinx.html.FormEncType
 import kotlinx.html.FormMethod
 import kotlinx.html.HTML
 import kotlinx.html.InputType
@@ -46,6 +47,7 @@ import org.proanima.shelter.service.displayAdoptionStage
 import org.proanima.shelter.service.displayCatAge
 import org.proanima.shelter.service.displayCatLocation
 import org.proanima.shelter.views.THEME_INIT_SCRIPT
+import java.util.Locale
 
 // The admin panel is for the people who run the site, in Russian only. Its pages are plain: the colours,
 // fonts and buttons of the site, forms that work without JavaScript, nothing for search engines.
@@ -149,7 +151,7 @@ internal fun catTitle(cat: Cat) = cat.name?.ru?.ifBlank { null } ?: cat.name?.en
 
 internal fun dogTitle(dog: Dog) = dog.name.ru?.ifBlank { null } ?: dog.name.en?.ifBlank { null } ?: "Без имени"
 
-fun HTML.adminDashboardPage(cats: List<Cat>, dogs: List<Dog>, csrf: String, flashCode: String?) =
+fun HTML.adminDashboardPage(cats: List<Cat>, dogs: List<Dog>, csrf: String, flashCode: String?, photoBytes: Long = 0) =
     adminPage("Кошки и собаки", csrf) {
         h1 { +"Кошки и собаки" }
         flash(flashCode)
@@ -176,7 +178,8 @@ fun HTML.adminDashboardPage(cats: List<Cat>, dogs: List<Dog>, csrf: String, flas
                             +listOf(
                                 displayCatLocation(cat.location, AppLocale.RU),
                                 displayAdoptionStage(cat.adoptionStage, AppLocale.RU),
-                                displayCatAge(cat.birthYear, cat.birthMonth, AppLocale.RU)
+                                displayCatAge(cat.birthYear, cat.birthMonth, AppLocale.RU),
+                                photoCount(cat.photoUrls)
                             ).joinToString(" · ")
                         }
                         previewLinks("/admin/cats/${cat.id}/preview")
@@ -200,13 +203,34 @@ fun HTML.adminDashboardPage(cats: List<Cat>, dogs: List<Dog>, csrf: String, flas
                             a(href = "/admin/dogs/${dog.id}", classes = "admin-row-title") { +dogTitle(dog) }
                             statusBadges(dog.published, translationGaps(listOf(dog.name, dog.age, dog.description)))
                         }
-                        p(classes = "admin-row-meta") { +displayCatLocation(dog.location, AppLocale.RU) }
+                        p(classes = "admin-row-meta") {
+                            +listOf(displayCatLocation(dog.location, AppLocale.RU), photoCount(dog.photoUrls)).joinToString(" · ")
+                        }
                         previewLinks("/admin/dogs/${dog.id}/preview")
                     }
                 }
             }
         }
+
+        storageNote(photoBytes)
     }
+
+private fun photoCount(photoUrls: List<String>) = if (photoUrls.isEmpty()) "без фото" else "фото: ${photoUrls.size}"
+
+private const val DATABASE_LIMIT_BYTES = 1024L * 1024 * 1024
+
+private fun megabytes(bytes: Long): String = String.format(Locale.forLanguageTag("ru"), "%.1f", bytes / 1024.0 / 1024.0)
+
+// The free database holds 1 GB for everything. The pictures are almost all of it, so the number is shown where
+// someone adding photos will see it, before the day it runs out.
+private fun FlowContent.storageNote(photoBytes: Long) {
+    if (photoBytes <= 0) return
+    val nearlyFull = photoBytes > DATABASE_LIMIT_BYTES * 8 / 10
+    p(classes = if (nearlyFull) "admin-alert" else "admin-note") {
+        +"Фотографии занимают ${megabytes(photoBytes)} МБ из 1024 МБ, которые вмещает бесплатная база."
+        if (nearlyFull) +" Места остаётся мало: удалите ненужные фото или перейдите на платный тариф."
+    }
+}
 
 // How the page will look on the site, whatever the status: a draft has no address of its own there.
 private fun FlowContent.previewLinks(base: String) {
@@ -397,17 +421,27 @@ private fun <T> FlowContent.formFrame(
     }
 }
 
-private fun FlowContent.currentPhotos(photoUrls: List<String>, name: String) {
+// Photos are changed on a page of their own (it reloads at every step, and the form's unsaved text would be lost).
+private fun FlowContent.photosSummary(kindPath: String, id: Int?, photoUrls: List<String>, name: String) {
     div(classes = "field") {
         span(classes = "field-label") { +"Фотографии" }
+        if (id == null) {
+            p(classes = "field-hint") { +"Фотографии можно добавить после первого сохранения." }
+            return@div
+        }
         if (photoUrls.isEmpty()) {
             p(classes = "field-hint") { +"Фотографий пока нет: на сайте показывается заглушка." }
         } else {
             div(classes = "admin-photos") {
-                photoUrls.forEach { url -> img(src = cardPhotoUrl(url), alt = name, classes = "admin-photo") }
+                photoUrls.take(6).forEach { url -> img(src = cardPhotoUrl(url), alt = name, classes = "admin-photo") }
             }
         }
-        p(classes = "field-hint") { +"Загрузка и порядок фотографий появятся в админке на следующем этапе." }
+        p {
+            a(href = "/admin/$kindPath/$id/photos") {
+                +(if (photoUrls.isEmpty()) "Добавить фотографии" else "Фотографии: ${photoUrls.size}, изменить")
+            }
+        }
+        p(classes = "field-hint") { +"Текст выше не сохраняется при переходе: сначала нажмите «Сохранить»." }
     }
 }
 
@@ -456,7 +490,7 @@ fun HTML.catFormPage(page: FormPage<Cat>) {
                 hint = "«Пристроена» переносит кошку в отдельный раздел внизу списка."
             )
             localizedField("Как забрать кошку", "adoptionInstruction", page.values, page.errors, multiline = true, hint = "Если пусто, на сайте будет общая фраза «порядок пока не определён».")
-            currentPhotos(cat?.photoUrls.orEmpty(), heading)
+            photosSummary("cats", cat?.id, cat?.photoUrls.orEmpty(), heading)
         }
     }
 }
@@ -480,7 +514,7 @@ fun HTML.dogFormPage(page: FormPage<Dog>) {
                 CatLocation.entries.map { it.name to displayCatLocation(it, AppLocale.RU) },
                 page.values, page.errors
             )
-            currentPhotos(dog?.photoUrls.orEmpty(), heading)
+            photosSummary("dogs", dog?.id, dog?.photoUrls.orEmpty(), heading)
         }
     }
 }
@@ -500,3 +534,102 @@ fun HTML.adminDeleteConfirmPage(question: String, action: String, backHref: Stri
             }
         }
     }
+
+class PhotosPage(
+    val kindPath: String,
+    val id: Int,
+    val title: String,
+    val photoUrls: List<String>,
+    val csrf: String,
+    val flashCode: String?,
+    val problems: List<String>,
+    val addedCount: Int,
+    val usedBytes: Long
+)
+
+private val PHOTO_FLASH = mapOf(
+    "uploaded" to "Фото добавлены.",
+    "moved" to "Порядок сохранён.",
+    "removed" to "Фото удалено."
+)
+
+private fun FlowContent.photoButton(action: String, label: String, danger: Boolean = false) {
+    button(type = ButtonType.submit, name = "action", classes = if (danger) "link-button photo-action photo-delete" else "link-button photo-action") {
+        value = action
+        +label
+    }
+}
+
+fun HTML.adminPhotosPage(page: PhotosPage) = adminPage("Фотографии: ${page.title}", page.csrf) {
+    val base = "/admin/${page.kindPath}/${page.id}"
+    p(classes = "admin-back") { a(href = base) { +"← ${page.title}" } }
+    h1 { +"Фотографии" }
+
+    PHOTO_FLASH[page.flashCode]?.let { message ->
+        p(classes = "admin-flash") {
+            attributes["role"] = "status"
+            +message
+        }
+    }
+    if (page.addedCount > 0) {
+        p(classes = "admin-flash") {
+            attributes["role"] = "status"
+            +"Добавлено фото: ${page.addedCount}."
+        }
+    }
+    if (page.problems.isNotEmpty()) {
+        div(classes = "admin-alert") {
+            attributes["role"] = "alert"
+            p { +"Не всё загрузилось:" }
+            ul { page.problems.forEach { li { +it } } }
+        }
+    }
+
+    // The token field comes first on purpose: the server reads it before the first file.
+    form(action = "$base/photos", encType = FormEncType.multipartFormData, method = FormMethod.post, classes = "admin-form") {
+        csrfField(page.csrf)
+        div(classes = "field") {
+            label { htmlFor = "f-photos"; +"Добавить фото" }
+            input(type = InputType.file, name = "photos") {
+                id = "f-photos"
+                attributes["multiple"] = "multiple"
+                attributes["accept"] = "image/jpeg,image/png"
+            }
+            p(classes = "field-hint") {
+                +"JPEG или PNG, до 8 МБ каждый, до 5 файлов за раз, всего до 12 фото у одной записи. "
+                +"Снимок с iPhone выбирайте как JPEG («Самые совместимые»). Место съёмки из файла удаляется."
+            }
+        }
+        div(classes = "form-actions") {
+            button(type = ButtonType.submit, classes = "button") { +"Загрузить" }
+        }
+    }
+
+    h2 { +"Загружено: ${page.photoUrls.size}" }
+    p(classes = "admin-note") {
+        +"Первое фото — обложка: оно стоит на карточке в списке и открывает страницу. Выбирайте кадр, где хорошо видно мордочку "
+        +"и ничто не закрывает животное (решётка, сетка вольера)."
+    }
+    if (page.photoUrls.isEmpty()) {
+        p(classes = "admin-note") { +"Фотографий пока нет: на сайте показывается заглушка." }
+    }
+    ul(classes = "photo-grid") {
+        page.photoUrls.forEachIndexed { index, url ->
+            li(classes = "photo-tile") {
+                img(src = cardPhotoUrl(url), alt = "Фото ${index + 1}", classes = "photo-thumb")
+                span(classes = if (index == 0) "badge badge-published" else "badge") {
+                    +(if (index == 0) "Обложка" else "Фото ${index + 1}")
+                }
+                form(action = "$base/photos/update", method = FormMethod.post, classes = "photo-actions") {
+                    csrfField(page.csrf)
+                    input(type = InputType.hidden, name = "photo") { value = url }
+                    if (index > 0) photoButton("left", "← Раньше")
+                    if (index < page.photoUrls.lastIndex) photoButton("right", "Позже →")
+                    if (index > 0) photoButton("cover", "Сделать обложкой")
+                    photoButton("delete", "Удалить", danger = true)
+                }
+            }
+        }
+    }
+    storageNote(page.usedBytes)
+}

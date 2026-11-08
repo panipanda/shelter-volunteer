@@ -18,6 +18,9 @@ interface PhotoStore {
 
     fun names(): Set<String>
 
+    // How much of the database the pictures take, in bytes: the free plan has 1 GB for everything.
+    fun totalBytes(): Long
+
     fun put(name: String, contentType: String, bytes: ByteArray)
 
     fun delete(name: String): Boolean
@@ -56,6 +59,14 @@ class PgPhotoStore(
         connection.createStatement().use { statement ->
             statement.executeQuery("SELECT name FROM photos").use { rows ->
                 buildSet { while (rows.next()) add(rows.getString(1)) }
+            }
+        }
+    }
+
+    override fun totalBytes(): Long = dataSource.connection.use { connection ->
+        connection.createStatement().use { statement ->
+            statement.executeQuery("SELECT COALESCE(SUM(OCTET_LENGTH(data)), 0) FROM photos").use { rows ->
+                if (rows.next()) rows.getLong(1) else 0L
             }
         }
     }

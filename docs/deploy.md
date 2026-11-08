@@ -128,7 +128,22 @@ marks records that lack a translation (`нет en`, `нет sr`): the site then 
 - A wrong password costs a second, and all wrong attempts go through one gate, so guessing is limited to about one a
   second however many requests arrive; the right password never waits.
 - No public page links to `/admin`; its pages say `noindex`, are never cached and cannot be framed.
-- Photos can not be uploaded from the panel yet. Existing photos are kept when a record is edited.
+- Uploaded files are checked by their content, not by their name: only JPEG and PNG, up to 8 MB and 30 megapixels each,
+  at least 300 px on the short side, at most 5 files per upload and 12 photos per cat or dog. Everything else (HEIC,
+  WebP, GIF, a renamed text file) is refused with a message that names the file.
+
+**Photos.** Each cat and dog has a page of its own for photos (`Фотографии` on the record's form; it is a separate page
+because every step there reloads it, and unsaved text in the form would be lost). A photo can be added (several at
+once), moved earlier or later, made the cover (the first photo is the card in the list and the first picture on the
+page) and deleted. Behind the scenes the server turns every upload into two JPEGs, the same way
+`tools/make-card-images.py` did by hand: the picture itself, at most 1600 px on the long side and the right way up
+(the camera's rotation tag is applied), and the card copy that covers 440×550 (never scaled up). Nothing from the
+original file's metadata is kept, the shooting place included. Names look like `/images/cat-12-3fa9c1d2.jpg`: the random
+part makes every photo a new address, so a browser never shows an old picture in the place of a new one. The page shows
+how much of the database's 1 GB the photos take.
+- One picture is processed at a time and large pictures are read in a reduced size, so memory stays within the free plan
+  (checked with the same JVM limits as `render.yaml`: a 24-megapixel photo takes about a second here). The free plan has
+  a tenth of a CPU, so expect it to be several times slower on Render; upload three or four photos at a time at first.
 
 **Trying it locally.** `./gradlew devAdmin` starts the site with the panel on a throwaway in-memory database
 (it starts with the content of `data/`) at <http://localhost:8095>, password `dev-password-123`. Nothing real is

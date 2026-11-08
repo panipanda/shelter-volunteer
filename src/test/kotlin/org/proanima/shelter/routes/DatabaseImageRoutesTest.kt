@@ -1,6 +1,7 @@
 package org.proanima.shelter.routes
 
 import io.ktor.client.request.get
+import io.ktor.client.request.head
 import io.ktor.client.request.header
 import io.ktor.client.call.body
 import io.ktor.http.HttpHeaders
@@ -89,6 +90,22 @@ class DatabaseImageRoutesTest {
         assertEquals(HttpStatusCode.OK, response.status)
         assertEquals("image/png", response.headers[HttpHeaders.ContentType])
         assertContentEquals(newBytes, response.body<ByteArray>())
+    }
+
+    @Test
+    fun `a HEAD request gets the same headers as a GET and no body`() = testApplication {
+        start()
+
+        val get = client.get("/images/felix.jpg")
+        val head = client.head("/images/felix.jpg")
+
+        assertEquals(HttpStatusCode.OK, head.status)
+        assertEquals(etag, head.headers[HttpHeaders.ETag])
+        assertEquals(get.headers[HttpHeaders.ContentType], head.headers[HttpHeaders.ContentType])
+        assertEquals(get.headers[HttpHeaders.ContentLength], head.headers[HttpHeaders.ContentLength])
+        assertEquals(listOf("max-age=86400"), head.headers.getAll(HttpHeaders.CacheControl))
+        assertEquals(0, head.body<ByteArray>().size)
+        assertEquals(HttpStatusCode.NotFound, client.head("/images/nope.jpg").status)
     }
 
     @Test

@@ -17,6 +17,7 @@ dependencies {
     implementation("io.ktor:ktor-server-caching-headers-jvm:2.3.12")
     implementation("io.ktor:ktor-server-compression-jvm:2.3.12")
     implementation("io.ktor:ktor-server-sessions-jvm:2.3.12")
+    implementation("io.ktor:ktor-server-auto-head-response-jvm:2.3.12")
     implementation("ch.qos.logback:logback-classic:1.5.6")
 
     implementation("org.postgresql:postgresql:42.7.4")
@@ -42,6 +43,8 @@ tasks.register<JavaExec>("devAdmin") {
     description = "Runs the site with the admin panel on an in-memory database at http://localhost:8095 (password: dev-password-123)."
     classpath = sourceSets["test"].runtimeClasspath
     mainClass.set("org.proanima.shelter.DevAdminServerKt")
+    // The same limits as on the hosting plan (render.yaml), so that memory problems show up here and not there.
+    jvmArgs("-Xmx256m", "-Xss256k", "-XX:MaxMetaspaceSize=128m")
     environment("PORT", "8095")
     environment("ADMIN_PASSWORD", "dev-password-123")
     environment("SESSION_SECRET", "dev-session-secret-not-for-production-use")
