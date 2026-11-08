@@ -40,7 +40,7 @@ fun valueIn(text: LocalizedText?, language: String): String? = when (language) {
     else -> null
 }
 
-private class FormReader(private val values: Map<String, String>) {
+internal class FormReader(private val values: Map<String, String>) {
     val errors = linkedMapOf<String, String>()
 
     fun text(name: String): String = cleanText(values[name].orEmpty())
@@ -49,9 +49,10 @@ private class FormReader(private val values: Map<String, String>) {
         errors.putIfAbsent(name, message)
     }
 
-    // The three language versions of one text. Null when all three are empty.
-    fun localized(base: String, maxLength: Int, requireRu: Boolean): LocalizedText? {
-        val texts = CONTENT_LANGUAGES.associateWith { text("${base}_$it") }
+    // The three language versions of one text. Null when all three are empty. `clean` says what is done to what was
+    // typed: by default line breaks become spaces; a long text keeps its paragraphs.
+    fun localized(base: String, maxLength: Int, requireRu: Boolean, clean: (String) -> String = ::cleanText): LocalizedText? {
+        val texts = CONTENT_LANGUAGES.associateWith { clean(values["${base}_$it"].orEmpty()) }
         texts.forEach { (language, text) ->
             if (text.length > maxLength) {
                 fail("${base}_$language", "Слишком длинный текст: не больше $maxLength знаков.")
@@ -81,6 +82,16 @@ private class FormReader(private val values: Map<String, String>) {
         else -> false.also { fail("published", "Выберите статус из списка.") }
     }
 
+    // A yes/no choice made with a select ("true" or "false").
+    fun yesNo(name: String): Boolean = when (text(name)) {
+        "true" -> true
+        "false" -> false
+        else -> false.also { fail(name, "Выберите «Да» или «Нет».") }
+    }
+
+    // A checkbox: ticked sends its value, unticked sends nothing.
+    fun ticked(name: String): Boolean = text(name) == "true"
+
     // The birth year and month of a cat or a dog; both may be empty, a month needs a year, and neither may be in the
     // future. A mistake is recorded under the field it belongs to and the value comes back null.
     fun birth(today: LocalDate): Pair<Int?, Int?> {
@@ -102,8 +113,16 @@ private class FormReader(private val values: Map<String, String>) {
     }
 }
 
-private fun localizedValues(base: String, text: LocalizedText?): List<Pair<String, String>> =
+internal fun localizedValues(base: String, text: LocalizedText?): List<Pair<String, String>> =
     CONTENT_LANGUAGES.map { "${base}_$it" to valueIn(text, it).orEmpty() }
+
+// A long text keeps its paragraphs (a blank line between them); everything else about its spacing is tidied.
+internal fun cleanParagraphs(raw: String): String =
+    raw.replace("\r\n", "\n").replace('\r', '\n').lines().joinToString("\n") { it.trim() }.replace(Regex("\n{3,}"), "\n\n").trim()
+
+// A markdown text keeps its line breaks as they are (a list is lines), only the ends are tidied.
+internal fun cleanMarkdown(raw: String): String =
+    raw.replace("\r\n", "\n").replace('\r', '\n').lines().joinToString("\n") { it.trimEnd() }.trim()
 
 // The address of a pet's page is made from its English name. Two pets with the same English name would
 // share one address and the second would never be reachable.

@@ -12,6 +12,9 @@ data class LocalizedText(
     fun forLocale(locale: AppLocale): String =
         valueFor(locale) ?: en ?: ru ?: sr ?: ""
 
+    // Whether there is a text written for this language itself, not one borrowed from another by forLocale.
+    fun isFilledIn(locale: AppLocale): Boolean = !valueFor(locale).isNullOrBlank()
+
     private fun valueFor(locale: AppLocale): String? = when (locale) {
         AppLocale.RU -> ru
         AppLocale.EN -> en

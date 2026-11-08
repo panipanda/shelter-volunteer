@@ -1,7 +1,6 @@
 package org.proanima.shelter.views
 
 import kotlinx.html.FlowContent
-import kotlinx.html.FlowOrPhrasingContent
 import kotlinx.html.HTML
 import kotlinx.html.a
 import kotlinx.html.aside
@@ -20,7 +19,6 @@ import org.proanima.shelter.i18n.plain
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.service.GuideBlock
-import org.proanima.shelter.service.isSafeGuideLink
 import java.util.ResourceBundle
 
 // contentLang comes from GuideService/GuideRepository, not from the route's locale:
@@ -80,22 +78,4 @@ private fun FlowContent.tableOfContents(blocks: List<GuideBlock>, label: String)
         attributes["aria-label"] = label
         parts.forEach { part -> a(href = "#${part.id}") { +part.text } }
     }
-}
-
-private val INLINE_LINK = Regex("""\[([^\]]+)]\(([^)\s]+)\)""")
-
-// Renders plain text where [text](url) becomes a link; the rest is escaped by the html builder.
-private fun FlowOrPhrasingContent.inlineText(text: String) {
-    var position = 0
-    INLINE_LINK.findAll(text).forEach { match ->
-        +text.substring(position, match.range.first)
-        val href = match.groupValues[2]
-        if (isSafeGuideLink(href)) {
-            a(href = href) { +match.groupValues[1] }
-        } else {
-            +match.groupValues[1]
-        }
-        position = match.range.last + 1
-    }
-    +text.substring(position)
 }

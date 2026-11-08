@@ -103,7 +103,7 @@ Routes and services must not depend on JSON-specific implementation details.
 Visit data is not stored yet. Visits are organised in the cat volunteer chat, and sync with it is not
 implemented, so the test data (`data/visits.json`, `data/visit-participants.json`) and the whole visit
 data layer (`VolunteerVisit`, `VisitService`, `VisitRepository` and related code) were removed.
-The "Upcoming visits" page shows the next trip and how to join it. The "Visit archive" page was removed (2026-11-03): an empty public stub works against trust; bring it back when there is something to show.
+The "Upcoming visits" page shows the next trip and how to join it. The "Visit archive" page was removed (2026-11-03): an empty public stub works against trust; bring it back when there is something to show. It comes back as a section made in the admin panel from the "Архив визитов" preset (see "Sections" below), which is in the menu only once it has a published entry.
 The data model will be designed again together with the sync.
 
 The home page computes the next visit from the regular schedule (Wednesday 9:00 and Saturday 10:00,
@@ -181,7 +181,63 @@ Added the same month, as the second part of the admin panel ("Страницы �
   home form.
 - **What is still code:** the regular schedule of trips (Wednesday 9:00, Saturday 10:00) and the cancelled or extra
   trips in `data/visit-overrides.json`, the navigation and footer texts, the error pages, the cat and dog labels.
-  The visit schedule belongs with the visit archive (below in the roadmap), as both are the same data.
+  The visit schedule is separate from the visit archive (see "Sections" below): the archive is a public record of what
+  happened, the schedule drives the "next visit" card, and one does not feed the other yet.
+
+### Sections (the section builder)
+
+The admin builds new parts of the site ("Разделы"). The user asked for a general builder rather than two fixed
+kinds, so a section is data, not code: its settings, its fields and its tags are made in the panel, and the first
+two (useful articles, the visit archive) are presets of the same builder.
+
+- **What a section is.** Title and short menu title (three languages), an intro, an address (`/ru/<slug>`), a list
+  look (`CARDS`: the cat cards; `LIST`: rows), whether entries have a date and photos, a position in the menu, a
+  vocabulary of tags and an ordered list of fields. `model/Section.kt`. Stored as two tables of JSON documents,
+  `sections` and `section_items`, like the cats (created at start; no migration; the list is cached 30 s).
+- **Entries.** Every entry has a title (three languages, Russian required), a status (draft or published), a date if
+  the section has dates, photos if it has photos, tags, and one value per field of its section. Texts live in
+  `texts` (by field key, three languages), dates and chosen options in `plain` (one value for all languages).
+- **Five field types:** one line of text, a few sentences, markdown (the guide's dialect, plus `**bold**`), a date,
+  and a choice from options the admin lists. A field is `required`, `inList` (shown on the card or in the row) and
+  `showLabel` (a label over a long text). The type of a field cannot change once it exists, because entries hold
+  values of that type. Fields and options have keys (`f3`, `health`, `o7`) that are made once and never reused, so a
+  deleted field's old values can never come back under a new field; deleting a field leaves its values in the
+  entries, unused, and they are dropped the next time the entry is saved.
+- **Tags are a per-section vocabulary** (a key and a name in three languages), chosen with checkboxes. On the site the
+  list offers a filter (`?tag=key`) with only the tags that an entry in that language has. Taking a tag off the
+  vocabulary takes it off the entries. A section with no tags has no filter.
+- **Visibility.** An entry is on the site in a language only if it is published *and its title is written in that
+  language* (the user's choice: an article may exist in one language). The other texts of a shown entry fall back to
+  another language as the cats' do. A section is in the menu, and its page exists, only in a language where it has
+  at least one such entry: no empty stub (consultation 2026-11-03). The language links of a page that exists in
+  fewer languages lead to the home page for the missing ones, and its `hreflang` alternates list only the ones it has.
+- **The address of an entry** is made from its English title (the cat rule), or its number when there is none; two
+  entries of one section cannot share one. The address of a section is typed (or made from its English title),
+  must be Latin letters, digits and hyphens, and cannot be one of the site's own pages (`cats`, `dogs`, `guide`,
+  `visits`, `help`); those routes win anyway. Changing it later breaks old links, and the form says so.
+- **The menu.** The entries come from the sections, after the fixed pages, in the order of their position. They are
+  handed to the navigation through `SiteMenu` (a thread-local set by `respondPage`, which draws every page in one go),
+  so no view had to change its parameters. A menu that cannot be read (database down) is a menu without sections.
+  Measured: with even one extra entry the one-row header overflows below ~900 px and, with two or more, leaves the
+  text column on a wide screen, so **when the menu has sections the header is two rows at every width** (wordmark and
+  controls, then the menu), as on a phone; without sections it is unchanged, byte for byte. At most six sections.
+- **Same pattern as cats and dogs in the admin.** `petRoutes` (list, form, drafts, preview, photos, deletion with a
+  question) takes the path and a function that finds the "kind" of a request, so the entries of any section use the
+  same code as the cats; photos are `/images/item-<id>-<8 hex>.jpg`. An entry is reachable only under its own
+  section. A form with three long texts is bigger than a cat's, so the limit for entries is 900 KB.
+- **Presets.** "Полезные статьи" (date, summary, markdown text, cover, four tags) and "Архив визитов" (date, status
+  held/cancelled/extra, result, short report, photos) are filled-in settings, nothing more; after creation they are
+  ordinary sections. The archive shows cancelled trips as plainly as held ones (roadmap: show them honestly).
+- **Participants of visits are not stored and not shown.** The archive has a result, a short report and photos; the
+  number of volunteers can be a text field if the people want it.
+- **Bold text** (`**words**`) was added to the markdown dialect; the guide page uses the same renderer. The shipped
+  guides have no `*`, so they render as before.
+- **Backup and first start.** The backup has `sections.json` and `section-items.json` and the photos of entries; the
+  seeder reads the same files from `data/` on an empty database (ids kept, counting carries on), and a site without a
+  database reads them too (read only).
+- **Not done, on purpose:** the trip schedule (cancelled and extra trips still come from `data/visit-overrides.json`,
+  not from the archive); reordering entries by hand; images inside a markdown text; hiding or reordering blocks of the
+  fixed pages.
 
 ## Google Calendar
 

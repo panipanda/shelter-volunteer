@@ -31,9 +31,12 @@ suspend fun ApplicationCall.respondPage(
     status: HttpStatusCode? = null,
     block: HTML.() -> Unit
 ) {
-    val page = buildString {
-        append("<!DOCTYPE html>\n")
-        TypographicConsumer(appendHTML(), locale).html(block = block)
+    val menu = sectionMenu(locale)
+    val page = SiteMenu.showing(menu) {
+        buildString {
+            append("<!DOCTYPE html>\n")
+            TypographicConsumer(appendHTML(), locale).html(block = block)
+        }
     }
     respond(TextContent(page, ContentType.Text.Html.withCharset(Charsets.UTF_8), status))
 }

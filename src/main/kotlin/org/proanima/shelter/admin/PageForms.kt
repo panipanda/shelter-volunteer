@@ -16,7 +16,7 @@ class PageFormResult(val changes: Map<ContentKey, String?>, val errors: Map<Stri
 
 private const val MAX_WEB_ADDRESS = 300
 private val TELEGRAM_NAME = Regex("^[A-Za-z0-9_]{4,32}$")
-private val MARKDOWN_LINK = Regex("""\[[^\]]+]\(([^)\s]+)\)""")
+internal val MARKDOWN_LINK = Regex("""\[[^\]]+]\(([^)\s]+)\)""")
 
 // The form of a page is a flat map of field name to the text the person typed ("home.hero.headline_ru",
 // "help.donate.url"). A field with a stored text also has a checkbox "reset:<name>" that brings the shipped text back.

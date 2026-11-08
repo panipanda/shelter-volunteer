@@ -56,10 +56,11 @@ import java.util.Locale
 // The admin panel is for the people who run the site, in Russian only. Its pages are plain: the colours,
 // fonts and buttons of the site, forms that work without JavaScript, nothing for search engines.
 
-// The two parts of the admin panel, as the menu at the top shows them.
+// The parts of the admin panel, as the menu at the top shows them.
 enum class AdminSection(val title: String, val href: String) {
     ANIMALS("Кошки и собаки", "/admin"),
-    PAGES("Страницы сайта", "/admin/pages")
+    PAGES("Страницы сайта", "/admin/pages"),
+    SECTIONS("Разделы", "/admin/sections")
 }
 
 // csrf == null: nobody is logged in (the login page), so there is no menu.
@@ -169,7 +170,7 @@ internal fun FlowContent.flash(code: String?, messages: Map<String, String> = FL
     }
 }
 
-private fun FlowContent.statusBadges(published: Boolean, gaps: List<String>) {
+internal fun FlowContent.statusBadges(published: Boolean, gaps: List<String>) {
     span(classes = if (published) "badge badge-published" else "badge badge-draft") {
         +(if (published) "Опубликовано" else "Черновик")
     }
@@ -270,7 +271,7 @@ fun HTML.adminDashboardPage(cats: List<Cat>, dogs: List<Dog>, csrf: String, flas
         }
     }
 
-private fun photoCount(photoUrls: List<String>) = if (photoUrls.isEmpty()) "без фото" else "фото: ${photoUrls.size}"
+internal fun photoCount(photoUrls: List<String>) = if (photoUrls.isEmpty()) "без фото" else "фото: ${photoUrls.size}"
 
 private const val DATABASE_LIMIT_BYTES = 1024L * 1024 * 1024
 
@@ -288,7 +289,7 @@ internal fun FlowContent.storageNote(photoBytes: Long) {
 }
 
 // How the page will look on the site, whatever the status: a draft has no address of its own there.
-private fun FlowContent.previewLinks(base: String) {
+internal fun FlowContent.previewLinks(base: String) {
     p(classes = "admin-row-links") {
         +"Как на сайте: "
         AppLocale.entries.forEachIndexed { index, locale ->
@@ -353,21 +354,21 @@ private fun fieldLabel(field: String): String {
 }
 
 // What is wrong, with a link to each field: the form is long, and a red field can be far below.
-private fun FlowContent.errorSummary(errors: Map<String, String>) {
+internal fun FlowContent.errorSummary(errors: Map<String, String>, labelFor: (String) -> String = ::fieldLabel) {
     if (errors.isEmpty()) return
     div(classes = "admin-alert") {
         attributes["role"] = "alert"
         p { +"Не сохранено. Проверьте поля:" }
         ul {
             errors.forEach { (field, message) ->
-                li { a(href = "#f-$field") { +"${fieldLabel(field)}: $message" } }
+                li { a(href = "#f-$field") { +"${labelFor(field)}: $message" } }
             }
         }
     }
 }
 
 // One text in three languages, one row per language.
-private fun FlowContent.localizedField(
+internal fun FlowContent.localizedField(
     legend: String,
     base: String,
     values: Map<String, String>,
@@ -375,7 +376,9 @@ private fun FlowContent.localizedField(
     multiline: Boolean,
     required: Boolean = false,
     hint: String? = null,
-    rows: Int = 3
+    rows: Int = 3,
+    // A class for the text boxes, for a long text that wants a fixed-width font.
+    boxClass: String? = null
 ) {
     fieldSet(classes = "field-group") {
         legend { +legend }
@@ -394,7 +397,7 @@ private fun FlowContent.localizedField(
                     if (required && language == "ru") span(classes = "required") { +" (обязательно)" }
                 }
                 if (multiline) {
-                    textArea(rows = rows.toString()) {
+                    textArea(rows = rows.toString(), classes = boxClass) {
                         this.id = "f-$name"
                         this.name = name
                         markInvalid(this, errors, name)
@@ -416,7 +419,7 @@ private fun FlowContent.localizedField(
     }
 }
 
-private fun FlowContent.selectField(
+internal fun FlowContent.selectField(
     label: String,
     name: String,
     options: List<Pair<String, String>>,
@@ -445,27 +448,29 @@ private fun FlowContent.selectField(
     }
 }
 
-private val STATUS_OPTIONS = listOf(
+internal val STATUS_OPTIONS = listOf(
     "false" to "Черновик: виден только в админке",
     "true" to "Опубликовано: видно на сайте"
 )
 
-private fun <T> FlowContent.formFrame(
+internal fun <T> FlowContent.formFrame(
     page: FormPage<T>,
     action: String,
     deleteHref: String?,
     previewBase: String?,
+    backHref: String = "/admin",
+    labelFor: (String) -> String = ::fieldLabel,
     content: FlowContent.() -> Unit
 ) {
     flash(page.flashCode)
-    errorSummary(page.errors)
+    errorSummary(page.errors, labelFor)
     form(action = action, method = FormMethod.post, classes = "admin-form") {
         csrfField(page.csrf)
         selectField("Статус", "published", STATUS_OPTIONS, page.values, page.errors)
         content()
         div(classes = "form-actions") {
             button(type = ButtonType.submit, classes = "button") { +"Сохранить" }
-            a(href = "/admin") { +"К списку" }
+            a(href = backHref) { +"К списку" }
         }
     }
     if (previewBase != null) {
@@ -477,7 +482,7 @@ private fun <T> FlowContent.formFrame(
 }
 
 // Photos are changed on a page of their own (it reloads at every step, and the form's unsaved text would be lost).
-private fun FlowContent.photosSummary(kindPath: String, id: Int?, photoUrls: List<String>, name: String) {
+internal fun FlowContent.photosSummary(kindPath: String, id: Int?, photoUrls: List<String>, name: String) {
     div(classes = "field") {
         span(classes = "field-label") { +"Фотографии" }
         if (id == null) {

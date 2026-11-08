@@ -581,6 +581,30 @@ Page texts and photos ("Страницы сайта" in the menu; use a test edi
 - A link preview (`og:image` in the page source) of `/ru/cats` uses the current home photo.
 - HTML typed into a text (`<b>`) shows as text on the site, not as markup.
 
+Sections ("Разделы" in the menu; make a test section and delete it at the end):
+
+- "Создать раздел" shows three presets. "Полезные статьи" opens a form that is already filled in; "Создать раздел"
+  makes it, the settings page lists two fields and four tags. An address of a page of the site (`cats`) and an address
+  already taken are refused with everything typed still in the form.
+- A section with no published entry is not in the site's menu and `/ru/articles` is a 404. Add an entry: it starts as
+  a draft, "Как на сайте" shows it under the banner in each language; the list marks it "Черновик". Publish it: the
+  menu of every page has the section after "Как помочь" and the header is two rows; the card is on `/ru/articles`.
+- Fill an article in Russian only: it is on `/ru/articles`, not on `/en/articles` (404), the English menu has no such
+  section if it has nothing else, and the language links of the article lead to the home page. Add an English title
+  and it appears there.
+- An entry with tags: the page shows them under the title and each leads to the list narrowed to it; the list shows a
+  row of tag links (only the tags in use) with the current one marked. Taking a tag off ("Изменить метки", clear its row)
+  takes it off the entries.
+- Text with `## heading`, a `- list`, `**bold**` and a `[link](https://example.com)` shows as such; `[x](javascript:alert(1))`
+  is refused in the form. Photos: add two, the first is the cover on the card and the gallery works as the cat's.
+- The settings page: add a field of each kind (a choice needs two options), move one up and down, change a label (the
+  type cannot be changed), delete one (asked first). The form of an entry follows the order of the fields.
+- "Архив визитов": add a held trip with a photo and a cancelled one; `/ru/archive` lists rows with the date and the
+  status, newest first; the cancelled trip is as visible as the held one.
+- Delete an entry (its photos go, except one another entry also uses) and delete the test section (asked first; its
+  entries go with it). The backup has `sections.json`, `section-items.json` and the entries' photos `item-...`.
+- A phone (360 px): the two-row header wraps the menu, no sideways scrolling on a list or an entry page.
+
 ## Automated tests
 
 Run automated tests after changing repositories, services, routes, views, models, or Gradle dependencies.

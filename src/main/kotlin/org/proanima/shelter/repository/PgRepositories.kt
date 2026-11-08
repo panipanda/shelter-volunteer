@@ -4,6 +4,8 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.model.Dog
+import org.proanima.shelter.model.Section
+import org.proanima.shelter.model.SectionItem
 import org.slf4j.LoggerFactory
 import java.sql.SQLException
 import java.time.Clock
@@ -172,4 +174,32 @@ class PgDogRepository(
     override fun save(dog: Dog): Dog = documents.save(dog)
 
     override fun delete(id: Int): Boolean = documents.delete(id)
+}
+
+// Two tables of documents, like the cats and the dogs: the sections, and the entries of all of them. An entry holds
+// the id of its section.
+class PgSectionRepository(
+    private val dataSource: DataSource,
+    clock: Clock = Clock.systemUTC(),
+    cacheTtl: Duration = DEFAULT_CACHE_TTL
+) : MutableSectionRepository {
+
+    private val sections = PgDocuments(dataSource, "sections", Section.serializer(), Section::id, { section, id -> section.copy(id = id) }, clock, cacheTtl)
+    private val items = PgDocuments(dataSource, "section_items", SectionItem.serializer(), SectionItem::id, { item, id -> item.copy(id = id) }, clock, cacheTtl)
+
+    override fun findSections(): List<Section> = sections.findAll().sortedWith(sectionOrder)
+
+    override fun findItems(): List<SectionItem> = items.findAll()
+
+    override fun saveSection(section: Section): Section = sections.save(section)
+
+    // The entries go first: a section that is gone must not leave entries that no page can reach.
+    override fun deleteSection(id: Int): Boolean {
+        items.findAll().filter { it.sectionId == id }.forEach { items.delete(it.id) }
+        return sections.delete(id)
+    }
+
+    override fun saveItem(item: SectionItem): SectionItem = items.save(item)
+
+    override fun deleteItem(id: Int): Boolean = items.delete(id)
 }

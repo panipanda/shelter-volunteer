@@ -27,22 +27,30 @@ import org.proanima.shelter.admin.adminRoutes
 import org.proanima.shelter.admin.installAdminSessions
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.repository.EditableGuideRepository
+import org.proanima.shelter.repository.InMemorySectionRepository
 import org.proanima.shelter.repository.InMemorySiteContentRepository
 import org.proanima.shelter.repository.JsonCatRepository
 import org.proanima.shelter.repository.JsonDogRepository
 import org.proanima.shelter.repository.JsonVisitOverridesRepository
 import org.proanima.shelter.repository.MarkdownGuideRepository
+import org.proanima.shelter.repository.NoSections
 import org.proanima.shelter.repository.NoSiteContent
 import org.proanima.shelter.repository.PgCatRepository
 import org.proanima.shelter.repository.PgDogRepository
 import org.proanima.shelter.repository.PgPhotoStore
+import org.proanima.shelter.repository.PgSectionRepository
 import org.proanima.shelter.repository.PgSiteContentRepository
 import org.proanima.shelter.repository.PhotoStore
+import org.proanima.shelter.repository.SECTIONS_FILE_NAME
+import org.proanima.shelter.repository.SECTION_ITEMS_FILE_NAME
 import org.proanima.shelter.repository.SITE_CONTENT_FILE_NAME
+import org.proanima.shelter.repository.SectionRepository
 import org.proanima.shelter.repository.SiteContentRepository
 import org.proanima.shelter.repository.createDataSource
 import org.proanima.shelter.repository.createSchema
 import org.proanima.shelter.repository.loadSeedData
+import org.proanima.shelter.repository.readSectionItemsFile
+import org.proanima.shelter.repository.readSectionsFile
 import org.proanima.shelter.repository.readSiteContentFile
 import org.proanima.shelter.repository.parseDatabaseUrl
 import org.proanima.shelter.repository.seedIfNeeded
@@ -52,14 +60,17 @@ import org.proanima.shelter.routes.dogRoutes
 import org.proanima.shelter.routes.healthRoutes
 import org.proanima.shelter.routes.helpRoutes
 import org.proanima.shelter.routes.imageRoutes
+import org.proanima.shelter.routes.sectionRoutes
 import org.proanima.shelter.routes.visitRoutes
 import org.proanima.shelter.routes.guideRoutes
 import org.proanima.shelter.routes.homeRoutes
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.service.DogService
 import org.proanima.shelter.service.GuideService
+import org.proanima.shelter.service.SectionService
 import org.proanima.shelter.service.VisitOverrides
 import org.proanima.shelter.service.validatePets
+import org.proanima.shelter.views.SectionMenuKey
 import java.io.File
 import java.time.Clock
 import java.time.ZoneId
@@ -102,12 +113,20 @@ internal fun Application.moduleWithFiles() {
     // panel without a database, so here the file is only read.
     val siteContent = InMemorySiteContentRepository(readSiteContentFile(File("data/$SITE_CONTENT_FILE_NAME")))
 
+    // Sections made in the admin panel and put back from a backup (data/sections.json, data/section-items.json); read
+    // only here, like the page texts.
+    val sections = InMemorySectionRepository(
+        readSectionsFile(File("data/$SECTIONS_FILE_NAME")),
+        readSectionItemsFile(File("data/$SECTION_ITEMS_FILE_NAME"))
+    )
+
     configureRoutes(
         catService = CatService(catRepository),
         guideService = GuideService(EditableGuideRepository(MarkdownGuideRepository(), siteContent)),
         dogService = DogService(dogRepository),
         visitOverrides = JsonVisitOverridesRepository().load(),
-        siteContent = siteContent
+        siteContent = siteContent,
+        sections = sections
     )
 }
 
@@ -119,7 +138,10 @@ internal fun Application.moduleWithDatabase(databaseUrl: String) {
     val clock = Clock.systemUTC()
     val seeded = seedIfNeeded(dataSource, clock) {
         // The first start copies data/ into the database, so it must be sound; after that the database is the truth.
-        loadSeedData(File("data/cats.json"), File("data/dogs.json"), IMAGES_DIR, File("data/$SITE_CONTENT_FILE_NAME")).also { seed ->
+        loadSeedData(
+            File("data/cats.json"), File("data/dogs.json"), IMAGES_DIR,
+            File("data/$SITE_CONTENT_FILE_NAME"), File("data/$SECTIONS_FILE_NAME"), File("data/$SECTION_ITEMS_FILE_NAME")
+        ).also { seed ->
             val photoNames = seed.photos.map { it.name }.toSet()
             failOnProblems(validatePets(seed.cats, seed.dogs, IMAGES_DIR.path) { it in photoNames })
         }
@@ -142,10 +164,11 @@ internal fun Application.moduleWithDatabase(databaseUrl: String) {
     // come with the code wherever nothing was edited.
     val siteContent = PgSiteContentRepository(dataSource, clock)
     val shippedGuide = MarkdownGuideRepository()
+    val sections = PgSectionRepository(dataSource, clock)
 
     // The admin panel needs ADMIN_PASSWORD and SESSION_SECRET; without them the site runs and /admin does not exist.
     val admin = adminConfigFromEnv()?.let {
-        AdminSetup(it, catRepository, dogRepository, photoStore, clock, content = siteContent, shippedGuide = shippedGuide)
+        AdminSetup(it, catRepository, dogRepository, photoStore, clock, content = siteContent, shippedGuide = shippedGuide, sections = sections)
     }
     if (admin == null) {
         environment.log.warn("ADMIN_PASSWORD and SESSION_SECRET are not set: the admin panel is off")
@@ -158,7 +181,8 @@ internal fun Application.moduleWithDatabase(databaseUrl: String) {
         visitOverrides = JsonVisitOverridesRepository().load(),
         photoStore = photoStore,
         admin = admin,
-        siteContent = siteContent
+        siteContent = siteContent,
+        sections = sections
     )
 }
 
@@ -177,8 +201,13 @@ fun Application.configureRoutes(
     photoStore: PhotoStore? = null,
     admin: AdminSetup? = null,
     // The edited texts of the pages. With an admin panel they are the ones it edits.
-    siteContent: SiteContentRepository = admin?.content ?: NoSiteContent
+    siteContent: SiteContentRepository = admin?.content ?: NoSiteContent,
+    // The sections made in the admin panel. With an admin panel they are the ones it edits.
+    sections: SectionRepository = admin?.sections ?: NoSections
 ) {
+    val sectionService = SectionService(sections)
+    // The pages ask this for the entries of the menu that the sections add (see SiteMenu).
+    attributes.put(SectionMenuKey, sectionService::menu)
     configureErrorPages()
     if (admin != null) {
         installAdminSessions(admin.config)
@@ -236,6 +265,7 @@ fun Application.configureRoutes(
                 visitRoutes(locale, clock, visitOverrides, siteContent)
                 guideRoutes(guideService, locale, siteContent)
                 helpRoutes(locale, siteContent)
+                sectionRoutes(sectionService, locale, siteContent)
             }
         }
     }

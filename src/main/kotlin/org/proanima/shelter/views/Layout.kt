@@ -81,7 +81,8 @@ private fun HEAD.pageMetadata(
     description: String?,
     ogImage: String?,
     defaultImage: String,
-    indexable: Boolean
+    indexable: Boolean,
+    alternates: List<AppLocale>
 ) {
     title { +fullTitle }
     if (description != null) {
@@ -97,13 +98,15 @@ private fun HEAD.pageMetadata(
     val image = (ogImage?.takeUnless { it.endsWith(".svg") } ?: defaultImage).let { "$PUBLIC_BASE_URL$it" }
 
     link(rel = "canonical", href = canonical)
-    AppLocale.entries.forEach { alternate ->
+    alternates.forEach { alternate ->
         link(rel = "alternate", href = "$PUBLIC_BASE_URL/${alternate.code}$pathSuffix") {
             attributes["hreflang"] = alternate.code
         }
     }
-    link(rel = "alternate", href = "$PUBLIC_BASE_URL/${AppLocale.default.code}$pathSuffix") {
-        attributes["hreflang"] = "x-default"
+    if (AppLocale.default in alternates) {
+        link(rel = "alternate", href = "$PUBLIC_BASE_URL/${AppLocale.default.code}$pathSuffix") {
+            attributes["hreflang"] = "x-default"
+        }
     }
 
     listOfNotNull(
@@ -159,6 +162,10 @@ fun HTML.pageLayout(
     // The texts of the site with the edits made in the admin panel; a page that does not pass them shows the
     // texts that come with the code.
     messages: ResourceBundle = messagesFor(locale),
+    // The languages this page exists in, and where the link to each language goes. By default every language, at the
+    // same address; an entry of a section written in one language only says so here.
+    alternates: List<AppLocale> = AppLocale.entries,
+    localeHref: ((AppLocale) -> String)? = null,
     content: MAIN.() -> Unit
 ) {
     // The brand goes after the page name, so a row of open tabs says where each one is from.
@@ -169,7 +176,7 @@ fun HTML.pageLayout(
         meta(charset = "UTF-8")
         meta(name = "viewport", content = "width=device-width, initial-scale=1")
         meta(name = "color-scheme", content = "light dark")
-        pageMetadata(locale, fullTitle, currentPath, description, ogImage, messages.plain(SiteSettings.HERO_PHOTO), indexable && preview == null)
+        pageMetadata(locale, fullTitle, currentPath, description, ogImage, messages.plain(SiteSettings.HERO_PHOTO), indexable && preview == null, alternates)
         link(rel = "icon", href = "/icons/favicon-32.png", type = "image/png") {
             attributes["sizes"] = "32x32"
         }
@@ -198,7 +205,7 @@ fun HTML.pageLayout(
         if (preview != null) {
             previewBanner(preview)
         }
-        navigation(locale, currentPath, preview?.localeHref)
+        navigation(locale, currentPath, preview?.localeHref ?: localeHref)
         main(classes = mainClass) {
             id = "main"
             content()

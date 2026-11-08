@@ -4,9 +4,15 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.model.Dog
+import org.proanima.shelter.model.Section
+import org.proanima.shelter.model.SectionItem
 import org.proanima.shelter.repository.PhotoStore
+import org.proanima.shelter.repository.SECTIONS_FILE_NAME
+import org.proanima.shelter.repository.SECTION_ITEMS_FILE_NAME
 import org.proanima.shelter.repository.SITE_CONTENT_FILE_NAME
 import org.proanima.shelter.repository.isSiteAsset
+import org.proanima.shelter.repository.sectionItemsToJson
+import org.proanima.shelter.repository.sectionsToJson
 import org.proanima.shelter.repository.siteContentToJson
 import org.proanima.shelter.service.SiteContent
 import org.proanima.shelter.service.cardPhotoUrl
@@ -29,7 +35,15 @@ private val exportJson = Json {
 
 private const val IMAGES_PREFIX = "/images/"
 
-class BackupReport(val cats: Int, val dogs: Int, val photos: Int, val missingPhotos: List<String>, val pageTexts: Int = 0)
+class BackupReport(
+    val cats: Int,
+    val dogs: Int,
+    val photos: Int,
+    val missingPhotos: List<String>,
+    val pageTexts: Int = 0,
+    val sections: Int = 0,
+    val sectionItems: Int = 0
+)
 
 // Writes the zip to `out`, one photo at a time: nothing but the photo being copied is held in memory, however
 // many photos there are (the server has a 256 MB heap and the photos can add up to a gigabyte).
@@ -44,12 +58,16 @@ fun writeBackup(
     photoNames: Set<String>,
     photos: PhotoStore,
     today: LocalDate,
-    content: SiteContent = SiteContent.EMPTY
+    content: SiteContent = SiteContent.EMPTY,
+    sections: List<Section> = emptyList(),
+    sectionItems: List<SectionItem> = emptyList()
 ): BackupReport {
     val zip = ZipOutputStream(out)
     zip.putText("cats.json", exportJson.encodeToString(ListSerializer(Cat.serializer()), cats))
     zip.putText("dogs.json", exportJson.encodeToString(ListSerializer(Dog.serializer()), dogs))
     zip.putText(SITE_CONTENT_FILE_NAME, siteContentToJson(content))
+    zip.putText(SECTIONS_FILE_NAME, sectionsToJson(sections))
+    zip.putText(SECTION_ITEMS_FILE_NAME, sectionItemsToJson(sectionItems))
 
     var copied = 0
     zip.setLevel(Deflater.NO_COMPRESSION)
@@ -66,7 +84,7 @@ fun writeBackup(
     // A record that points at a picture the store does not have: the backup is still made, but says so. The
     // photos of the pages are one picture each (no card copy).
     val pagePhotos = content.entries.filterKeys { it.key.startsWith("image.") }.values
-    val wanted = (cats.flatMap { it.photoUrls } + dogs.flatMap { it.photoUrls })
+    val wanted = (cats.flatMap { it.photoUrls } + dogs.flatMap { it.photoUrls } + sectionItems.flatMap { it.photoUrls })
         .flatMap { listOf(it, cardPhotoUrl(it)) }
         .plus(pagePhotos)
         .filter { it.startsWith(IMAGES_PREFIX) }
@@ -75,7 +93,7 @@ fun writeBackup(
         .distinct()
     val missing = wanted.filterNot { it in photoNames }.sorted()
 
-    val report = BackupReport(cats.size, dogs.size, copied, missing, content.entries.size)
+    val report = BackupReport(cats.size, dogs.size, copied, missing, content.entries.size, sections.size, sectionItems.size)
     zip.putText("README.txt", readme(report, today))
     zip.finish()
     zip.flush()
@@ -96,10 +114,13 @@ private fun readme(report: BackupReport, today: LocalDate): String = buildString
     appendLine("  cats.json, dogs.json — кошки и собаки (тексты на трёх языках). Черновики тоже здесь: у них \"published\": false.")
     appendLine("  site-content.json — тексты страниц (главная, гайд, визиты, «Как помочь»), которые меняли в админке: только изменённые,")
     appendLine("    остальные такие, как в коде сайта. Гайд, если его правили, лежит там целиком.")
-    appendLine("  images/ — фото кошек и собак (оригинал и уменьшенная копия для карточки, имя с -card) и фото страниц,")
+    appendLine("  sections.json, section-items.json — разделы сайта (статьи, архив визитов и другие): их настройки, поля, метки и записи")
+    appendLine("    на трёх языках. Черновики тоже здесь: у них \"published\": false.")
+    appendLine("  images/ — фото кошек и собак и записей разделов (оригинал и уменьшенная копия для карточки, имя с -card) и фото страниц,")
     appendLine("    которые загружали в админке (имена page-...).")
     appendLine()
     appendLine("Кошек: ${report.cats}. Собак: ${report.dogs}. Изменённых текстов страниц: ${report.pageTexts}. Файлов в images/: ${report.photos}.")
+    appendLine("Разделов: ${report.sections}, записей в них: ${report.sectionItems}.")
     if (report.missingPhotos.isNotEmpty()) {
         appendLine()
         appendLine("ВНИМАНИЕ: записи ссылаются на эти файлы, но в базе их не нашлось, в копию они не попали:")
@@ -109,7 +130,8 @@ private fun readme(report: BackupReport, today: LocalDate): String = buildString
     appendLine("Исходные фото страниц и картинки-заглушки (home-*, default-*) в копию не входят: они лежат в репозитории сайта.")
     appendLine()
     appendLine("Как восстановить:")
-    appendLine("  Положите cats.json, dogs.json и site-content.json в папку data/ репозитория сайта, а содержимое images/ — в data/images/.")
+    appendLine("  Положите все json-файлы (cats, dogs, site-content, sections, section-items) в папку data/ репозитория сайта,")
+    appendLine("  а содержимое images/ — в data/images/.")
     appendLine("  Сайт без настройки DATABASE_URL работает прямо с этих файлов. А если база пустая (новая), при первом запуске")
     appendLine("  сайт сам копирует эти файлы в неё.")
 }

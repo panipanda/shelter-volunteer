@@ -2,6 +2,11 @@ package org.proanima.shelter.repository
 
 import com.zaxxer.hikari.HikariDataSource
 import org.junit.jupiter.api.Assumptions.assumeTrue
+import org.proanima.shelter.model.FieldType
+import org.proanima.shelter.model.LocalizedText
+import org.proanima.shelter.model.Section
+import org.proanima.shelter.model.SectionField
+import org.proanima.shelter.model.SectionItem
 import org.proanima.shelter.service.ContentKey
 import org.proanima.shelter.service.validatePets
 import java.io.File
@@ -98,4 +103,28 @@ private fun runChecks(dataSource: HikariDataSource) {
     assertEquals("New_Nata", content.load().plain("contact.nata.telegram"))
     content.update(mapOf(headline to null, ContentKey("guide.markdown", "ru") to null))
     assertEquals(mapOf(ContentKey("contact.nata.telegram") to "New_Nata"), content.load().entries)
+
+    checkSections(dataSource, clock)
+}
+
+// The sections made in the admin panel: two tables of documents, read back as written (Cyrillic and Serbian
+// letters, a long text), the entries going with their section, and a backup's numbers carried on from.
+private fun checkSections(dataSource: HikariDataSource, clock: TestClock) {
+    val sections = PgSectionRepository(dataSource, clock)
+    val section = sections.saveSection(
+        Section(
+            id = 0, slug = "articles", title = LocalizedText("Статьи", "Articles", "Članci"), position = 1, useDate = true,
+            fields = listOf(SectionField("f1", FieldType.MARKDOWN, LocalizedText("Текст")))
+        )
+    )
+    val long = "## Заголовок\n\n" + "Строка с čćžšđ.\n".repeat(2_000)
+    val item = sections.saveItem(
+        SectionItem(id = 0, sectionId = section.id, title = LocalizedText("Запись"), texts = mapOf("f1" to LocalizedText(long)), published = true)
+    )
+    assertEquals(listOf(section), sections.findSections())
+    assertEquals(long, sections.findItems().single().texts.getValue("f1").ru)
+    assertEquals(item, sections.findItems().single())
+    assertTrue(sections.deleteSection(section.id))
+    assertEquals(emptyList(), sections.findItems())
+    assertEquals(emptyList(), sections.findSections())
 }

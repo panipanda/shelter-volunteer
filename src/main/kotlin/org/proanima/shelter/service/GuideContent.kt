@@ -9,8 +9,9 @@ sealed interface GuideBlock {
 
 // A minimal markdown parser for exactly what volunteer-guide.md actually uses:
 // headings #, ## and ### (optionally with an anchor: "## Title {#id}"), paragraphs separated by a blank line,
-// lists via "- ", a callout via "> ". Inline [text](url) links stay as is in the text and are turned into
-// <a> by the view. Other markdown (bold text, nested lists) is not supported — not needed, the guide is simple.
+// lists via "- ", a callout via "> ". Inline [text](url) links and **bold** stay as is in the text and are turned
+// into <a> and <strong> by the view. Other markdown (nested lists, italics) is not supported — not needed.
+// The entries of the sections use the same dialect.
 fun parseGuideMarkdown(markdown: String): List<GuideBlock> {
     val blocks = mutableListOf<GuideBlock>()
     val paragraphLines = mutableListOf<String>()

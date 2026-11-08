@@ -114,7 +114,7 @@ class AdminExportTest : AdminTestBase() {
 
         val files = response.entries()
         assertEquals(
-            setOf("cats.json", "dogs.json", "site-content.json", "README.txt", "images/cat-1-aaaa1111.jpg", "images/cat-1-aaaa1111-card.jpg"),
+            setOf("cats.json", "dogs.json", "site-content.json", "sections.json", "section-items.json", "README.txt", "images/cat-1-aaaa1111.jpg", "images/cat-1-aaaa1111-card.jpg"),
             files.keys
         )
         assertContentEquals(photos.get("cat-1-aaaa1111.jpg")!!.bytes, files.getValue("images/cat-1-aaaa1111.jpg"))
@@ -205,7 +205,7 @@ class AdminExportTest : AdminTestBase() {
 
         val files = browser.post("/admin/export", emptyMap(), csrf).entries()
 
-        assertEquals(setOf("cats.json", "dogs.json", "site-content.json", "README.txt"), files.keys)
+        assertEquals(setOf("cats.json", "dogs.json", "site-content.json", "sections.json", "section-items.json", "README.txt"), files.keys)
         assertEquals("[]", files.getValue("cats.json").decodeToString().trim())
         assertContains(files.getValue("site-content.json").decodeToString(), "\"texts\": []")
         assertContains(files.getValue("README.txt").decodeToString(), "Кошек: 0. Собак: 0. Изменённых текстов страниц: 0. Файлов в images/: 0.")
@@ -269,7 +269,7 @@ class AdminExportTest : AdminTestBase() {
 
         val files = browser.post("/admin/export", emptyMap(), csrf).entries()
 
-        assertEquals(setOf("cats.json", "dogs.json", "site-content.json", "README.txt", "images/$heroName.jpg"), files.keys)
+        assertEquals(setOf("cats.json", "dogs.json", "site-content.json", "sections.json", "section-items.json", "README.txt", "images/$heroName.jpg"), files.keys)
         assertContentEquals(photos.get("$heroName.jpg")!!.bytes, files.getValue("images/$heroName.jpg"))
         val readme = files.getValue("README.txt").decodeToString()
         assertContains(readme, "Изменённых текстов страниц: 5.")

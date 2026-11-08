@@ -200,7 +200,13 @@ Dark: accent on surface 6.3, muted on surface 5.9. Re-check when changing any va
   A contact in a step ("write to the coordinator: Name (@handle), Name (@handle)") is part of the sentence: it follows
   the colon in the same line and wraps with the text, never in a row of its own under it. A name stays together with its
   handle (`.nowrap`), so on a narrow screen a link that does not fit moves down whole, never split in two.
-- **Nav**: ink text, no background on the current item, current item has a 2 px accent underline.
+- **Nav**: ink text, no background on the current item, current item has a 2 px accent underline. When sections made
+  in the admin panel are in the menu (after "Как помочь"), the header is two rows at every width: wordmark with the
+  language and theme controls, then the menu (`.site-header.has-sections`). Seven or more entries do not fit one row.
+- **Sections** (made in the admin panel): the list uses the cat cards (`CARDS`, a card without a photo is the title
+  and its lines) or plain rows (`LIST`: `.entry-list`, a serif title, a muted date line, the result); the page of an
+  entry is the cat page (gallery left, text right; the text alone when there are no photos); tags are 44 px outlined
+  links (`.tag`, the filter above the list) or smaller ones under the title; the current filter has `aria-current`.
 - **Focus**: `outline: 2px solid var(--color-accent); outline-offset: 2px` on every interactive element. Never removed.
 - **Status** (cat): shape carries the meaning, so no extra colours are needed. It is shown only where it tells the
   reader something the context does not. Lists are grouped under a heading by stage ("Ждут свою семью", "Нашли дом"),

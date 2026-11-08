@@ -3,6 +3,8 @@ package org.proanima.shelter.repository
 import kotlinx.serialization.KSerializer
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.model.Dog
+import org.proanima.shelter.model.Section
+import org.proanima.shelter.model.SectionItem
 import org.proanima.shelter.service.ContentKey
 import java.io.File
 import java.sql.Connection
@@ -20,7 +22,9 @@ class SeedData(
     val cats: List<Cat>,
     val dogs: List<Dog>,
     val photos: List<SeedPhoto>,
-    val siteContent: Map<ContentKey, String> = emptyMap()
+    val siteContent: Map<ContentKey, String> = emptyMap(),
+    val sections: List<Section> = emptyList(),
+    val sectionItems: List<SectionItem> = emptyList()
 )
 
 fun contentTypeFor(fileName: String): String? = when (fileName.substringAfterLast('.', "").lowercase()) {
@@ -31,11 +35,20 @@ fun contentTypeFor(fileName: String): String? = when (fileName.substringAfterLas
     else -> null
 }
 
-fun loadSeedData(catsFile: File, dogsFile: File, imagesDir: File, siteContentFile: File? = null): SeedData = SeedData(
+fun loadSeedData(
+    catsFile: File,
+    dogsFile: File,
+    imagesDir: File,
+    siteContentFile: File? = null,
+    sectionsFile: File? = null,
+    sectionItemsFile: File? = null
+): SeedData = SeedData(
     cats = JsonCatRepository(catsFile.path).findAll(),
     dogs = JsonDogRepository(dogsFile.path).findAll(),
     photos = imageFiles(imagesDir).filterNot { isSiteAsset(it.name) }.map(::toSeedPhoto),
-    siteContent = siteContentFile?.let(::readSiteContentFile).orEmpty()
+    siteContent = siteContentFile?.let(::readSiteContentFile).orEmpty(),
+    sections = sectionsFile?.let(::readSectionsFile).orEmpty(),
+    sectionItems = sectionItemsFile?.let(::readSectionItemsFile).orEmpty()
 )
 
 private fun imageFiles(imagesDir: File): List<File> =
@@ -58,6 +71,8 @@ fun seedIfNeeded(dataSource: DataSource, clock: Clock, load: () -> SeedData): Bo
         insertDocuments(connection, "cats", Cat.serializer(), data.cats, Cat::id, now)
         insertDocuments(connection, "dogs", Dog.serializer(), data.dogs, Dog::id, now)
         insertSiteContent(connection, data.siteContent, now)
+        insertDocuments(connection, "sections", Section.serializer(), data.sections, Section::id, now)
+        insertDocuments(connection, "section_items", SectionItem.serializer(), data.sectionItems, SectionItem::id, now)
         connection.prepareStatement("INSERT INTO app_meta (meta_key, meta_value) VALUES (?, ?)").use { statement ->
             statement.setString(1, SEEDED_KEY)
             statement.setString(2, now.toString())

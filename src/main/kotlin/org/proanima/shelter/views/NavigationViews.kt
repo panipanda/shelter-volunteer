@@ -18,7 +18,10 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String, localeHref: (
     val prefix = "/${locale.code}"
     val messages = messagesFor(locale)
 
-    header(classes = "site-header") {
+    // Seven or more entries do not fit one row beside the wordmark: with sections in the menu the header is two rows
+    // (the wordmark and the controls, then the menu) at every width, as it already is on a phone.
+    val sectionEntries = SiteMenu.entries()
+    header(classes = if (sectionEntries.isEmpty()) "site-header" else "site-header has-sections") {
         div(classes = "wrap site-header-row") {
             // The wordmark is live text. The logo mark is not in the header yet; it will go before the text.
             a(href = prefix, classes = "logo") { +"Pro Anima" }
@@ -31,6 +34,8 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String, localeHref: (
                 navLink("$prefix/guide", messages.t("nav.guide.short"), currentPath)
                 navLink("$prefix/visits", messages.t("nav.visits"), currentPath, matchChildren = true)
                 navLink("$prefix/help", messages.t("nav.help"), currentPath)
+                // The sections made in the admin panel come after the fixed pages.
+                sectionEntries.forEach { navLink(it.href, it.label, currentPath, matchChildren = true) }
             }
 
             localeSwitcher(locale, localeHref ?: { "/${it.code}${currentPath.removePrefix("/${locale.code}")}" }, messages.t("nav.language"))

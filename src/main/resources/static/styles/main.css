@@ -344,6 +344,28 @@ a.logo {
     font-size: 15px;
 }
 
+/* With sections in the menu there are too many entries for one row beside the wordmark: the header is two rows at
+   every width (below 761 px the rules of the phone layout further down already do this). The menu text is pulled
+   back by its own padding so it lines up with the page text. */
+@media (min-width: 761px) {
+    .site-header.has-sections .site-header-row {
+        flex-wrap: wrap;
+        min-height: 0;
+        padding-top: 8px;
+    }
+
+    .site-header.has-sections .lang-switch {
+        margin-inline-start: auto;
+    }
+
+    .site-header.has-sections .main-nav {
+        order: 3;
+        flex-wrap: wrap;
+        width: calc(100% + 20px);
+        margin: 0 -10px;
+    }
+}
+
 .lang-switch a,
 .lang-switch-current {
     display: flex;
@@ -579,6 +601,101 @@ main.page > section > h3:not(:first-child) {
 
 .cat-list + h2 {
     margin-top: 40px;
+}
+
+/* Sections made in the admin panel: the tag links, the rows of a list, the line under an entry's title.
+   The cards and the gallery of the cats are reused as they are. */
+
+.tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 24px;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 14px;
+    border: 1px solid var(--color-line);
+    border-radius: 4px;
+    color: var(--color-ink);
+    font-size: 15px;
+    line-height: 1.2;
+    text-decoration: none;
+}
+
+.tag:hover {
+    border-color: var(--color-ink);
+}
+
+.tag[aria-current="true"] {
+    border-color: var(--color-ink);
+    background: var(--color-surface);
+    font-weight: 600;
+}
+
+.entry-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin: 0 0 24px;
+}
+
+.entry-head .tag {
+    min-height: 36px;
+    padding-inline: 10px;
+    font-size: 14px;
+}
+
+.entry-meta {
+    color: var(--color-muted);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+main.page .entry-list {
+    margin-block: 20px;
+    padding: 0;
+    border-top: 1px solid var(--color-line);
+    list-style: none;
+}
+
+main.page .entry-row {
+    margin: 0;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--color-line);
+}
+
+.entry-title {
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    font-optical-sizing: auto;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
+    text-decoration: none;
+}
+
+.entry-title:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+
+main.page .entry-row .entry-meta {
+    margin: 4px 0 0;
+}
+
+main.page .entry-text {
+    margin: 8px 0 0;
+}
+
+/* An entry without photos is the text alone; its first paragraph sits right under the heading. */
+.entry-body > :first-child {
+    margin-top: 0;
 }
 
 /* Status: the marker shape carries the meaning and the text always comes with it */

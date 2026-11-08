@@ -284,6 +284,7 @@
 
 .field input[type="text"],
 .field input[type="number"],
+.field input[type="date"],
 .field input[type="password"],
 .field select,
 .field textarea {
@@ -534,4 +535,66 @@ input[type="file"] {
 
 .admin-form + h2 {
     margin-top: 2.5rem;
+}
+
+/* A long text of an entry: shorter than the guide's field, there are three of them in a row. */
+.field textarea.article-field {
+    min-height: 200px;
+}
+
+/* Sections: rows of options (tags, choices) in three languages, and the buttons under a field in the list. */
+
+.option-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 10px 0;
+    border-top: 1px solid var(--color-line);
+}
+
+.option-row .lang-field {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    margin: 0;
+}
+
+.option-row .lang-field input[type="text"] {
+    flex: 1 1 10rem;
+    width: auto;
+    min-width: 0;
+}
+
+.option-row .lang-tag {
+    margin: 0;
+}
+
+.option-row .field-error {
+    flex-basis: 100%;
+}
+
+@media (min-width: 761px) {
+    .option-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0 12px;
+    }
+}
+
+.row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 20px;
+    margin-top: 2px;
+}
+
+.row-actions form {
+    margin: 0;
+}
+
+.row-actions .link-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
 }

@@ -136,6 +136,21 @@ change (the dates and times of trips, which are still `data/visit-overrides.json
 - A page photo is one resized JPEG (long side at most 1600 px) with the same checks as the cat photos; the new
   one is stored first, the page points at it, and the old uploaded one is deleted. The committed `home-*.jpg` stay.
 
+**Sections ("Разделы").** The third item of the menu builds new parts of the site. "Создать раздел" offers presets
+(useful articles, the visit archive, an empty section); a section has its settings (titles, address, how the list
+looks, dates, photos, place in the menu), its **fields** (one line, a few sentences, a long text with formatting, a
+date, a choice from a list; added, changed, moved and deleted on the settings page) and its **tags**. Its entries are
+added, edited, previewed and deleted like the cats (draft first, photos on a page of their own). A section is in the
+site's menu only when it has a published entry; an entry is shown in a language only if its title is written in that
+language. Nothing needs setting up: the two tables are created at start. Things to know:
+- When the menu has a section, the site's header is two rows at every width (the menu does not fit one row any more).
+- A page of an entry can say `**bold**`, `## headings`, lists and `[links](https://...)`; a link that is not a web
+  address is never made a link. An entry form is allowed up to 900 KB (three long texts in Cyrillic).
+- Changing the address of a section breaks the links already shared. Deleting a section deletes its entries and their
+  photos after a question. The visit archive does not change the trip schedule: "Ближайший визит" still follows
+  `data/visit-overrides.json` and the code.
+- At most six sections and twelve fields per section.
+
 **Security notes.**
 - One session lasts 12 hours. The cookie is signed, `HttpOnly`, `SameSite=Lax`, `Secure` and limited to `/admin`.
   A server restart does not log anyone out (the cookie is self-contained).
@@ -162,8 +177,9 @@ how much of the database's 1 GB the photos take.
 
 **Backup.** The button "Скачать копию (zip)" at the bottom of the list page downloads one archive: `cats.json` and
 `dogs.json` (all three languages, drafts included, marked `"published": false`), `site-content.json` (the edited texts
-of the pages, only what differs from the code), `images/` (every photo, original and card copy, and the page photos
-that were uploaded, `page-...`) and a `README.txt` that says what is inside, how many of each, and names any photo
+of the pages, only what differs from the code), `sections.json` and `section-items.json` (the sections with their
+fields and tags, and all their entries, drafts included), `images/` (every photo, original and card copy, the
+entries' photos `item-...` and the page photos that were uploaded, `page-...`) and a `README.txt` that says what is inside, how many of each, and names any photo
 that a record or a page points at but the database lacks. The layout is the one the site uses without a database, so
 the archive can be unpacked into `data/` (and `data/images/`) of the repository, or the same files can seed a new
 empty database (the page texts are read from `data/site-content.json` in both modes). The site's own pictures

@@ -30,10 +30,12 @@ import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.model.Dog
 import org.proanima.shelter.repository.GuideRepository
+import org.proanima.shelter.repository.InMemorySectionRepository
 import org.proanima.shelter.repository.InMemorySiteContentRepository
 import org.proanima.shelter.repository.MarkdownGuideRepository
 import org.proanima.shelter.repository.MutableCatRepository
 import org.proanima.shelter.repository.MutableDogRepository
+import org.proanima.shelter.repository.MutableSectionRepository
 import org.proanima.shelter.repository.MutableSiteContentRepository
 import org.proanima.shelter.repository.PhotoStore
 import org.proanima.shelter.repository.isSiteAsset
@@ -73,7 +75,9 @@ class AdminSetup(
     // The texts and photos of the home, guide, visits and help pages, and the guide that comes with the code (what
     // the guide's form shows until someone edits it).
     val content: MutableSiteContentRepository = InMemorySiteContentRepository(),
-    val shippedGuide: GuideRepository = MarkdownGuideRepository()
+    val shippedGuide: GuideRepository = MarkdownGuideRepository(),
+    // The sections made in the admin panel and their entries.
+    val sections: MutableSectionRepository = InMemorySectionRepository()
 ) {
     // One backup at a time: it reads every photo, and the free plan has a tenth of a CPU.
     internal val exportRunning = AtomicBoolean(false)
@@ -109,7 +113,11 @@ internal class PetKind<T : Any>(
     val validate: (Map<String, String>, T?, List<T>) -> FormResult<T>,
     val formPage: HTML.(FormPage<T>) -> Unit,
     val previewPage: HTML.(T, AppLocale, String, PagePreview) -> Unit,
-    val deleteQuestion: (String) -> String
+    val deleteQuestion: (String) -> String,
+    // The list this kind's records are in: where "to the list" and a deletion lead.
+    val listHref: String = "/admin",
+    // The biggest form this kind's records are saved with.
+    val maxFormBytes: Long = MAX_FORM_BYTES
 )
 
 private fun catKind(admin: AdminSetup) = PetKind<Cat>(
@@ -178,9 +186,12 @@ fun Route.adminRoutes(admin: AdminSetup) {
             admin.withForm(call) { session, _ -> sendBackup(admin, call, session) }
         }
 
-        petRoutes(admin, catKind(admin))
-        petRoutes(admin, dogKind(admin))
+        val cats = catKind(admin)
+        val dogs = dogKind(admin)
+        petRoutes(admin, "/${cats.urlName}") { cats }
+        petRoutes(admin, "/${dogs.urlName}") { dogs }
         pageRoutes(admin)
+        sectionAdminRoutes(admin)
     }
 }
 
@@ -203,16 +214,18 @@ private suspend fun sendBackup(admin: AdminSetup, call: ApplicationCall, session
         val dogs = admin.dogs.findAll()
         val names = admin.photos.names()
         val content = admin.content.load()
+        val sections = admin.sections.findSections()
+        val sectionItems = admin.sections.findItems()
         val today = admin.today()
         call.response.header(
             HttpHeaders.ContentDisposition,
             ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, "proanima-backup-$today.zip").toString()
         )
         call.respondOutputStream(ContentType.Application.Zip) {
-            val report = writeBackup(this, cats, dogs, names, admin.photos, today, content)
+            val report = writeBackup(this, cats, dogs, names, admin.photos, today, content, sections, sectionItems)
             backupLog.info(
-                "Backup sent: {} cats, {} dogs, {} photo files, {} missing",
-                report.cats, report.dogs, report.photos, report.missingPhotos.size
+                "Backup sent: {} cats, {} dogs, {} sections with {} entries, {} photo files, {} missing",
+                report.cats, report.dogs, report.sections, report.sectionItems, report.photos, report.missingPhotos.size
             )
         }
     } finally {
@@ -258,21 +271,24 @@ private fun Route.loginRoutes(admin: AdminSetup) {
     }
 }
 
-private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
-    route("/${kind.urlName}") {
+// path: where the routes hang ("/cats"; for the entries of a section "/sections/{sid}/items"). kindOf says which kind
+// a request is about: one for the cats and the dogs, and for the entries the one made from the section named in the
+// address (null when there is no such section, which is a 404).
+internal fun <T : Any> Route.petRoutes(admin: AdminSetup, path: String, kindOf: (ApplicationCall) -> PetKind<T>?) {
+    route(path) {
         get("/new") {
-            admin.withSession(call) { session ->
+            admin.withKindSession(call, kindOf) { kind, session ->
                 call.respondHtml { kind.formPage(this, FormPage(null, kind.newValues(), emptyMap(), session.csrf)) }
             }
         }
 
         post {
-            admin.withForm(call) { session, values -> savePet(admin, kind, call, session, existing = null, values) }
+            admin.withKindForm(call, kindOf) { kind, session, values -> savePet(admin, kind, call, session, existing = null, values) }
         }
 
         route("/{id}") {
             get {
-                admin.withSession(call) { session ->
+                admin.withKindSession(call, kindOf) { kind, session ->
                     withPet(call, kind) { pet ->
                         val page = FormPage(pet, kind.valuesOf(pet), emptyMap(), session.csrf, call.request.queryParameters["msg"])
                         call.respondHtml { kind.formPage(this, page) }
@@ -281,13 +297,13 @@ private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
             }
 
             post {
-                admin.withForm(call) { session, values ->
+                admin.withKindForm(call, kindOf) { kind, session, values ->
                     withPet(call, kind) { pet -> savePet(admin, kind, call, session, existing = pet, values) }
                 }
             }
 
             get("/delete") {
-                admin.withSession(call) { session ->
+                admin.withKindSession(call, kindOf) { kind, session ->
                     withPet(call, kind) { pet ->
                         call.respondHtml {
                             adminDeleteConfirmPage(
@@ -302,12 +318,12 @@ private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
             }
 
             post("/delete") {
-                admin.withForm(call) { _, _ ->
+                admin.withKindForm(call, kindOf) { kind, _, _ ->
                     withPet(call, kind) { pet ->
                         val photoUrls = kind.photoUrls(pet)
                         kind.delete(kind.id(pet))
                         removeUnusedPhotos(admin, photoUrls)
-                        call.seeOther("/admin?msg=deleted")
+                        call.seeOther("${kind.listHref}?msg=deleted")
                     }
                 }
             }
@@ -316,7 +332,7 @@ private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
             // throw away text typed into the form but not saved yet.
             route("/photos") {
                 get {
-                    admin.withSession(call) { session ->
+                    admin.withKindSession(call, kindOf) { kind, session ->
                         withPet(call, kind) { pet ->
                             call.respondHtml {
                                 adminPhotosPage(photosPage(admin, kind, pet, session, call.request.queryParameters["msg"]))
@@ -326,7 +342,7 @@ private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
                 }
 
                 post {
-                    admin.withSession(call) { session ->
+                    admin.withKindSession(call, kindOf) { kind, session ->
                         withPet(call, kind) { pet -> uploadPhotos(admin, kind, call, session, pet) }
                     }
                 }
@@ -334,7 +350,7 @@ private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
                 // "Delete" next to a photo leads here first; the deletion itself is the "update" action below.
                 // Only a photo of this record can be asked about, so nothing else is ever put on the page.
                 get("/delete") {
-                    admin.withSession(call) { session ->
+                    admin.withKindSession(call, kindOf) { kind, session ->
                         withPet(call, kind) { pet ->
                             val urls = kind.photoUrls(pet)
                             val photo = call.request.queryParameters["photo"]
@@ -360,7 +376,7 @@ private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
                 }
 
                 post("/update") {
-                    admin.withForm(call) { session, values ->
+                    admin.withKindForm(call, kindOf) { kind, session, values ->
                         withPet(call, kind) { pet -> changePhotos(admin, kind, call, session, pet, values) }
                     }
                 }
@@ -369,7 +385,7 @@ private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
             // The page as visitors will see it, in the chosen language, whatever the status: a draft has no
             // address on the site, so this is the only way to look at it.
             get("/preview") {
-                admin.withSession(call) { _ ->
+                admin.withKindSession(call, kindOf) { kind, _ ->
                     withPet(call, kind) { pet ->
                         val locale = AppLocale.entries.firstOrNull { it.code == call.request.queryParameters["lang"] } ?: AppLocale.default
                         val path = "/${locale.code}/${kind.urlName}/${kind.slug(pet)}"
@@ -383,6 +399,36 @@ private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
                     }
                 }
             }
+        }
+    }
+}
+
+// The kind a request is about, found from the request itself. The kind of a cat or a dog never changes; the kind of
+// an entry depends on the section in the address.
+private suspend inline fun <T : Any> AdminSetup.withKindSession(
+    call: ApplicationCall,
+    kindOf: (ApplicationCall) -> PetKind<T>?,
+    block: (PetKind<T>, AdminSession) -> Unit
+) {
+    withSession(call) { session ->
+        val kind = kindOf(call)
+        if (kind == null) call.respond(HttpStatusCode.NotFound) else block(kind, session)
+    }
+}
+
+private suspend inline fun <T : Any> AdminSetup.withKindForm(
+    call: ApplicationCall,
+    kindOf: (ApplicationCall) -> PetKind<T>?,
+    block: (PetKind<T>, AdminSession, Map<String, String>) -> Unit
+) {
+    // The kind is found first because the size of form that is allowed depends on it; a request without a login
+    // is sent to the login page before anything about the address is said.
+    withSession(call) { _ ->
+        val kind = kindOf(call)
+        if (kind == null) {
+            call.respond(HttpStatusCode.NotFound)
+        } else {
+            withForm(call, kind.maxFormBytes) { session, values -> block(kind, session, values) }
         }
     }
 }
@@ -575,10 +621,14 @@ private suspend fun <T : Any> changePhotos(
     call.seeOther("/admin/${kind.urlName}/${kind.id(saved)}/photos?msg=$outcome")
 }
 
-// A photo is deleted with its pet unless another cat or dog still uses it. The pictures of the site's own
-// pages are never touched.
-private fun removeUnusedPhotos(admin: AdminSetup, urls: List<String>) {
-    val stillUsed = (admin.cats.findAll().flatMap { it.photoUrls } + admin.dogs.findAll().flatMap { it.photoUrls }).toSet()
+// A photo is deleted with its record unless another cat, dog or entry of a section still uses it. The pictures of
+// the site's own pages are never touched.
+internal fun removeUnusedPhotos(admin: AdminSetup, urls: List<String>) {
+    val stillUsed = (
+        admin.cats.findAll().flatMap { it.photoUrls } +
+            admin.dogs.findAll().flatMap { it.photoUrls } +
+            admin.sections.findItems().flatMap { it.photoUrls }
+        ).toSet()
     urls.filterNot { it in stillUsed }.forEach { url ->
         val original = url.removePrefix(IMAGES_PREFIX)
         val card = cardPhotoUrl(url).removePrefix(IMAGES_PREFIX)
