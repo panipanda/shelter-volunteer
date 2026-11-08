@@ -3,6 +3,7 @@ package org.proanima.shelter.repository
 import kotlinx.serialization.KSerializer
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.model.Dog
+import org.proanima.shelter.model.MenuTree
 import org.proanima.shelter.model.Section
 import org.proanima.shelter.model.SectionItem
 import org.proanima.shelter.service.ContentKey
@@ -17,14 +18,15 @@ private const val SEEDED_KEY = "seeded_at"
 class SeedPhoto(val name: String, val contentType: String, val bytes: ByteArray)
 
 // What the first start puts into an empty database: the cats, the dogs and their photos, as they are in the
-// repository's data folder, and the edited texts of the pages if a backup brought a file of them.
+// repository's data folder, and the edited texts of the pages, the sections and the menu if a backup brought files of them.
 class SeedData(
     val cats: List<Cat>,
     val dogs: List<Dog>,
     val photos: List<SeedPhoto>,
     val siteContent: Map<ContentKey, String> = emptyMap(),
     val sections: List<Section> = emptyList(),
-    val sectionItems: List<SectionItem> = emptyList()
+    val sectionItems: List<SectionItem> = emptyList(),
+    val menu: MenuTree? = null
 )
 
 fun contentTypeFor(fileName: String): String? = when (fileName.substringAfterLast('.', "").lowercase()) {
@@ -41,14 +43,16 @@ fun loadSeedData(
     imagesDir: File,
     siteContentFile: File? = null,
     sectionsFile: File? = null,
-    sectionItemsFile: File? = null
+    sectionItemsFile: File? = null,
+    menuFile: File? = null
 ): SeedData = SeedData(
     cats = JsonCatRepository(catsFile.path).findAll(),
     dogs = JsonDogRepository(dogsFile.path).findAll(),
     photos = imageFiles(imagesDir).filterNot { isSiteAsset(it.name) }.map(::toSeedPhoto),
     siteContent = siteContentFile?.let(::readSiteContentFile).orEmpty(),
     sections = sectionsFile?.let(::readSectionsFile).orEmpty(),
-    sectionItems = sectionItemsFile?.let(::readSectionItemsFile).orEmpty()
+    sectionItems = sectionItemsFile?.let(::readSectionItemsFile).orEmpty(),
+    menu = menuFile?.let(::readMenuFile)
 )
 
 private fun imageFiles(imagesDir: File): List<File> =
@@ -73,6 +77,7 @@ fun seedIfNeeded(dataSource: DataSource, clock: Clock, load: () -> SeedData): Bo
         insertSiteContent(connection, data.siteContent, now)
         insertDocuments(connection, "sections", Section.serializer(), data.sections, Section::id, now)
         insertDocuments(connection, "section_items", SectionItem.serializer(), data.sectionItems, SectionItem::id, now)
+        data.menu?.let { upsertMenu(connection, documentJson.encodeToString(MenuTree.serializer(), it), now) }
         connection.prepareStatement("INSERT INTO app_meta (meta_key, meta_value) VALUES (?, ?)").use { statement ->
             statement.setString(1, SEEDED_KEY)
             statement.setString(2, now.toString())

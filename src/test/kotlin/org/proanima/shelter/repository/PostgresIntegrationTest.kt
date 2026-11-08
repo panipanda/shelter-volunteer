@@ -4,6 +4,8 @@ import com.zaxxer.hikari.HikariDataSource
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.proanima.shelter.model.FieldType
 import org.proanima.shelter.model.LocalizedText
+import org.proanima.shelter.model.MenuNode
+import org.proanima.shelter.model.MenuTree
 import org.proanima.shelter.model.Section
 import org.proanima.shelter.model.SectionField
 import org.proanima.shelter.model.SectionItem
@@ -105,6 +107,7 @@ private fun runChecks(dataSource: HikariDataSource) {
     assertEquals(mapOf(ContentKey("contact.nata.telegram") to "New_Nata"), content.load().entries)
 
     checkSections(dataSource, clock)
+    checkMenu(dataSource, clock)
 }
 
 // The sections made in the admin panel: two tables of documents, read back as written (Cyrillic and Serbian
@@ -127,4 +130,27 @@ private fun checkSections(dataSource: HikariDataSource, clock: TestClock) {
     assertTrue(sections.deleteSection(section.id))
     assertEquals(emptyList(), sections.findItems())
     assertEquals(emptyList(), sections.findSections())
+}
+
+// The menu tree: one document in one row, saved over and over (update first, insert when there was no row), read back
+// as written with the letters of all three languages.
+private fun checkMenu(dataSource: HikariDataSource, clock: TestClock) {
+    val menu = PgMenuRepository(dataSource, clock)
+    assertNull(menu.load())
+
+    val tree = MenuTree(
+        listOf(
+            MenuNode("group:g1", position = 10, title = LocalizedText("Животные", "Animals", "Životinje")),
+            MenuNode("page:cats", parent = "group:g1", position = 10, hidden = true)
+        ),
+        nextGroupNumber = 2
+    )
+    menu.save(tree)
+    assertEquals(tree, menu.load())
+
+    val changed = tree.copy(nextGroupNumber = 3)
+    menu.save(changed)
+    assertEquals(changed, PgMenuRepository(dataSource, clock).load())
+    val rows = dataSource.connection.use { c -> c.createStatement().use { it.executeQuery("SELECT COUNT(*) FROM site_menu").use { rs -> rs.next(); rs.getInt(1) } } }
+    assertEquals(1, rows)
 }

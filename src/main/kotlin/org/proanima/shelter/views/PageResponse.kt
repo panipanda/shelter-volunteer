@@ -31,7 +31,7 @@ suspend fun ApplicationCall.respondPage(
     status: HttpStatusCode? = null,
     block: HTML.() -> Unit
 ) {
-    val menu = sectionMenu(locale)
+    val menu = siteMenu(locale)
     val page = SiteMenu.showing(menu) {
         buildString {
             append("<!DOCTYPE html>\n")

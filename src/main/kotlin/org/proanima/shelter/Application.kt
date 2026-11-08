@@ -27,17 +27,22 @@ import org.proanima.shelter.admin.adminRoutes
 import org.proanima.shelter.admin.installAdminSessions
 import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.repository.EditableGuideRepository
+import org.proanima.shelter.repository.InMemoryMenuRepository
 import org.proanima.shelter.repository.InMemorySectionRepository
 import org.proanima.shelter.repository.InMemorySiteContentRepository
 import org.proanima.shelter.repository.JsonCatRepository
 import org.proanima.shelter.repository.JsonDogRepository
 import org.proanima.shelter.repository.JsonVisitOverridesRepository
 import org.proanima.shelter.repository.MarkdownGuideRepository
+import org.proanima.shelter.repository.MENU_FILE_NAME
+import org.proanima.shelter.repository.MenuRepository
+import org.proanima.shelter.repository.NoMenu
 import org.proanima.shelter.repository.NoSections
 import org.proanima.shelter.repository.NoSiteContent
 import org.proanima.shelter.repository.PgCatRepository
 import org.proanima.shelter.repository.PgDogRepository
 import org.proanima.shelter.repository.PgPhotoStore
+import org.proanima.shelter.repository.PgMenuRepository
 import org.proanima.shelter.repository.PgSectionRepository
 import org.proanima.shelter.repository.PgSiteContentRepository
 import org.proanima.shelter.repository.PhotoStore
@@ -49,6 +54,7 @@ import org.proanima.shelter.repository.SiteContentRepository
 import org.proanima.shelter.repository.createDataSource
 import org.proanima.shelter.repository.createSchema
 import org.proanima.shelter.repository.loadSeedData
+import org.proanima.shelter.repository.readMenuFile
 import org.proanima.shelter.repository.readSectionItemsFile
 import org.proanima.shelter.repository.readSectionsFile
 import org.proanima.shelter.repository.readSiteContentFile
@@ -67,10 +73,11 @@ import org.proanima.shelter.routes.homeRoutes
 import org.proanima.shelter.service.CatService
 import org.proanima.shelter.service.DogService
 import org.proanima.shelter.service.GuideService
+import org.proanima.shelter.service.MenuService
 import org.proanima.shelter.service.SectionService
 import org.proanima.shelter.service.VisitOverrides
 import org.proanima.shelter.service.validatePets
-import org.proanima.shelter.views.SectionMenuKey
+import org.proanima.shelter.views.SiteMenuKey
 import java.io.File
 import java.time.Clock
 import java.time.ZoneId
@@ -120,13 +127,17 @@ internal fun Application.moduleWithFiles() {
         readSectionItemsFile(File("data/$SECTION_ITEMS_FILE_NAME"))
     )
 
+    // The menu tree put back from a backup (data/menu.json); read only here, like the sections.
+    val menu = InMemoryMenuRepository(readMenuFile(File("data/$MENU_FILE_NAME")))
+
     configureRoutes(
         catService = CatService(catRepository),
         guideService = GuideService(EditableGuideRepository(MarkdownGuideRepository(), siteContent)),
         dogService = DogService(dogRepository),
         visitOverrides = JsonVisitOverridesRepository().load(),
         siteContent = siteContent,
-        sections = sections
+        sections = sections,
+        menu = menu
     )
 }
 
@@ -140,7 +151,8 @@ internal fun Application.moduleWithDatabase(databaseUrl: String) {
         // The first start copies data/ into the database, so it must be sound; after that the database is the truth.
         loadSeedData(
             File("data/cats.json"), File("data/dogs.json"), IMAGES_DIR,
-            File("data/$SITE_CONTENT_FILE_NAME"), File("data/$SECTIONS_FILE_NAME"), File("data/$SECTION_ITEMS_FILE_NAME")
+            File("data/$SITE_CONTENT_FILE_NAME"), File("data/$SECTIONS_FILE_NAME"), File("data/$SECTION_ITEMS_FILE_NAME"),
+            File("data/$MENU_FILE_NAME")
         ).also { seed ->
             val photoNames = seed.photos.map { it.name }.toSet()
             failOnProblems(validatePets(seed.cats, seed.dogs, IMAGES_DIR.path) { it in photoNames })
@@ -165,10 +177,11 @@ internal fun Application.moduleWithDatabase(databaseUrl: String) {
     val siteContent = PgSiteContentRepository(dataSource, clock)
     val shippedGuide = MarkdownGuideRepository()
     val sections = PgSectionRepository(dataSource, clock)
+    val menu = PgMenuRepository(dataSource, clock)
 
     // The admin panel needs ADMIN_PASSWORD and SESSION_SECRET; without them the site runs and /admin does not exist.
     val admin = adminConfigFromEnv()?.let {
-        AdminSetup(it, catRepository, dogRepository, photoStore, clock, content = siteContent, shippedGuide = shippedGuide, sections = sections)
+        AdminSetup(it, catRepository, dogRepository, photoStore, clock, content = siteContent, shippedGuide = shippedGuide, sections = sections, menu = menu)
     }
     if (admin == null) {
         environment.log.warn("ADMIN_PASSWORD and SESSION_SECRET are not set: the admin panel is off")
@@ -182,7 +195,8 @@ internal fun Application.moduleWithDatabase(databaseUrl: String) {
         photoStore = photoStore,
         admin = admin,
         siteContent = siteContent,
-        sections = sections
+        sections = sections,
+        menu = menu
     )
 }
 
@@ -203,11 +217,13 @@ fun Application.configureRoutes(
     // The edited texts of the pages. With an admin panel they are the ones it edits.
     siteContent: SiteContentRepository = admin?.content ?: NoSiteContent,
     // The sections made in the admin panel. With an admin panel they are the ones it edits.
-    sections: SectionRepository = admin?.sections ?: NoSections
+    sections: SectionRepository = admin?.sections ?: NoSections,
+    // Where the pages, sections and groups stand in the menu. With an admin panel it is the tree it edits.
+    menu: MenuRepository = admin?.menu ?: NoMenu
 ) {
     val sectionService = SectionService(sections)
-    // The pages ask this for the entries of the menu that the sections add (see SiteMenu).
-    attributes.put(SectionMenuKey, sectionService::menu)
+    // The pages ask this for the menu to draw (see SiteMenu).
+    attributes.put(SiteMenuKey, MenuService(sections, menu)::build)
     configureErrorPages()
     if (admin != null) {
         installAdminSessions(admin.config)

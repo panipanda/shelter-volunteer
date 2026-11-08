@@ -16,6 +16,7 @@ import org.proanima.shelter.repository.GuideContent
 import org.proanima.shelter.repository.GuideRepository
 import org.proanima.shelter.repository.PgCatRepository
 import org.proanima.shelter.repository.PgDogRepository
+import org.proanima.shelter.repository.PgMenuRepository
 import org.proanima.shelter.repository.PgPhotoStore
 import org.proanima.shelter.repository.PgSectionRepository
 import org.proanima.shelter.repository.PgSiteContentRepository
@@ -38,6 +39,7 @@ abstract class AdminTestBase {
     protected val photos = PgPhotoStore(dataSource, clock)
     protected val siteContent = PgSiteContentRepository(dataSource, clock, Duration.ofSeconds(30))
     protected val sections = PgSectionRepository(dataSource, clock, Duration.ofSeconds(30))
+    protected val menu = PgMenuRepository(dataSource, clock, Duration.ofSeconds(30))
     protected val password = "correct horse battery"
 
     protected val guideRepository = object : GuideRepository {
@@ -50,7 +52,8 @@ abstract class AdminTestBase {
         FailedLoginThrottle(penaltyMillis = 0, maxWaiting = 5),
         content = siteContent,
         shippedGuide = guideRepository,
-        sections = sections
+        sections = sections,
+        menu = menu
     )
 
     protected fun ApplicationTestBuilder.start(admin: AdminSetup? = adminSetup()) {

@@ -78,7 +78,8 @@ internal fun itemTitle(item: SectionItem) = item.title.ru?.ifBlank { null } ?: i
 
 private fun fieldTitle(field: SectionField) = field.label.ru?.ifBlank { null } ?: field.label.en?.ifBlank { null } ?: "Без названия"
 
-class SectionSummary(val section: Section, val total: Int, val published: Int)
+// place: where the section stands in the menu, in words.
+class SectionSummary(val section: Section, val total: Int, val published: Int, val place: String = "верхний уровень")
 
 fun HTML.adminSectionsIndexPage(sections: List<SectionSummary>, csrf: String, flashCode: String?) =
     adminPage("Разделы", csrf, AdminSection.SECTIONS) {
@@ -111,7 +112,7 @@ fun HTML.adminSectionsIndexPage(sections: List<SectionSummary>, csrf: String, fl
                         }
                     }
                     p(classes = "admin-row-meta") {
-                        +"Адрес: /ru/${section.slug} · записей: ${summary.total}, опубликовано: ${summary.published}"
+                        +"Адрес: /ru/${section.slug} · записей: ${summary.total}, опубликовано: ${summary.published} · место в меню: ${summary.place}"
                     }
                     p(classes = "admin-row-links") {
                         a(href = "/admin/sections/${section.id}") { +"Записи" }
@@ -146,7 +147,7 @@ fun HTML.adminSectionPresetPage(csrf: String) = adminPage("Новый разде
 }
 
 // The settings of a section. A new section carries the preset it was started from along in a hidden field.
-fun HTML.adminSectionFormPage(page: FormPage<Section>, presetId: String?) {
+internal fun HTML.adminSectionFormPage(page: FormPage<Section>, presetId: String?, place: SectionPlace) {
     val section = page.existing
     val heading = if (section == null) "Новый раздел" else "Настройки: ${sectionTitle(section)}"
     adminPage(heading, page.csrf, AdminSection.SECTIONS) {
@@ -190,19 +191,10 @@ fun HTML.adminSectionFormPage(page: FormPage<Section>, presetId: String?) {
                 selectField("У записей есть дата", "useDate", yesNoOptions(), page.values, page.errors, hint = "Записи идут от новых к старым.")
                 selectField("У записей есть фотографии", "usePhotos", yesNoOptions(), page.values, page.errors)
             }
-            div(classes = "field") {
-                label { htmlFor = "f-position"; +"Место в меню" }
-                p(classes = "field-hint") { +"Число от 0 до 99: разделы идут слева направо от меньшего к большему, после страниц «Кошки», «Собаки», «Гайд», «Визиты», «Как помочь»." }
-                input(type = InputType.number, name = "position") {
-                    id = "f-position"
-                    value = page.values["position"].orEmpty()
-                    attributes["inputmode"] = "numeric"
-                    attributes["min"] = "0"
-                    attributes["max"] = "99"
-                    markInvalid(this, page.errors, "position")
-                }
-                fieldError(page.errors, "position")
-            }
+            selectField(
+                "Где в меню", "parent", place.options, page.values, page.errors,
+                hint = "На верхнем уровне или в выпадающем списке под другим пунктом. Порядок среди соседей и группы настраиваются на странице «Меню сайта»."
+            )
             div(classes = "form-actions") {
                 button(type = ButtonType.submit, classes = "button") { +(if (section == null) "Создать раздел" else "Сохранить") }
                 a(href = if (section == null) "/admin/sections/new" else "/admin/sections/${section.id}") { +"Отмена" }
@@ -227,7 +219,7 @@ private val SECTION_FIELD_LABELS = mapOf(
     "layout" to "Вид списка",
     "useDate" to "У записей есть дата",
     "usePhotos" to "У записей есть фотографии",
-    "position" to "Место в меню"
+    "parent" to "Где в меню"
 )
 
 private fun sectionFieldLabel(field: String): String = languageLabel(field, SECTION_FIELD_LABELS)

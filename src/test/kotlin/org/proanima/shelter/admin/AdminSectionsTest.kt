@@ -36,7 +36,7 @@ class AdminSectionsTest : AdminTestBase() {
 
     // What the form of a new section sends for a preset.
     private fun newSectionForm(preset: SectionPreset, vararg changes: Pair<String, String>): Map<String, String> =
-        SectionForm.newValues(preset.section, sections.findSections()) + ("preset" to preset.id) + changes
+        SectionForm.newValues(preset.section) + ("parent" to "") + ("preset" to preset.id) + changes
 
     private fun storedSection(preset: SectionPreset = articlesPreset, slug: String = preset.section.slug): Section =
         sections.saveSection(preset.section.copy(slug = slug))

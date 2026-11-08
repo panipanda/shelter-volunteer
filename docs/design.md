@@ -200,9 +200,13 @@ Dark: accent on surface 6.3, muted on surface 5.9. Re-check when changing any va
   A contact in a step ("write to the coordinator: Name (@handle), Name (@handle)") is part of the sentence: it follows
   the colon in the same line and wraps with the text, never in a row of its own under it. A name stays together with its
   handle (`.nowrap`), so on a narrow screen a link that does not fit moves down whole, never split in two.
-- **Nav**: ink text, no background on the current item, current item has a 2 px accent underline. When sections made
-  in the admin panel are in the menu (after "Как помочь"), the header is two rows at every width: wordmark with the
-  language and theme controls, then the menu (`.site-header.has-sections`). Seven or more entries do not fit one row.
+- **Nav**: ink text, no background on the current item, current item has a 2 px accent underline. A parent whose
+  drop-down holds the current page is underlined too (`.nav-branch`). More than five entries at the top level (counted
+  in the language that has most) make the header two rows at every width: wordmark with the language and theme controls,
+  then the menu (`.site-header.nav-two-rows`); six do not fit one row below about 900 px.
+- **Drop-downs** (`.nav-group`, `.nav-sub`, `.nav-toggle`): a chevron after the label, drawn in CSS (two borders turned
+  45°) so it takes the text colour; the panel is flat, `--color-bg` with a 1 px `--color-line` border, radius 4, no
+  shadow, links 44 px high; on a phone it spans the whole menu row under it. Nothing orange or beige.
 - **Sections** (made in the admin panel): the list uses the cat cards (`CARDS`, a card without a photo is the title
   and its lines) or plain rows (`LIST`: `.entry-list`, a serif title, a muted date line, the result); the page of an
   entry is the cat page (gallery left, text right; the text alone when there are no photos); tags are 44 px outlined

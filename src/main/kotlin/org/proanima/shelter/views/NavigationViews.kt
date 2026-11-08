@@ -6,11 +6,13 @@ import kotlinx.html.a
 import kotlinx.html.button
 import kotlinx.html.div
 import kotlinx.html.header
+import kotlinx.html.id
 import kotlinx.html.nav
 import kotlinx.html.span
 import org.proanima.shelter.i18n.messagesFor
 import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
+import org.proanima.shelter.service.NavItem
 import java.util.ResourceBundle
 
 // localeHref: where the language links go; by default the same page of the public site in the other language.
@@ -18,30 +20,79 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String, localeHref: (
     val prefix = "/${locale.code}"
     val messages = messagesFor(locale)
 
-    // Seven or more entries do not fit one row beside the wordmark: with sections in the menu the header is two rows
-    // (the wordmark and the controls, then the menu) at every width, as it already is on a phone.
-    val sectionEntries = SiteMenu.entries()
-    header(classes = if (sectionEntries.isEmpty()) "site-header" else "site-header has-sections") {
+    // More entries than fit one row beside the wordmark: the header is two rows (the wordmark and the controls, then
+    // the menu) at every width, as it already is on a phone. The menu says so for all languages at once, so that the
+    // header does not change height when the language is switched.
+    val menu = SiteMenu.current(locale)
+    header(classes = if (menu.twoRows) "site-header nav-two-rows" else "site-header") {
         div(classes = "wrap site-header-row") {
             // The wordmark is live text. The logo mark is not in the header yet; it will go before the text.
             a(href = prefix, classes = "logo") { +"Pro Anima" }
 
             nav(classes = "main-nav") {
                 attributes["aria-label"] = messages.t("nav.main")
-                navLink("$prefix/cats", messages.t("nav.cats"), currentPath, matchChildren = true)
-                navLink("$prefix/dogs", messages.t("nav.dogs"), currentPath, matchChildren = true)
-                // The short name: five items have to fit in one row on a 360 px phone. The page itself keeps the full title.
-                navLink("$prefix/guide", messages.t("nav.guide.short"), currentPath)
-                navLink("$prefix/visits", messages.t("nav.visits"), currentPath, matchChildren = true)
-                navLink("$prefix/help", messages.t("nav.help"), currentPath)
-                // The sections made in the admin panel come after the fixed pages.
-                sectionEntries.forEach { navLink(it.href, it.label, currentPath, matchChildren = true) }
+                menu.items.forEach { navItem(it, currentPath, messages) }
             }
 
             localeSwitcher(locale, localeHref ?: { "/${it.code}${currentPath.removePrefix("/${locale.code}")}" }, messages.t("nav.language"))
             themeToggle(messages.t("nav.theme"))
         }
     }
+}
+
+// An entry without anything below it is a plain link. An entry with a drop-down is a group:
+//  - the label opens the drop-down when it has no page of its own (a button, so that the keyboard reaches it);
+//  - with a page of its own the label stays a link, and a small button beside it opens the drop-down. That button is
+//    hidden until the script that works it has run;
+//  - the drop-down opens by hover and by focus without any script (see main.css), and by click with it (nav-menu.js).
+// Only one level below is drawn: the menu does not go deeper (MAX_MENU_DEPTH).
+private fun FlowContent.navItem(item: NavItem, currentPath: String, messages: ResourceBundle) {
+    val href = item.href
+    if (item.children.isEmpty()) {
+        if (href != null) {
+            navLink(href, item.label, currentPath, item.matchChildren)
+        }
+        return
+    }
+
+    val subId = "nav-sub-" + item.id.replace(Regex("[^A-Za-z0-9]+"), "-")
+    val onBranch = item.children.any { isCurrentPage(it, currentPath) }
+    div(classes = "nav-group") {
+        if (href != null) {
+            navLink(href, item.label, currentPath, item.matchChildren, onBranch)
+            button(type = ButtonType.button, classes = "nav-toggle nav-toggle-only") {
+                attributes["hidden"] = "hidden"
+                attributes["aria-expanded"] = "false"
+                attributes["aria-controls"] = subId
+                attributes["aria-label"] = messages.t("nav.submenu", item.label)
+                chevron()
+            }
+        } else {
+            button(type = ButtonType.button, classes = if (onBranch) "nav-toggle nav-label nav-branch" else "nav-toggle nav-label") {
+                attributes["aria-expanded"] = "false"
+                attributes["aria-controls"] = subId
+                +item.label
+                chevron()
+            }
+        }
+        div(classes = "nav-sub") {
+            id = subId
+            item.children.forEach { child ->
+                child.href?.let { navLink(it, child.label, currentPath, child.matchChildren) }
+            }
+        }
+    }
+}
+
+private fun FlowContent.chevron() {
+    span(classes = "nav-chevron") {
+        attributes["aria-hidden"] = "true"
+    }
+}
+
+private fun isCurrentPage(item: NavItem, currentPath: String): Boolean {
+    val href = item.href ?: return false
+    return currentPath == href || (item.matchChildren && currentPath.startsWith("$href/"))
 }
 
 // Icon-only button; the tooltip (title) and the accessible name share one label.
@@ -57,12 +108,13 @@ private fun FlowContent.themeToggle(label: String) {
     }
 }
 
-// /visits is a prefix of /visits/archive, so child paths count as "current" only where
-// it makes sense (a cat card inside /cats), not for every link.
-private fun FlowContent.navLink(href: String, label: String, currentPath: String, matchChildren: Boolean = false) {
+// The current page is marked with aria-current. A parent whose drop-down holds the current page is only underlined
+// (onBranch): the person is not on the parent's own page.
+// A page below this one counts as "current" only where it makes sense (a cat's card inside /cats), not for every link.
+private fun FlowContent.navLink(href: String, label: String, currentPath: String, matchChildren: Boolean = false, onBranch: Boolean = false) {
     val isCurrent = currentPath == href || (matchChildren && currentPath.startsWith("$href/"))
 
-    a(href = href) {
+    a(href = href, classes = if (onBranch && !isCurrent) "nav-branch" else null) {
         if (isCurrent) {
             attributes["aria-current"] = "page"
         }

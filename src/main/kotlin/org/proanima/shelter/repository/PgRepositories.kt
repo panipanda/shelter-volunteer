@@ -4,6 +4,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.model.Dog
+import org.proanima.shelter.model.MenuTree
 import org.proanima.shelter.model.Section
 import org.proanima.shelter.model.SectionItem
 import org.slf4j.LoggerFactory
@@ -202,4 +203,81 @@ class PgSectionRepository(
     override fun saveItem(item: SectionItem): SectionItem = items.save(item)
 
     override fun deleteItem(id: Int): Boolean = items.delete(id)
+}
+
+// The menu tree: one document in one row. It is cached for a short time like the other documents, because every page
+// asks for it, and an older copy is served when the database cannot be reached.
+class PgMenuRepository(
+    private val dataSource: DataSource,
+    private val clock: Clock = Clock.systemUTC(),
+    private val cacheTtl: Duration = DEFAULT_CACHE_TTL
+) : MutableMenuRepository {
+
+    // The tree is null while nothing was ever saved; that is an answer worth caching too.
+    private class Snapshot(val loadedAt: Instant, val tree: MenuTree?)
+
+    @Volatile
+    private var snapshot: Snapshot? = null
+
+    // Counts writes. A read that started before a write must not put its (already stale) result in the cache.
+    @Volatile
+    private var generation = 0L
+
+    override fun load(): MenuTree? {
+        val cached = snapshot
+        val now = clock.instant()
+        if (cached != null && Duration.between(cached.loadedAt, now) < cacheTtl) {
+            return cached.tree
+        }
+        val startedAt = generation
+        return try {
+            read().also { tree ->
+                if (generation == startedAt) {
+                    snapshot = Snapshot(now, tree)
+                }
+            }
+        } catch (e: SQLException) {
+            if (cached == null) throw e
+            log.warn("Could not read {} ({}); serving the copy from {}", MENU_TABLE, e.message, cached.loadedAt)
+            cached.tree
+        }
+    }
+
+    override fun save(tree: MenuTree) {
+        val now = OffsetDateTime.now(clock)
+        val data = documentJson.encodeToString(MenuTree.serializer(), tree)
+        dataSource.inTransaction { connection -> upsertMenu(connection, data, now) }
+        generation++
+        snapshot = null
+    }
+
+    private fun read(): MenuTree? = dataSource.connection.use { connection ->
+        connection.prepareStatement("SELECT data FROM $MENU_TABLE WHERE id = ?").use { statement ->
+            statement.setInt(1, MENU_ROW_ID)
+            statement.executeQuery().use { rows ->
+                if (rows.next()) documentJson.decodeFromString(MenuTree.serializer(), rows.getString(1)) else null
+            }
+        }
+    }
+}
+
+private const val MENU_TABLE = "site_menu"
+private const val MENU_ROW_ID = 1
+
+// Update first and insert when there was no row, as the photos are saved.
+internal fun upsertMenu(connection: java.sql.Connection, data: String, now: OffsetDateTime) {
+    val updated = connection.prepareStatement("UPDATE $MENU_TABLE SET data = ?, updated_at = ? WHERE id = ?").use { statement ->
+        statement.setString(1, data)
+        statement.setObject(2, now)
+        statement.setInt(3, MENU_ROW_ID)
+        statement.executeUpdate()
+    }
+    if (updated == 0) {
+        connection.prepareStatement("INSERT INTO $MENU_TABLE (id, data, updated_at) VALUES (?, ?, ?)").use { statement ->
+            statement.setInt(1, MENU_ROW_ID)
+            statement.setString(2, data)
+            statement.setObject(3, now)
+            statement.executeUpdate()
+        }
+    }
 }

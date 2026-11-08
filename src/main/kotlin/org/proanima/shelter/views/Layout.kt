@@ -52,6 +52,9 @@ try {
 } catch (e) {}
 """
 
+// Marks <html> as one where the menu's drop-downs can be opened by script (see nav-menu.js and main.css).
+internal const val NAV_JS_SCRIPT = "document.documentElement.classList.add(\"nav-js\");"
+
 // Common skeleton for all pages: <head>/nav/<main>/footer/CSS link in one place,
 // so it is not repeated in every Views file. contentLang is separate from locale —
 // it is needed by GuideViews, whose content is not yet translated while the route is already localized.
@@ -199,6 +202,13 @@ fun HTML.pageLayout(
         script {
             unsafe { +THEME_INIT_SCRIPT }
         }
+        // The drop-downs of the menu are collapsed only where the script that opens them runs; this tells the
+        // stylesheet so before the first paint. Pages without a drop-down do not carry it.
+        if (SiteMenu.hasDropdown()) {
+            script {
+                unsafe { +NAV_JS_SCRIPT }
+            }
+        }
     }
     body {
         a(href = "#main", classes = "skip-link") { +messages.t("nav.skip") }
@@ -224,6 +234,11 @@ fun HTML.pageLayout(
         }
         script(src = "/scripts/theme-toggle.js") {
             attributes["defer"] = "defer"
+        }
+        if (SiteMenu.hasDropdown()) {
+            script(src = "/scripts/nav-menu.js") {
+                attributes["defer"] = "defer"
+            }
         }
     }
 }

@@ -60,7 +60,8 @@ import java.util.Locale
 enum class AdminSection(val title: String, val href: String) {
     ANIMALS("Кошки и собаки", "/admin"),
     PAGES("Страницы сайта", "/admin/pages"),
-    SECTIONS("Разделы", "/admin/sections")
+    SECTIONS("Разделы", "/admin/sections"),
+    MENU("Меню сайта", "/admin/menu")
 }
 
 // csrf == null: nobody is logged in (the login page), so there is no menu.

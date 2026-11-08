@@ -13,20 +13,10 @@ import java.time.format.FormatStyle
 import java.time.format.DateTimeParseException
 import java.util.Locale
 
-// One more entry of the site's menu, made by a section.
-class MenuEntry(val href: String, val label: String)
-
 // What the public pages may show. An entry is shown in a language only when its title is written in that language,
 // so a page is never half a language: the title is what a visitor reads first. A draft is never shown, and a section
-// with nothing to show does not exist for visitors (no empty page, no menu entry).
+// with nothing to show does not exist for visitors (no empty page; the menu leaves it out too, see MenuService).
 class SectionService(private val repository: SectionRepository) {
-
-    fun menu(locale: AppLocale): List<MenuEntry> {
-        val items = repository.findItems()
-        return repository.findSections()
-            .filter { section -> items.any { it.sectionId == section.id && it.isShownIn(locale) } }
-            .map { MenuEntry("/${locale.code}/${it.slug}", it.menuLabel(locale)) }
-    }
 
     // The section at this address, if it has anything to show in this language.
     fun findSection(slug: String, locale: AppLocale): Section? =
@@ -45,7 +35,7 @@ class SectionService(private val repository: SectionRepository) {
     fun localesOf(section: Section): List<AppLocale> = AppLocale.entries.filter { publishedItems(section, it).isNotEmpty() }
 }
 
-private fun SectionItem.isShownIn(locale: AppLocale): Boolean = published && title.isFilledIn(locale)
+fun SectionItem.isShownIn(locale: AppLocale): Boolean = published && title.isFilledIn(locale)
 
 // The languages the entry's page exists in.
 fun SectionItem.shownLocales(): List<AppLocale> = AppLocale.entries.filter { isShownIn(it) }

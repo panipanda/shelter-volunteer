@@ -4,13 +4,16 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.model.Dog
+import org.proanima.shelter.model.MenuTree
 import org.proanima.shelter.model.Section
 import org.proanima.shelter.model.SectionItem
+import org.proanima.shelter.repository.MENU_FILE_NAME
 import org.proanima.shelter.repository.PhotoStore
 import org.proanima.shelter.repository.SECTIONS_FILE_NAME
 import org.proanima.shelter.repository.SECTION_ITEMS_FILE_NAME
 import org.proanima.shelter.repository.SITE_CONTENT_FILE_NAME
 import org.proanima.shelter.repository.isSiteAsset
+import org.proanima.shelter.repository.menuToJson
 import org.proanima.shelter.repository.sectionItemsToJson
 import org.proanima.shelter.repository.sectionsToJson
 import org.proanima.shelter.repository.siteContentToJson
@@ -60,7 +63,9 @@ fun writeBackup(
     today: LocalDate,
     content: SiteContent = SiteContent.EMPTY,
     sections: List<Section> = emptyList(),
-    sectionItems: List<SectionItem> = emptyList()
+    sectionItems: List<SectionItem> = emptyList(),
+    // Null while the menu was never saved: the file is then an empty tree, which the site reads as the default menu.
+    menu: MenuTree? = null
 ): BackupReport {
     val zip = ZipOutputStream(out)
     zip.putText("cats.json", exportJson.encodeToString(ListSerializer(Cat.serializer()), cats))
@@ -68,6 +73,7 @@ fun writeBackup(
     zip.putText(SITE_CONTENT_FILE_NAME, siteContentToJson(content))
     zip.putText(SECTIONS_FILE_NAME, sectionsToJson(sections))
     zip.putText(SECTION_ITEMS_FILE_NAME, sectionItemsToJson(sectionItems))
+    zip.putText(MENU_FILE_NAME, menuToJson(menu ?: MenuTree()))
 
     var copied = 0
     zip.setLevel(Deflater.NO_COMPRESSION)
@@ -116,6 +122,7 @@ private fun readme(report: BackupReport, today: LocalDate): String = buildString
     appendLine("    остальные такие, как в коде сайта. Гайд, если его правили, лежит там целиком.")
     appendLine("  sections.json, section-items.json — разделы сайта (статьи, архив визитов и другие): их настройки, поля, метки и записи")
     appendLine("    на трёх языках. Черновики тоже здесь: у них \"published\": false.")
+    appendLine("  menu.json — где в меню сайта стоят страницы, разделы и группы. Пустой файл значит, что меню не меняли.")
     appendLine("  images/ — фото кошек и собак и записей разделов (оригинал и уменьшенная копия для карточки, имя с -card) и фото страниц,")
     appendLine("    которые загружали в админке (имена page-...).")
     appendLine()
@@ -130,7 +137,7 @@ private fun readme(report: BackupReport, today: LocalDate): String = buildString
     appendLine("Исходные фото страниц и картинки-заглушки (home-*, default-*) в копию не входят: они лежат в репозитории сайта.")
     appendLine()
     appendLine("Как восстановить:")
-    appendLine("  Положите все json-файлы (cats, dogs, site-content, sections, section-items) в папку data/ репозитория сайта,")
+    appendLine("  Положите все json-файлы (cats, dogs, site-content, sections, section-items, menu) в папку data/ репозитория сайта,")
     appendLine("  а содержимое images/ — в data/images/.")
     appendLine("  Сайт без настройки DATABASE_URL работает прямо с этих файлов. А если база пустая (новая), при первом запуске")
     appendLine("  сайт сам копирует эти файлы в неё.")

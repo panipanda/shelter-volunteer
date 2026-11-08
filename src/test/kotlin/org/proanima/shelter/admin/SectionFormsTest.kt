@@ -31,15 +31,16 @@ class SectionFormsTest {
     // ---- the settings of a section
 
     @Test
-    fun `a new section is the preset with its fields and tags, at the end of the menu`() {
+    fun `a new section is the preset with its fields and tags, after the sections that are there`() {
         val other = articles.copy(id = 1, slug = "other", position = 4)
 
-        val values = SectionForm.newValues(SectionPresets.visits.section, listOf(other))
+        val values = SectionForm.newValues(SectionPresets.visits.section)
         val result = SectionForm.validate(values, null, SectionPresets.visits.section, listOf(other))
 
         assertTrue(result.ok, result.errors.toString())
         val section = result.value!!
-        assertEquals("5", values["position"])
+        assertEquals(5, section.position)
+        assertFalse("position" in values, "where a section stands is the menu's business, not a setting of the section")
         assertEquals("archive", section.slug)
         assertEquals(SectionPresets.visits.section.fields, section.fields)
         assertEquals(SectionPresets.visits.section.nextKeyNumber, section.nextKeyNumber)
@@ -84,10 +85,10 @@ class SectionFormsTest {
     @Test
     fun `the Russian title is required and the numbers and choices are checked`() {
         val result = SectionForm.validate(
-            sectionValues("title_ru" to "", "position" to "100", "layout" to "GRID", "useDate" to "maybe"), null, articles, emptyList()
+            sectionValues("title_ru" to "", "layout" to "GRID", "useDate" to "maybe"), null, articles, emptyList()
         )
 
-        assertEquals(setOf("title_ru", "position", "layout", "useDate"), result.errors.keys)
+        assertEquals(setOf("title_ru", "layout", "useDate"), result.errors.keys)
     }
 
     @Test
@@ -100,6 +101,7 @@ class SectionFormsTest {
         assertEquals(articles.fields, section.fields)
         assertEquals(articles.tags, section.tags)
         assertEquals(articles.nextKeyNumber, section.nextKeyNumber)
+        assertEquals(articles.position, section.position, "saving the settings does not move the section")
     }
 
     @Test

@@ -30,7 +30,9 @@ import org.proanima.shelter.model.AppLocale
 import org.proanima.shelter.model.Cat
 import org.proanima.shelter.model.Dog
 import org.proanima.shelter.repository.GuideRepository
+import org.proanima.shelter.repository.InMemoryMenuRepository
 import org.proanima.shelter.repository.InMemorySectionRepository
+import org.proanima.shelter.repository.MutableMenuRepository
 import org.proanima.shelter.repository.InMemorySiteContentRepository
 import org.proanima.shelter.repository.MarkdownGuideRepository
 import org.proanima.shelter.repository.MutableCatRepository
@@ -77,7 +79,9 @@ class AdminSetup(
     val content: MutableSiteContentRepository = InMemorySiteContentRepository(),
     val shippedGuide: GuideRepository = MarkdownGuideRepository(),
     // The sections made in the admin panel and their entries.
-    val sections: MutableSectionRepository = InMemorySectionRepository()
+    val sections: MutableSectionRepository = InMemorySectionRepository(),
+    // The menu tree: where the pages, sections and groups stand in the menu.
+    val menu: MutableMenuRepository = InMemoryMenuRepository()
 ) {
     // One backup at a time: it reads every photo, and the free plan has a tenth of a CPU.
     internal val exportRunning = AtomicBoolean(false)
@@ -192,6 +196,7 @@ fun Route.adminRoutes(admin: AdminSetup) {
         petRoutes(admin, "/${dogs.urlName}") { dogs }
         pageRoutes(admin)
         sectionAdminRoutes(admin)
+        menuAdminRoutes(admin)
     }
 }
 
@@ -216,13 +221,14 @@ private suspend fun sendBackup(admin: AdminSetup, call: ApplicationCall, session
         val content = admin.content.load()
         val sections = admin.sections.findSections()
         val sectionItems = admin.sections.findItems()
+        val menu = admin.menu.load()
         val today = admin.today()
         call.response.header(
             HttpHeaders.ContentDisposition,
             ContentDisposition.Attachment.withParameter(ContentDisposition.Parameters.FileName, "proanima-backup-$today.zip").toString()
         )
         call.respondOutputStream(ContentType.Application.Zip) {
-            val report = writeBackup(this, cats, dogs, names, admin.photos, today, content, sections, sectionItems)
+            val report = writeBackup(this, cats, dogs, names, admin.photos, today, content, sections, sectionItems, menu)
             backupLog.info(
                 "Backup sent: {} cats, {} dogs, {} sections with {} entries, {} photo files, {} missing",
                 report.cats, report.dogs, report.sections, report.sectionItems, report.photos, report.missingPhotos.size

@@ -10,7 +10,14 @@ import org.proanima.shelter.model.SectionLayout
 // What a new section can start from. A preset is only a filled-in set of the same settings, fields and tags that the
 // admin panel lets anyone make by hand; after the section is made it is an ordinary one that can be changed in every
 // part.
-class SectionPreset(val id: String, val name: String, val description: String, val section: Section)
+class SectionPreset(
+    val id: String,
+    val name: String,
+    val description: String,
+    val section: Section,
+    // The entry of the menu the section is offered under (the archive of visits under "Visits"); null is the top level.
+    val menuParent: String? = null
+)
 
 private fun text(ru: String, en: String, sr: String) = LocalizedText(ru = ru, en = en, sr = sr)
 
@@ -52,7 +59,8 @@ object SectionPresets {
     val visits = SectionPreset(
         id = "visits",
         name = "Архив визитов",
-        description = "Как прошли выезды: дата, статус (состоялся, отменён, дополнительный), итог, короткий отчёт и фотографии.",
+        description = "Как прошли выезды: дата, статус (состоялся, отменён, дополнительный), итог, короткий отчёт и фотографии. В меню встаёт под «Визиты».",
+        menuParent = "page:visits",
         section = Section(
             id = 0,
             slug = "archive",

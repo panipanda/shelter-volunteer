@@ -215,12 +215,12 @@ two (useful articles, the visit archive) are presets of the same builder.
   entries of one section cannot share one. The address of a section is typed (or made from its English title),
   must be Latin letters, digits and hyphens, and cannot be one of the site's own pages (`cats`, `dogs`, `guide`,
   `visits`, `help`); those routes win anyway. Changing it later breaks old links, and the form says so.
-- **The menu.** The entries come from the sections, after the fixed pages, in the order of their position. They are
-  handed to the navigation through `SiteMenu` (a thread-local set by `respondPage`, which draws every page in one go),
-  so no view had to change its parameters. A menu that cannot be read (database down) is a menu without sections.
-  Measured: with even one extra entry the one-row header overflows below ~900 px and, with two or more, leaves the
-  text column on a wide screen, so **when the menu has sections the header is two rows at every width** (wordmark and
-  controls, then the menu), as on a phone; without sections it is unchanged, byte for byte. At most six sections.
+- **The menu.** The entries come from the sections, after the fixed pages, until the menu tree is saved (see "Menu
+  tree" below, which also says where a section stands once it is). They are handed to the navigation through
+  `SiteMenu` (a thread-local set by `respondPage`, which draws every page in one go), so no view had to change its
+  parameters. Measured: with even one extra entry in a flat menu the one-row header overflows below ~900 px and, with
+  two or more, leaves the text column on a wide screen, hence the two-row rule below. At most twelve sections (it was
+  six while the menu was flat).
 - **Same pattern as cats and dogs in the admin.** `petRoutes` (list, form, drafts, preview, photos, deletion with a
   question) takes the path and a function that finds the "kind" of a request, so the entries of any section use the
   same code as the cats; photos are `/images/item-<id>-<8 hex>.jpg`. An entry is reachable only under its own
@@ -234,10 +234,75 @@ two (useful articles, the visit archive) are presets of the same builder.
   guides have no `*`, so they render as before.
 - **Backup and first start.** The backup has `sections.json` and `section-items.json` and the photos of entries; the
   seeder reads the same files from `data/` on an empty database (ids kept, counting carries on), and a site without a
-  database reads them too (read only).
+  database reads them too (read only). The menu tree travels the same way, see below.
 - **Not done, on purpose:** the trip schedule (cancelled and extra trips still come from `data/visit-overrides.json`,
   not from the archive); reordering entries by hand; images inside a markdown text; hiding or reordering blocks of the
   fixed pages.
+
+### Menu tree (the hierarchy of the menu)
+
+The user asked for a hierarchy: a group "Animals" with the cats and the dogs in it, the visit archive as a drop-down
+under "Visits", and a choice of the level whenever a section is made or edited. Decisions (with the user, 2026-11-08):
+
+- **A hierarchy is the tree of the menu, not nested addresses.** `/ru/cats` stays `/ru/cats` and the archive stays
+  `/ru/archive` wherever the menu puts them: no redirects, nothing breaks in links, bookmarks or search results. The
+  tree only says where an entry stands in the navigation. Without a saved tree and without sections the public pages
+  are byte for byte what they were (compared with `main` on 36 pages in three languages: home, visits, guide, help,
+  the lists and the cards of the cats and dogs, the 404 page).
+- **Two levels:** the top level and one drop-down. A drop-down inside a drop-down is poor on a touch screen and from the
+  keyboard. The model keeps any depth; `MAX_MENU_DEPTH` (`service/MenuTrees.kt`) is the one number that holds it back.
+- **A group is a folder with no page of its own:** names in three languages (Russian required) and a short name for
+  the menu, like a section. A page with entries below it (Visits and the archive) keeps its own page and gets a drop-down
+  as well. The cats and the dogs stay the special pages they are (age, stage, "how to take", the filters), only their
+  place in the menu changes. All five pages of the site (`SystemPage`) can be moved and hidden; none can be deleted.
+- **Hiding** takes an entry out of the menu **with everything below it**; the page itself stays and opens by its address
+  and by the links of other pages (the home page and the footer carry some). The admin page says so next to the button
+  and counts what goes with a hidden entry.
+- **One document, `MenuTree` (`model/Menu.kt`), in a table of its own, `site_menu` (one row, id 1).** Entries are
+  identified by what they are: `page:cats`, `section:3`, `group:g2` (group numbers only go up, a deleted group's key is
+  never used again). Never saved means the default menu: the five pages, then the sections by position. The first change
+  made in the admin writes the whole tree down (all pages, sections, groups), so the order of the pages is explicit
+  from then on. Opening the page "Меню сайта", or creating a section on the top level, writes nothing.
+- **A stored tree is read defensively** (`settleMenuTree`): an entry whose section is gone, whose page does not exist or
+  whose group has no name is dropped; a parent that is gone, a cycle or a chain deeper than the limit puts the entry on
+  the top level; two entries with one id count once; a page or a section the document does not know goes to the end of
+  the top level. A backup can hold anything, so nothing here may throw. A section that is deleted in the admin first
+  leaves the tree through `without`, which lifts what stood under it to its place (the fallback above puts such an
+  entry on the top level instead).
+- **What a visitor sees, per language** (`MenuService`): a page always; a section when it has a published entry written
+  in that language (the rule of the sections); a group when one of its entries is shown; an entry with a shown entry
+  below it is shown anyway, and if it has no page of its own in that language it only opens its drop-down. Reading the
+  tree or the sections can fail (database asleep): the tree falls back to the default, the sections to none; the page
+  never fails because of the menu.
+- **Header rule.** The two-row header (`.site-header.nav-two-rows`) is on when the top level has **more than five
+  entries** (`MAX_ONE_ROW_ITEMS`), and it is decided **for the three languages together** (the largest top level of the
+  three), so the header does not change height when the language is switched (it did on the live site while the archive
+  existed only in Russian). With the archive under "Visits" the top level has five entries and the header is one row.
+- **The markup.** A group is a `<button>` with a chevron (a button, so that the keyboard reaches it with no script); a
+  page with entries below it is its link plus a small button beside it, hidden until the script runs; the drop-down is a
+  `div.nav-sub` named by `aria-controls`. The current page carries `aria-current="page"`; a parent whose drop-down holds
+  the current page is only underlined (`nav-branch`). A drop-down opens by hover and by keyboard focus with no script; with
+  it (`nav-menu.js`, plus a one-line inline script in the head that puts `nav-js` on `<html>` so the collapsed state
+  is right before the first paint; only pages that have a drop-down carry either) by a click, closes with Esc (the focus
+  goes back to the button), a click elsewhere, or Tab out of the group, and by hover only where there is a mouse
+  (`@media (hover: hover)`). On a phone the panel spans the whole menu row, under it; with no script on a phone the
+  menu with drop-downs is a plain list with the drop-downs set in. Flat, dense, no shadow: `--color-bg`, a 1 px
+  `--color-line` border, radius 4. Checked in Chrome at 1100, 900, 800 and 375 px, light and dark, in all three
+  languages, by keyboard and with scripts off.
+- **Where it is chosen.** The admin page "Меню сайта" (`/admin/menu`): the tree as a list with, for each entry, one step
+  up or down, hide or show, "Перенести…" (a form with a select of the places that keep the tree valid), and for a group
+  rename and delete (asked first; what was in it stays, in its place); "Добавить группу". It also shows the menu as
+  visitors get it in each language, and marks an entry they do not see with the reason. The form of a section has a
+  select **"Где в меню"** instead of the number "Место в меню" (`Section.position` is now only the default order until
+  the tree is saved); a new section stands at the end of the chosen level, and the archive preset offers "Visits"
+  first. The list of sections says where each stands. Every one of these is a plain form that works without a script.
+  The server checks every request again (a form can be forged or out of date): an unknown entry, a place not offered,
+  a move under itself or deeper than two levels is refused with a page that says so and nothing is saved.
+- **Backup and first start.** The backup has `menu.json` (an empty tree while the menu was never saved, which the site
+  reads as the default menu); the seeder reads it from `data/` on an empty database, and a site without a database reads
+  it too (read only).
+- **Not done, on purpose:** nested addresses (`/ru/animals/cats`); breadcrumbs; a footer that follows the tree; categories
+  inside a section (tags exist); more than two levels in the interface.
 
 ## Google Calendar
 
@@ -285,6 +350,9 @@ dependency-free script is fine where it adds real value a static page can't prov
 First case: keyboard arrow-key navigation in the photo lightbox
 (`static/scripts/cat-gallery.js`), added because `:target` reacts to clicks but not to keydown
 events, and clicking was the only way to page through photos before this.
+
+Second case: the drop-downs of the menu (`static/scripts/nav-menu.js`): they open by hover and by focus with no script;
+the script adds the click, Esc and the closing on a click elsewhere (see "Menu tree").
 
 Scripts should stay small and framework-free (plain `document.addEventListener`, no bundler, no
 new dependency) and act as progressive enhancement: the underlying CSS-only mechanism must keep

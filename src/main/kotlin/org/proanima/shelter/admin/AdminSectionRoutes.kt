@@ -12,6 +12,8 @@ import io.ktor.server.routing.route
 import org.proanima.shelter.model.Section
 import org.proanima.shelter.model.SectionField
 import org.proanima.shelter.model.SectionItem
+import org.proanima.shelter.model.sectionNodeId
+import org.proanima.shelter.service.node
 import org.proanima.shelter.service.itemSlug
 import org.proanima.shelter.views.sectionItemPage
 
@@ -63,9 +65,13 @@ internal fun Route.sectionAdminRoutes(admin: AdminSetup) {
         get {
             admin.withSession(call) { session ->
                 val items = admin.sections.findItems()
-                val summaries = admin.sections.findSections().map { section ->
+                val tree = admin.currentMenuTree()
+                val allSections = admin.sections.findSections()
+                val summaries = allSections.map { section ->
                     val own = items.filter { it.sectionId == section.id }
-                    SectionSummary(section, own.size, own.count { it.published })
+                    val parent = tree.node(sectionNodeId(section.id))?.parent?.let { tree.node(it) }
+                    val place = parent?.let { "внутри «${menuNodeLabel(it, allSections)}»" } ?: "верхний уровень"
+                    SectionSummary(section, own.size, own.count { it.published }, place)
                 }
                 call.respondHtml { adminSectionsIndexPage(summaries, session.csrf, call.request.queryParameters["msg"]) }
             }
@@ -77,8 +83,10 @@ internal fun Route.sectionAdminRoutes(admin: AdminSetup) {
                 if (preset == null) {
                     call.respondHtml { adminSectionPresetPage(session.csrf) }
                 } else {
-                    val values = SectionForm.newValues(preset.section, admin.sections.findSections())
-                    call.respondHtml { adminSectionFormPage(FormPage(null, values, emptyMap(), session.csrf), preset.id) }
+                    val place = admin.sectionPlace(null)
+                    val parent = preset.menuParent?.takeIf { place.offers(it) }.orEmpty()
+                    val values = SectionForm.newValues(preset.section) + ("parent" to parent)
+                    call.respondHtml { adminSectionFormPage(FormPage(null, values, emptyMap(), session.csrf), preset.id, place) }
                 }
             }
         }
@@ -87,13 +95,17 @@ internal fun Route.sectionAdminRoutes(admin: AdminSetup) {
             admin.withForm(call) { session, values ->
                 val preset = SectionPresets.byId(values["preset"]) ?: SectionPresets.blank
                 val result = SectionForm.validate(values, existing = null, template = preset.section, others = admin.sections.findSections())
+                val place = admin.sectionPlace(null)
+                val wanted = place.wanted(values)
+                val errors = if (place.offers(wanted)) result.errors else result.errors + ("parent" to PLACE_ERROR)
                 val section = result.value
-                if (section == null || !result.ok) {
+                if (section == null || errors.isNotEmpty()) {
                     call.respondHtml(HttpStatusCode.UnprocessableEntity) {
-                        adminSectionFormPage(FormPage(null, values, result.errors, session.csrf), preset.id)
+                        adminSectionFormPage(FormPage(null, values, errors, session.csrf), preset.id, place)
                     }
                 } else {
                     val saved = admin.sections.saveSection(section)
+                    admin.placeSection(saved.id, wanted)
                     call.seeOther("/admin/sections/${saved.id}?msg=section-created")
                 }
             }
@@ -123,8 +135,9 @@ private fun Route.settingsRoutes(admin: AdminSetup) {
         get {
             admin.withSession(call) { session ->
                 admin.withSection(call) { section ->
-                    val page = FormPage(section, SectionForm.valuesOf(section), emptyMap(), session.csrf, call.request.queryParameters["msg"])
-                    call.respondHtml { adminSectionFormPage(page, presetId = null) }
+                    val place = admin.sectionPlace(section.id)
+                    val page = FormPage(section, SectionForm.valuesOf(section) + ("parent" to place.current), emptyMap(), session.csrf, call.request.queryParameters["msg"])
+                    call.respondHtml { adminSectionFormPage(page, presetId = null, place = place) }
                 }
             }
         }
@@ -134,13 +147,17 @@ private fun Route.settingsRoutes(admin: AdminSetup) {
                 admin.withSection(call) { section ->
                     val others = admin.sections.findSections().filter { it.id != section.id }
                     val result = SectionForm.validate(values, section, section, others)
+                    val place = admin.sectionPlace(section.id)
+                    val wanted = place.wanted(values)
+                    val errors = if (place.offers(wanted)) result.errors else result.errors + ("parent" to PLACE_ERROR)
                     val changed = result.value
-                    if (changed == null || !result.ok) {
+                    if (changed == null || errors.isNotEmpty()) {
                         call.respondHtml(HttpStatusCode.UnprocessableEntity) {
-                            adminSectionFormPage(FormPage(section, values, result.errors, session.csrf), presetId = null)
+                            adminSectionFormPage(FormPage(section, values, errors, session.csrf), presetId = null, place = place)
                         }
                     } else {
                         admin.sections.saveSection(changed)
+                        admin.placeSection(section.id, wanted)
                         call.seeOther("/admin/sections/${section.id}/settings?msg=settings-saved")
                     }
                 }
@@ -299,6 +316,8 @@ private fun Route.deleteRoutes(admin: AdminSetup) {
             admin.withForm(call) { _, _ ->
                 admin.withSection(call) { section ->
                     val photoUrls = admin.sections.findItems().filter { it.sectionId == section.id }.flatMap { it.photoUrls }
+                    // First out of the menu tree, while the section is still known: what stood under it moves up.
+                    admin.forgetSection(section.id)
                     admin.sections.deleteSection(section.id)
                     // The entries are gone, and only then are their pictures removed.
                     removeUnusedPhotos(admin, photoUrls)

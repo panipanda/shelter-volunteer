@@ -330,8 +330,10 @@ a.logo {
     color: var(--color-accent);
 }
 
-/* The current item is marked by a 2 px accent underline under the text only. */
-.main-nav a[aria-current="page"] {
+/* The current item is marked by a 2 px accent underline under the text only. A parent whose drop-down holds the
+   current page is marked the same way. */
+.main-nav a[aria-current="page"],
+.main-nav .nav-branch {
     text-decoration: underline;
     text-decoration-color: var(--color-accent);
     text-decoration-thickness: 2px;
@@ -344,25 +346,118 @@ a.logo {
     font-size: 15px;
 }
 
-/* With sections in the menu there are too many entries for one row beside the wordmark: the header is two rows at
-   every width (below 761 px the rules of the phone layout further down already do this). The menu text is pulled
-   back by its own padding so it lines up with the page text. */
+/* More entries than fit one row beside the wordmark (more than five at the top level; the server counts the
+   languages together so that the header does not change height with the language): the header is two rows at every
+   width (below 761 px the rules of the phone layout further down already do this). The menu text is pulled back by
+   its own padding so it lines up with the page text. */
 @media (min-width: 761px) {
-    .site-header.has-sections .site-header-row {
+    .site-header.nav-two-rows .site-header-row {
         flex-wrap: wrap;
         min-height: 0;
         padding-top: 8px;
     }
 
-    .site-header.has-sections .lang-switch {
+    .site-header.nav-two-rows .lang-switch {
         margin-inline-start: auto;
     }
 
-    .site-header.has-sections .main-nav {
+    .site-header.nav-two-rows .main-nav {
         order: 3;
         flex-wrap: wrap;
         width: calc(100% + 20px);
         margin: 0 -10px;
+    }
+}
+
+/* Drop-downs. An entry with entries below it is a group: its label (a link to its own page, or a button when it has
+   none), a small button that opens the drop-down (only where the script runs), and the drop-down itself.
+   Without the script the drop-down opens by hover and by keyboard focus. With it (the head script puts nav-js on
+   <html>) it opens by a click, and by hover only where there is a mouse. */
+
+.nav-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.main-nav .nav-toggle {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--color-ink);
+    font: inherit;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.main-nav .nav-toggle:hover {
+    color: var(--color-accent);
+}
+
+/* The small button beside a label that is a link: close to the label, its own touch target. */
+.main-nav .nav-toggle-only {
+    margin-inline-start: -2px;
+    padding: 0 8px 0 4px;
+}
+
+.main-nav .nav-toggle-only[hidden] {
+    display: none;
+}
+
+.nav-js .nav-group > a {
+    padding-inline-end: 4px;
+}
+
+.nav-chevron {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    margin-inline-start: 7px;
+    margin-top: -3px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+}
+
+.nav-toggle-only .nav-chevron {
+    margin-inline-start: 0;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-chevron {
+    margin-top: 3px;
+    transform: rotate(-135deg);
+}
+
+.nav-sub {
+    display: none;
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+    z-index: 20;
+    min-width: 100%;
+    padding: 4px 0;
+    border: 1px solid var(--color-line);
+    border-radius: 4px;
+    background: var(--color-bg);
+}
+
+.main-nav .nav-sub a {
+    padding-inline: 14px;
+}
+
+.nav-group.is-open > .nav-sub,
+html:not(.nav-js) .nav-group:hover > .nav-sub,
+html:not(.nav-js) .nav-group:focus-within > .nav-sub {
+    display: block;
+}
+
+@media (hover: hover) {
+    .nav-js .nav-group:hover > .nav-sub {
+        display: block;
     }
 }
 
@@ -1057,6 +1152,46 @@ footer p {
 
     .main-nav a {
         padding-inline: 6px;
+    }
+
+    .main-nav .nav-label {
+        padding-inline: 6px;
+    }
+
+    .nav-js .nav-group > a {
+        padding-inline-end: 2px;
+    }
+
+    /* The drop-down spans the whole menu, under its row, not just the width of the group it belongs to. */
+    .nav-group {
+        position: static;
+    }
+
+    .nav-sub {
+        inset-inline: 0;
+    }
+
+    .main-nav .nav-sub a {
+        padding-inline: 12px;
+    }
+
+    /* No script, no hover on a phone: a menu with drop-downs is a plain list, each drop-down set in under its group. */
+    html:not(.nav-js) .main-nav:has(.nav-group) {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    html:not(.nav-js) .nav-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    html:not(.nav-js) .nav-sub {
+        display: block;
+        position: static;
+        min-width: 0;
+        padding: 0 0 0 12px;
+        border: 0;
     }
 }
 

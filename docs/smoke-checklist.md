@@ -605,6 +605,35 @@ Sections ("Разделы" in the menu; make a test section and delete it at the
   entries go with it). The backup has `sections.json`, `section-items.json` and the entries' photos `item-...`.
 - A phone (360 px): the two-row header wraps the menu, no sideways scrolling on a list or an entry page.
 
+Menu tree ("Меню сайта" in the admin menu; do it on a test group and put everything back at the end):
+
+- The page opens and lists the five pages and the sections. "Как это видят посетители" shows the menu in ru, en and sr
+  as text. Opening the page changes nothing on the site.
+- "Добавить группу" ("Животные приюта", short name "Животные"): it appears at the end of the list. In the row of "Кошки"
+  open "Перенести…", choose the group, "Перенести"; the same for "Собаки". On `/ru` the menu has "Животные ▾" and the cats
+  and the dogs are only in its drop-down. The addresses `/ru/cats` and `/ru/dogs` still open.
+- Move the group up with "↑ Выше" until it is first. "Гайд", "Визиты", "Как помочь" keep their places.
+- Make an archive of visits from the preset (the select "Где в меню" already says "Внутри «Визиты»"), publish an entry.
+  On `/ru` "Визиты" has a small arrow beside it; the link still opens the visits page, the arrow opens "Архив". The top
+  level has five entries and the header is one row (before the archive it was six and two rows).
+- The drop-down: opens by a click and by the mouse; Esc closes it and the focus goes back to its button; a click elsewhere
+  and Tab out of it close it. On `/ru/archive` "Архив" is marked in the drop-down and "Визиты" is underlined.
+- Switch to EN and SR: the same tree in the other languages (the archive only appears where an entry has a title in that
+  language). The header has the same height in every language.
+- "Скрыть из меню" on "Гайд": it is gone from the menu and `/ru/guide` still opens, and the link on the home page works.
+  "Показать в меню" brings it back. Hide "Визиты": "Архив" goes with it, and the row of the archive says "скрыт вместе с".
+- A section with nothing published is marked "посетители не видят" with the reason; a group with nothing shown too.
+- Delete the group (asked first): "Кошки" and "Собаки" stand on the top level again, at the end. Move them back to
+  their places with "↑ Выше" if the order matters.
+- The form of a section ("Настройки"): "Где в меню" lists the top level and the entries it may go under; the section
+  itself is not in the list. Change it, save, and look at `/ru`. The list of sections says "место в меню: …".
+- A phone (360 px): the menu is one row of four or five entries; a click opens the drop-down as a panel under the whole
+  row; no sideways scrolling; the panel does not cover the language links for good (a click elsewhere closes it).
+- Keyboard only: Tab reaches the group and the small arrows; Enter opens, Tab goes into the drop-down.
+- Scripts off (in the browser's settings): on a computer the drop-down opens by hover and by Tab; on a phone the menu
+  is a plain list with the drop-downs set in.
+- The backup has `menu.json` with the groups and places you made.
+
 ## Automated tests
 
 Run automated tests after changing repositories, services, routes, views, models, or Gradle dependencies.

@@ -178,7 +178,8 @@ how much of the database's 1 GB the photos take.
 **Backup.** The button "Скачать копию (zip)" at the bottom of the list page downloads one archive: `cats.json` and
 `dogs.json` (all three languages, drafts included, marked `"published": false`), `site-content.json` (the edited texts
 of the pages, only what differs from the code), `sections.json` and `section-items.json` (the sections with their
-fields and tags, and all their entries, drafts included), `images/` (every photo, original and card copy, the
+fields and tags, and all their entries, drafts included), `menu.json` (where the pages, sections and groups stand in the
+menu; empty while it was never changed), `images/` (every photo, original and card copy, the
 entries' photos `item-...` and the page photos that were uploaded, `page-...`) and a `README.txt` that says what is inside, how many of each, and names any photo
 that a record or a page points at but the database lacks. The layout is the one the site uses without a database, so
 the archive can be unpacked into `data/` (and `data/images/`) of the repository, or the same files can seed a new

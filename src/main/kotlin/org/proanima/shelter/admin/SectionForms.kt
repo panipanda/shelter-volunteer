@@ -17,7 +17,8 @@ import java.time.LocalDate
 // cat and dog forms, each is a flat map of field name to what was typed, read back into the model; a form with a
 // mistake comes back as typed, with the mistakes by field name.
 
-const val MAX_SECTIONS = 6
+// With drop-downs the menu has room for many; this only stops a runaway.
+const val MAX_SECTIONS = 12
 const val MAX_FIELDS = 12
 const val MAX_TAGS = 24
 const val MAX_CHOICE_OPTIONS = 12
@@ -32,7 +33,6 @@ private const val MAX_ITEM_TITLE = 120
 private const val MAX_TEXT_VALUE = 300
 private const val MAX_LONG_TEXT = 3_000
 private const val MAX_MARKDOWN_TEXT = 20_000
-private const val MAX_POSITION = 99
 private const val EARLIEST_YEAR = 2000
 private const val LATEST_YEAR = 2100
 private const val MAX_KEY_LENGTH = 30
@@ -53,14 +53,13 @@ object SectionForm {
         putAll(localizedValues("intro", section?.intro))
         put("slug", section?.slug.orEmpty())
         put("layout", (section?.layout ?: SectionLayout.CARDS).name)
-        put("position", (section?.position ?: 0).toString())
         put("useDate", (section?.useDate ?: false).toString())
         put("usePhotos", (section?.usePhotos ?: true).toString())
     }
 
-    // A new section starts from a preset (its fields and tags come along) and goes to the end of the menu.
-    fun newValues(preset: Section, others: List<Section>): Map<String, String> =
-        valuesOf(preset) + ("position" to ((others.maxOfOrNull { it.position } ?: 0) + 1).coerceAtMost(MAX_POSITION).toString())
+    // A new section starts from a preset (its fields and tags come along). Where it stands in the menu is the menu's
+    // business (see SectionPlace), not a setting of the section.
+    fun newValues(preset: Section): Map<String, String> = valuesOf(preset)
 
     // existing: the section being edited (null for a new one); template: what a new one is made from (its fields and
     // tags); others: every other section.
@@ -72,10 +71,6 @@ object SectionForm {
         val layout = form.choice("layout", SectionLayout.CARDS)
         val useDate = form.yesNo("useDate")
         val usePhotos = form.yesNo("usePhotos")
-        val position = form.text("position").let { typed ->
-            if (typed.isEmpty()) 0 else typed.toIntOrNull()?.takeIf { it in 0..MAX_POSITION }
-                ?: 0.also { form.fail("position", "Укажите число от 0 до $MAX_POSITION.") }
-        }
         val slug = form.text("slug").lowercase().ifEmpty { slugOf(title?.en) }
         when {
             slug.isEmpty() -> form.fail("slug", "Укажите адрес латиницей, например articles. Или заполните английское название: адрес возьмётся из него.")
@@ -85,7 +80,7 @@ object SectionForm {
             others.any { it.slug == slug } -> form.fail("slug", "Раздел с таким адресом уже есть.")
         }
         if (existing == null && others.size >= MAX_SECTIONS) {
-            form.fail("title_ru", "Разделов уже $MAX_SECTIONS: больше меню не вместит. Уберите ненужный раздел.")
+            form.fail("title_ru", "Разделов уже $MAX_SECTIONS: больше создать нельзя. Уберите ненужный раздел.")
         }
 
         if (form.errors.isNotEmpty()) {
@@ -100,7 +95,8 @@ object SectionForm {
                 menuTitle = menuTitle,
                 intro = intro,
                 layout = layout,
-                position = position,
+                // The order the menu uses until its tree is saved: the sections as they were made.
+                position = existing?.position ?: ((others.maxOfOrNull { it.position } ?: 0) + 1),
                 useDate = useDate,
                 usePhotos = usePhotos
             ),

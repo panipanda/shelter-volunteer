@@ -97,7 +97,7 @@ class SectionRoutesTest {
             assertEquals(
                 listOf("/ru/cats", "/ru/dogs", "/ru/guide", "/ru/visits", "/ru/help", "/ru/articles"), navLinks(body), path
             )
-            assertTrue(hasTag(body, "header", """class="site-header has-sections""""), path)
+            assertTrue(hasTag(body, "header", """class="site-header nav-two-rows""""), path)
         }
     }
 
@@ -120,7 +120,7 @@ class SectionRoutesTest {
         val body = client.get("/ru").plainText()
 
         assertTrue(hasTag(body, "header", """class="site-header""""))
-        assertFalse(body.contains("has-sections"))
+        assertFalse(body.contains("nav-two-rows"))
         assertEquals(5, navLinks(body).size)
     }
 
@@ -248,6 +248,8 @@ class SectionRoutesTest {
         assertEquals(HttpStatusCode.NotFound, client.get("/sr/articles").status)
         assertEquals(5, navLinks(client.get("/en").plainText()).size)
         assertEquals(6, navLinks(client.get("/ru").plainText()).size)
+        // The header is as high in every language: the rule counts the languages together, not the page's own.
+        listOf("/ru", "/en", "/sr").forEach { assertTrue(hasTag(client.get(it).plainText(), "header", """class="site-header nav-two-rows""""), it) }
     }
 
     @Test

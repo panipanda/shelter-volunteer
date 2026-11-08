@@ -69,6 +69,10 @@ Done (2026-11, third part): sections. The admin builds new parts of the site (se
 drafts, preview and photos) and starts from presets: useful articles, and the visit archive. They are in the menu only
 when they have something published. See `docs/decisions.md` "Sections".
 
+Done (2026-11, fourth part): the menu tree. The admin chooses where the pages, the sections and new groups stand in
+the menu (two levels, drop-downs), hides a page from the menu, and picks the level in the form of a section. See
+`docs/decisions.md` "Menu tree".
+
 Left:
 
 - Edit the trip schedule, cancelled and extra trips (still `data/visit-overrides.json` and the schedule in the code);

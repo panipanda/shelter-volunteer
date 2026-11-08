@@ -114,6 +114,14 @@ private val SCHEMA = listOf(
         updated_at TIMESTAMP WITH TIME ZONE NOT NULL
     )
     """,
+    // The menu tree saved in the admin panel: one row (id 1), one document. No row means the menu was never saved.
+    """
+    CREATE TABLE IF NOT EXISTS site_menu (
+        id INTEGER PRIMARY KEY,
+        data TEXT NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE NOT NULL
+    )
+    """,
     // The texts of the site's pages that were edited in the admin panel; a key with no row here has the text that
     // comes with the code. lang is "ru", "en", "sr", or "all" for a value that is the same in every language.
     """
