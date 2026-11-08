@@ -55,7 +55,7 @@ private fun FlowContent.dogList(dogs: List<Dog>, locale: AppLocale) {
     }
 }
 
-fun HTML.dogDetailsPage(dog: Dog, locale: AppLocale, currentPath: String) {
+fun HTML.dogDetailsPage(dog: Dog, locale: AppLocale, currentPath: String, preview: PagePreview? = null) {
     val messages = messagesFor(locale)
     val name = dog.name.forLocale(locale)
     val photoUrls = dog.photoUrls.ifEmpty { listOf(DEFAULT_PHOTO) }
@@ -69,7 +69,8 @@ fun HTML.dogDetailsPage(dog: Dog, locale: AppLocale, currentPath: String) {
         currentPath = currentPath,
         mainClass = "page cat-page",
         description = description,
-        ogImage = photoUrls.first()
+        ogImage = photoUrls.first(),
+        preview = preview
     ) {
         p(classes = "back") { a(href = "/${locale.code}/dogs") { +messages.t("dog.backToDogs") } }
 

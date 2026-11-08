@@ -47,6 +47,7 @@ import org.proanima.shelter.service.displayAdoptionStage
 import org.proanima.shelter.service.displayCatAge
 import org.proanima.shelter.service.displayCatLocation
 import org.proanima.shelter.views.THEME_INIT_SCRIPT
+import java.net.URLEncoder
 import java.util.Locale
 
 // The admin panel is for the people who run the site, in Russian only. Its pages are plain: the colours,
@@ -553,10 +554,43 @@ private val PHOTO_FLASH = mapOf(
     "removed" to "Фото удалено."
 )
 
-private fun FlowContent.photoButton(action: String, label: String, danger: Boolean = false) {
-    button(type = ButtonType.submit, name = "action", classes = if (danger) "link-button photo-action photo-delete" else "link-button photo-action") {
+private fun FlowContent.photoButton(action: String, label: String) {
+    button(type = ButtonType.submit, name = "action", classes = "link-button photo-action") {
         value = action
         +label
+    }
+}
+
+// What the page that asks "delete this photo?" needs. isCover and isOnly change what the page warns about.
+class PhotoDeleteAsk(
+    val kindPath: String,
+    val id: Int,
+    val title: String,
+    val photoUrl: String,
+    val isCover: Boolean,
+    val isOnly: Boolean,
+    val csrf: String
+)
+
+fun HTML.adminPhotoDeleteConfirmPage(ask: PhotoDeleteAsk) = adminPage("Удаление фото", ask.csrf) {
+    val base = "/admin/${ask.kindPath}/${ask.id}"
+    h1 { +"Удалить это фото?" }
+    p(classes = "admin-back") { +"Запись: "; a(href = base) { +ask.title } }
+    img(src = cardPhotoUrl(ask.photoUrl), alt = "Фото, которое будет удалено", classes = "photo-confirm")
+    p { +"Фото будет удалено без возможности восстановления. Остальные фото не изменятся." }
+    if (ask.isOnly) {
+        p(classes = "admin-note") { +"Это единственное фото: на сайте вместо него будет заглушка." }
+    } else if (ask.isCover) {
+        p(classes = "admin-note") { +"Это обложка: обложкой станет следующее фото." }
+    }
+    form(action = "$base/photos/update", method = FormMethod.post, classes = "admin-form") {
+        csrfField(ask.csrf)
+        input(type = InputType.hidden, name = "photo") { value = ask.photoUrl }
+        input(type = InputType.hidden, name = "action") { value = "delete" }
+        div(classes = "form-actions") {
+            button(type = ButtonType.submit, classes = "button") { +"Да, удалить" }
+            a(href = "$base/photos") { +"Нет, вернуться" }
+        }
     }
 }
 
@@ -626,7 +660,11 @@ fun HTML.adminPhotosPage(page: PhotosPage) = adminPage("Фотографии: ${
                     if (index > 0) photoButton("left", "← Раньше")
                     if (index < page.photoUrls.lastIndex) photoButton("right", "Позже →")
                     if (index > 0) photoButton("cover", "Сделать обложкой")
-                    photoButton("delete", "Удалить", danger = true)
+                    // Not a button: deleting asks first, on a page of its own (see adminPhotoDeleteConfirmPage).
+                    a(
+                        href = "$base/photos/delete?photo=" + URLEncoder.encode(url, Charsets.UTF_8),
+                        classes = "link-button photo-action photo-delete"
+                    ) { +"Удалить" }
                 }
             }
         }

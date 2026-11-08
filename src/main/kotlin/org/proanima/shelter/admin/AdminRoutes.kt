@@ -32,6 +32,7 @@ import org.proanima.shelter.repository.PhotoStore
 import org.proanima.shelter.repository.isSiteAsset
 import org.proanima.shelter.service.cardPhotoUrl
 import org.proanima.shelter.service.petSlug
+import org.proanima.shelter.views.PagePreview
 import org.proanima.shelter.views.catDetailsPage
 import org.proanima.shelter.views.dogDetailsPage
 import org.proanima.shelter.views.respondPage
@@ -83,6 +84,7 @@ internal class PetKind<T : Any>(
     val slug: (T) -> String,
     val photoUrls: (T) -> List<String>,
     val withPhotoUrls: (T, List<String>) -> T,
+    val published: (T) -> Boolean,
     val all: () -> List<T>,
     val save: (T) -> T,
     val delete: (Int) -> Boolean,
@@ -90,7 +92,7 @@ internal class PetKind<T : Any>(
     val valuesOf: (T) -> Map<String, String>,
     val validate: (Map<String, String>, T?, List<T>) -> FormResult<T>,
     val formPage: HTML.(FormPage<T>) -> Unit,
-    val previewPage: HTML.(T, AppLocale, String) -> Unit,
+    val previewPage: HTML.(T, AppLocale, String, PagePreview) -> Unit,
     val deleteQuestion: (String) -> String
 )
 
@@ -102,6 +104,7 @@ private fun catKind(admin: AdminSetup) = PetKind<Cat>(
     slug = { petSlug(it.name?.en, it.id) },
     photoUrls = Cat::photoUrls,
     withPhotoUrls = { cat, urls -> cat.copy(photoUrls = urls, updatedAt = admin.nowText()) },
+    published = Cat::published,
     all = admin.cats::findAll,
     save = admin.cats::save,
     delete = admin.cats::delete,
@@ -109,7 +112,7 @@ private fun catKind(admin: AdminSetup) = PetKind<Cat>(
     valuesOf = CatForm::valuesOf,
     validate = { values, existing, others -> CatForm.validate(values, existing, others, admin.nowText(), admin.today()) },
     formPage = { page -> catFormPage(page) },
-    previewPage = { cat, locale, path -> catDetailsPage(cat, locale, path) },
+    previewPage = { cat, locale, path, preview -> catDetailsPage(cat, locale, path, preview) },
     deleteQuestion = { "Удалить кошку «$it»?" }
 )
 
@@ -121,6 +124,7 @@ private fun dogKind(admin: AdminSetup) = PetKind<Dog>(
     slug = { petSlug(it.name.en, it.id) },
     photoUrls = Dog::photoUrls,
     withPhotoUrls = { dog, urls -> dog.copy(photoUrls = urls) },
+    published = Dog::published,
     all = admin.dogs::findAll,
     save = admin.dogs::save,
     delete = admin.dogs::delete,
@@ -128,7 +132,7 @@ private fun dogKind(admin: AdminSetup) = PetKind<Dog>(
     valuesOf = DogForm::valuesOf,
     validate = { values, existing, others -> DogForm.validate(values, existing, others) },
     formPage = { page -> dogFormPage(page) },
-    previewPage = { dog, locale, path -> dogDetailsPage(dog, locale, path) },
+    previewPage = { dog, locale, path, preview -> dogDetailsPage(dog, locale, path, preview) },
     deleteQuestion = { "Удалить собаку «$it»?" }
 )
 
@@ -266,6 +270,34 @@ private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
                     }
                 }
 
+                // "Delete" next to a photo leads here first; the deletion itself is the "update" action below.
+                // Only a photo of this record can be asked about, so nothing else is ever put on the page.
+                get("/delete") {
+                    admin.withSession(call) { session ->
+                        withPet(call, kind) { pet ->
+                            val urls = kind.photoUrls(pet)
+                            val photo = call.request.queryParameters["photo"]
+                            if (photo == null || photo !in urls) {
+                                call.respond(HttpStatusCode.NotFound)
+                            } else {
+                                call.respondHtml {
+                                    adminPhotoDeleteConfirmPage(
+                                        PhotoDeleteAsk(
+                                            kindPath = kind.urlName,
+                                            id = kind.id(pet),
+                                            title = kind.title(pet),
+                                            photoUrl = photo,
+                                            isCover = urls.first() == photo,
+                                            isOnly = urls.size == 1,
+                                            csrf = session.csrf
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
                 post("/update") {
                     admin.withForm(call) { session, values ->
                         withPet(call, kind) { pet -> changePhotos(admin, kind, call, session, pet, values) }
@@ -280,7 +312,13 @@ private fun <T : Any> Route.petRoutes(admin: AdminSetup, kind: PetKind<T>) {
                     withPet(call, kind) { pet ->
                         val locale = AppLocale.entries.firstOrNull { it.code == call.request.queryParameters["lang"] } ?: AppLocale.default
                         val path = "/${locale.code}/${kind.urlName}/${kind.slug(pet)}"
-                        call.respondPage(locale) { kind.previewPage(this, pet, locale, path) }
+                        val own = "/admin/${kind.urlName}/${kind.id(pet)}"
+                        val preview = PagePreview(
+                            editHref = own,
+                            draft = !kind.published(pet),
+                            localeHref = { "$own/preview?lang=${it.code}" }
+                        )
+                        call.respondPage(locale) { kind.previewPage(this, pet, locale, path, preview) }
                     }
                 }
             }

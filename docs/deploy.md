@@ -117,7 +117,8 @@ running), so a half-configured panel never goes live.
 
 **What it does.** Every cat and dog is a *draft* or *published*. Drafts are in no list, no page and not on the
 home page; only the admin sees them, and "Как на сайте" shows a draft the way visitors will see it, in each
-language. A new record starts as a draft. Editing a published record changes the site at once. Deleting asks
+language. That preview is the public page under a banner ("Предпросмотр", with a link back to editing); its
+language links stay inside the preview, because a draft has no public address. A new record starts as a draft. Editing a published record changes the site at once. Deleting asks
 first and removes the record together with its photos (unless another cat or dog uses the same photo). The list
 marks records that lack a translation (`нет en`, `нет sr`): the site then shows another language for them.
 
@@ -135,7 +136,7 @@ marks records that lack a translation (`нет en`, `нет sr`): the site then 
 **Photos.** Each cat and dog has a page of its own for photos (`Фотографии` on the record's form; it is a separate page
 because every step there reloads it, and unsaved text in the form would be lost). A photo can be added (several at
 once), moved earlier or later, made the cover (the first photo is the card in the list and the first picture on the
-page) and deleted. Behind the scenes the server turns every upload into two JPEGs, the same way
+page) and deleted (after a question that shows the photo and warns if it is the cover or the only one). Behind the scenes the server turns every upload into two JPEGs, the same way
 `tools/make-card-images.py` did by hand: the picture itself, at most 1600 px on the long side and the right way up
 (the camera's rotation tag is applied), and the card copy that covers 440×550 (never scaled up). Nothing from the
 original file's metadata is kept, the shooting place included. Names look like `/images/cat-12-3fa9c1d2.jpg`: the random

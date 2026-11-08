@@ -13,7 +13,8 @@ import org.proanima.shelter.i18n.t
 import org.proanima.shelter.model.AppLocale
 import java.util.ResourceBundle
 
-fun FlowContent.navigation(locale: AppLocale, currentPath: String) {
+// localeHref: where the language links go; by default the same page of the public site in the other language.
+fun FlowContent.navigation(locale: AppLocale, currentPath: String, localeHref: ((AppLocale) -> String)? = null) {
     val prefix = "/${locale.code}"
     val messages = messagesFor(locale)
 
@@ -32,7 +33,7 @@ fun FlowContent.navigation(locale: AppLocale, currentPath: String) {
                 navLink("$prefix/help", messages.t("nav.help"), currentPath)
             }
 
-            localeSwitcher(locale, currentPath, messages.t("nav.language"))
+            localeSwitcher(locale, localeHref ?: { "/${it.code}${currentPath.removePrefix("/${locale.code}")}" }, messages.t("nav.language"))
             themeToggle(messages.t("nav.theme"))
         }
     }
@@ -68,9 +69,7 @@ private fun FlowContent.navLink(href: String, label: String, currentPath: String
 // the path structure is the same in all locales, so stripping the current prefix is enough.
 // The visible text is the short code. The full name in its own language is the tooltip and the accessible
 // name, and lang/hreflang tell a screen reader which voice to use for it.
-private fun FlowContent.localeSwitcher(locale: AppLocale, currentPath: String, label: String) {
-    val pathSuffix = currentPath.removePrefix("/${locale.code}")
-
+private fun FlowContent.localeSwitcher(locale: AppLocale, hrefFor: (AppLocale) -> String, label: String) {
     nav(classes = "lang-switch") {
         attributes["aria-label"] = label
         AppLocale.entries.forEach { entryLocale ->
@@ -82,7 +81,7 @@ private fun FlowContent.localeSwitcher(locale: AppLocale, currentPath: String, l
                     +entryLocale.code.uppercase()
                 }
             } else {
-                a(href = "/${entryLocale.code}$pathSuffix") {
+                a(href = hrefFor(entryLocale)) {
                     attributes["lang"] = entryLocale.code
                     attributes["hreflang"] = entryLocale.code
                     attributes["title"] = entryLocale.nativeName

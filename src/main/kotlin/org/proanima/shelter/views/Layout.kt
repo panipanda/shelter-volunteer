@@ -1,5 +1,6 @@
 package org.proanima.shelter.views
 
+import kotlinx.html.FlowContent
 import kotlinx.html.HEAD
 import kotlinx.html.HTML
 import kotlinx.html.MAIN
@@ -15,6 +16,8 @@ import kotlinx.html.main
 import kotlinx.html.meta
 import kotlinx.html.p
 import kotlinx.html.script
+import kotlinx.html.span
+import kotlinx.html.strong
 import kotlinx.html.title
 import kotlinx.html.unsafe
 import org.proanima.shelter.i18n.messagesFor
@@ -113,6 +116,33 @@ private fun HEAD.pageMetadata(
     meta(name = "twitter:card", content = "summary_large_image")
 }
 
+// A page shown to the people who run the site before (or instead of) its public address: the admin panel's
+// preview of a cat or a dog. It adds a banner above the header, keeps the language links inside the preview
+// (a draft has no public address, so a link to it would be a 404) and keeps the page out of search engines.
+class PagePreview(
+    // Where the "back to editing" link goes.
+    val editHref: String,
+    // A draft is not on the site; a published record is, and the banner says which one this is.
+    val draft: Boolean,
+    // The address of this same preview in another language.
+    val localeHref: (AppLocale) -> String
+)
+
+// The banner is in Russian whatever the page language is: it is for the admin panel's users, not for visitors.
+private fun FlowContent.previewBanner(preview: PagePreview) {
+    div(classes = "preview-banner") {
+        attributes["lang"] = "ru"
+        attributes["role"] = "note"
+        div(classes = "wrap preview-banner-row") {
+            span(classes = "preview-banner-text") {
+                strong { +"Предпросмотр. " }
+                +(if (preview.draft) "Это черновик: посетители сайта этой страницы не видят." else "Так страницу видят посетители сайта.")
+            }
+            a(href = preview.editHref) { +"← Вернуться к редактированию" }
+        }
+    }
+}
+
 fun HTML.pageLayout(
     locale: AppLocale,
     pageTitle: String,
@@ -122,6 +152,7 @@ fun HTML.pageLayout(
     description: String? = null,
     ogImage: String? = null,
     indexable: Boolean = true,
+    preview: PagePreview? = null,
     content: MAIN.() -> Unit
 ) {
     val messages = messagesFor(locale)
@@ -133,7 +164,7 @@ fun HTML.pageLayout(
         meta(charset = "UTF-8")
         meta(name = "viewport", content = "width=device-width, initial-scale=1")
         meta(name = "color-scheme", content = "light dark")
-        pageMetadata(locale, fullTitle, currentPath, description, ogImage, indexable)
+        pageMetadata(locale, fullTitle, currentPath, description, ogImage, indexable && preview == null)
         link(rel = "icon", href = "/icons/favicon-32.png", type = "image/png") {
             attributes["sizes"] = "32x32"
         }
@@ -148,6 +179,9 @@ fun HTML.pageLayout(
             }
         }
         link(rel = "stylesheet", href = "/styles/main.css", type = "text/css")
+        if (preview != null) {
+            link(rel = "stylesheet", href = "/styles/admin.css", type = "text/css")
+        }
         // Inline and blocking on purpose: the theme must be set before the first paint,
         // otherwise a dark-theme user sees a light flash on every page load.
         script {
@@ -156,7 +190,10 @@ fun HTML.pageLayout(
     }
     body {
         a(href = "#main", classes = "skip-link") { +messages.t("nav.skip") }
-        navigation(locale, currentPath)
+        if (preview != null) {
+            previewBanner(preview)
+        }
+        navigation(locale, currentPath, preview?.localeHref)
         main(classes = mainClass) {
             id = "main"
             content()

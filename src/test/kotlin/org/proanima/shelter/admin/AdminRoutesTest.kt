@@ -448,6 +448,62 @@ class AdminRoutesTest : AdminTestBase() {
     }
 
     @Test
+    fun `a preview of a draft says so, keeps its language links inside the preview and stays out of search`() = testApplication {
+        start()
+        val browser = browser()
+        val csrf = browser.logIn()
+        browser.post("/admin/cats", catForm(), csrf)
+        val cat = cats.findAll().single()
+
+        val html = browser.get("/admin/cats/${cat.id}/preview?lang=en").plainText()
+
+        assertContains(html, "Предпросмотр.")
+        assertContains(html, "Это черновик: посетители сайта этой страницы не видят.")
+        assertContains(html, """href="/admin/cats/${cat.id}"""")
+        assertContains(html, "← Вернуться к редактированию")
+        // The other languages stay in the preview: the public address of a draft is a 404.
+        assertContains(html, """href="/admin/cats/${cat.id}/preview?lang=ru"""")
+        assertContains(html, """href="/admin/cats/${cat.id}/preview?lang=sr"""")
+        assertFalse("""href="/ru/cats/""" in html || """href="/sr/cats/""" in html)
+        assertContains(html, """content="noindex"""")
+        assertFalse("""rel="canonical"""" in html || """rel="alternate"""" in html)
+        assertContains(html, "/styles/admin.css")
+        // The page itself is the public page of the cat.
+        assertContains(html, "Barsik")
+        assertContains(html, "A kind cat")
+    }
+
+    @Test
+    fun `a preview of a published record says it is how visitors see it`() = testApplication {
+        start()
+        val browser = browser()
+        val csrf = browser.logIn()
+        browser.post("/admin/dogs", dogForm("published" to "true"), csrf)
+        val dog = dogs.findAll().single()
+
+        val html = browser.get("/admin/dogs/${dog.id}/preview?lang=sr").plainText()
+
+        assertContains(html, "Предпросмотр.")
+        assertContains(html, "Так страницу видят посетители сайта.")
+        assertFalse("Это черновик" in html)
+        assertContains(html, """href="/admin/dogs/${dog.id}/preview?lang=en"""")
+        assertContains(html, """href="/admin/dogs/${dog.id}"""")
+    }
+
+    @Test
+    fun `the public pages have no preview banner and keep their own language links`() = testApplication {
+        start()
+        storedCat("Tom")
+
+        val html = client.get("/en/cats/tom").plainText()
+
+        assertFalse("Предпросмотр" in html || "/styles/admin.css" in html)
+        assertContains(html, """href="/ru/cats/tom"""")
+        assertContains(html, """href="/sr/cats/tom"""")
+        assertContains(html, """rel="canonical"""")
+    }
+
+    @Test
     fun `an address with an unknown or odd id is a 404`() = testApplication {
         start()
         val browser = browser()

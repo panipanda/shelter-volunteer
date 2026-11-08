@@ -103,7 +103,7 @@ private val TELEGRAM_HANDLE = Regex("@([A-Za-z0-9_]{5,32})")
 private fun telegramHandle(instruction: String?): String? =
     instruction?.let { TELEGRAM_HANDLE.find(it)?.groupValues?.get(1) }
 
-fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
+fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String, preview: PagePreview? = null) {
     val prefix = "/${locale.code}"
     val messages = messagesFor(locale)
     val name = displayCatName(cat.name, locale)
@@ -122,7 +122,8 @@ fun HTML.catDetailsPage(cat: Cat, locale: AppLocale, currentPath: String) {
         currentPath = currentPath,
         mainClass = "page cat-page",
         description = description,
-        ogImage = photoUrls.first()
+        ogImage = photoUrls.first(),
+        preview = preview
     ) {
         p(classes = "back") { a(href = "$prefix/cats") { +messages.t("cat.backToCats") } }
 

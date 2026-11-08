@@ -9,6 +9,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.encodeURLParameter
 import io.ktor.server.testing.testApplication
 import org.proanima.shelter.model.AdoptionStage
 import org.proanima.shelter.model.Cat
@@ -404,6 +405,99 @@ class AdminPhotosTest : AdminTestBase() {
         assertTrue("Позже →" in tiles[0] && "Удалить" in tiles[0])
         assertTrue("← Раньше" in tiles[1] && "Позже →" in tiles[1] && "Сделать обложкой" in tiles[1])
         assertFalse("Позже →" in tiles[2])
+    }
+
+    // ---- deleting a photo asks first
+
+    @Test
+    fun `the delete link of a photo leads to a question, not to the deletion`() = testApplication {
+        start()
+        val browser = browser()
+        browser.logIn()
+        val cat = newCat(listOf(storedPhoto("a"), storedPhoto("b")))
+
+        val html = browser.get("/admin/cats/${cat.id}/photos").bodyAsText()
+
+        val tiles = html.split("<li class=\"photo-tile\">").drop(1)
+        assertContains(tiles[1], """href="/admin/cats/${cat.id}/photos/delete?photo=%2Fimages%2Fb.jpg"""")
+        // No button of the tile deletes anything by itself.
+        assertFalse(Regex("""<button[^>]*value="delete"""").containsMatchIn(html))
+    }
+
+    @Test
+    fun `the question shows the photo and deletes nothing until it is confirmed`() = testApplication {
+        start()
+        val browser = browser()
+        val csrf = browser.logIn()
+        val (a, b) = listOf(storedPhoto("a"), storedPhoto("b"))
+        val cat = newCat(listOf(a, b))
+
+        val ask = browser.get("/admin/cats/${cat.id}/photos/delete?photo=${"/images/b.jpg".encodeURLParameter()}")
+
+        assertEquals(HttpStatusCode.OK, ask.status)
+        val html = ask.bodyAsText()
+        assertContains(html, "Удалить это фото?")
+        assertContains(html, """src="/images/b-card.jpg"""")
+        assertContains(html, "Нет, вернуться")
+        assertContains(html, """href="/admin/cats/${cat.id}/photos"""")
+        // An ordinary photo: no warning about the cover or the placeholder.
+        assertFalse("обложка" in html.lowercase() || "заглушка" in html)
+        assertEquals(listOf(a, b), cats.findById(cat.id)!!.photoUrls)
+        assertEquals(setOf("a.jpg", "a-card.jpg", "b.jpg", "b-card.jpg"), photos.names())
+
+        // "Yes" is the same request the old button sent, with this page's token.
+        assertEquals(csrf, csrfOf(html))
+        assertContains(html, """action="/admin/cats/${cat.id}/photos/update"""")
+        assertContains(html, """name="photo" value="/images/b.jpg"""")
+        assertContains(html, """name="action" value="delete"""")
+        val done = browser.change(cat, csrf, b, "delete")
+        assertEquals("/admin/cats/${cat.id}/photos?msg=removed", done.headers[HttpHeaders.Location])
+        assertEquals(listOf(a), cats.findById(cat.id)!!.photoUrls)
+    }
+
+    @Test
+    fun `the question warns when the photo is the cover or the only one`() = testApplication {
+        start()
+        val browser = browser()
+        browser.logIn()
+        val cat = newCat(listOf(storedPhoto("a"), storedPhoto("b")))
+        val lone = newCat(listOf(storedPhoto("c")))
+
+        val cover = browser.get("/admin/cats/${cat.id}/photos/delete?photo=%2Fimages%2Fa.jpg").bodyAsText()
+        assertContains(cover, "Это обложка: обложкой станет следующее фото.")
+        assertFalse("заглушка" in cover)
+
+        val only = browser.get("/admin/cats/${lone.id}/photos/delete?photo=%2Fimages%2Fc.jpg").bodyAsText()
+        assertContains(only, "Это единственное фото: на сайте вместо него будет заглушка.")
+        assertFalse("обложкой станет" in only)
+    }
+
+    @Test
+    fun `the question is only for the person logged in and only about a photo of that record`() = testApplication {
+        start()
+        val cat = newCat(listOf(storedPhoto("a")))
+        val other = newCat(listOf(storedPhoto("z")))
+        val anonymous = browser()
+
+        assertEquals(
+            "/admin/login",
+            anonymous.get("/admin/cats/${cat.id}/photos/delete?photo=%2Fimages%2Fa.jpg").headers[HttpHeaders.Location]
+        )
+
+        val browser = browser()
+        browser.logIn()
+        listOf(
+            "/admin/cats/${cat.id}/photos/delete",
+            "/admin/cats/${cat.id}/photos/delete?photo=",
+            "/admin/cats/${cat.id}/photos/delete?photo=%2Fimages%2Fnot-his.jpg",
+            // A photo of another record is not this record's photo.
+            "/admin/cats/${cat.id}/photos/delete?photo=%2Fimages%2Fz.jpg",
+            "/admin/cats/999/photos/delete?photo=%2Fimages%2Fa.jpg",
+            "/admin/dogs/${cat.id}/photos/delete?photo=%2Fimages%2Fa.jpg"
+        ).forEach { path ->
+            assertEquals(HttpStatusCode.NotFound, browser.get(path).status, path)
+        }
+        assertEquals(listOf("/images/z.jpg"), cats.findById(other.id)!!.photoUrls)
     }
 
     @Test
