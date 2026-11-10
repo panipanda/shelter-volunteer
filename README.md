@@ -6,6 +6,13 @@ Live at [shelter-volunteer.onrender.com](https://shelter-volunteer.onrender.com)
 
 This repository is a Kotlin/Ktor learning project and a future production-ready MVP website for shelter volunteers.
 
+## Course
+
+[A course in Russian on Kotlin and web development](https://panipanda.github.io/shelter-volunteer/) uses this
+repository as its example: Kotlin, Ktor, HTML/CSS/JS, architecture, algorithms, testing, refactoring, UX and working
+with AI agents, with exercises, quizzes and live coding. Its source is in `course/`; how it is published and written
+is described in [docs/course.md](docs/course.md).
+
 ## MVP goal
 
 The MVP focuses on the cat volunteering direction.

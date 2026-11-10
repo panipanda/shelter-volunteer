@@ -1,0 +1,72 @@
+name: Course
+
+# The course in course/ is a static site (no build step). Every change is checked: the lessons must be consistent
+# (quizzes, links into the repository, English code comments). The Kotlin examples are compiled and run by
+# tools/course-snippets.mjs, which needs Gradle and takes a few minutes, so it runs on demand and on pull requests
+# that touch the lessons. A push to main publishes the site on GitHub Pages.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "course/**"
+      - "tools/course-*.mjs"
+      - ".github/workflows/course.yml"
+  pull_request:
+    paths:
+      - "course/**"
+      - "tools/course-*.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a running one is not cancelled, so the site is never left half published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/course-check.mjs
+
+  snippets:
+    # The Kotlin examples of the lessons must compile and print what the lessons say.
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x gradlew
+      - run: node tools/course-snippets.mjs
+
+  deploy:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: check
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: course
+      - id: deployment
+        uses: actions/deploy-pages@v4

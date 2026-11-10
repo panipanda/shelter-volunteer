@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Kotlin и веб-разработка на живом проекте</title>
+  <meta name="description" content="Глубокий курс по Kotlin и веб-разработке на примере реального сайта приюта: архитектура, алгоритмы, качество кода, рефакторинг, UX и работа с ИИ-агентами. Теория, задания, квизы и live coding.">
+  <meta property="og:title" content="Kotlin и веб-разработка на живом проекте">
+  <meta property="og:description" content="Курс на примере реального сайта приюта Pro Anima: Kotlin, Ktor, архитектура, тесты, рефакторинг, UX и ИИ-агенты.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231a7f37'/%3E%3Cpath d='M9 7v18M9 16l9-9M9 16l10 9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preload" href="assets/fonts/source-sans-3-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/literata-600-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/app.css">
+  <script>
+    // Apply the saved theme (or the system one) before the first paint, so there is no flash of the wrong theme.
+    try {
+      var saved = localStorage.getItem("course-theme");
+      var dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme = dark ? "dark" : "light";
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#content">К содержанию урока</a>
+
+  <header class="topbar">
+    <button type="button" class="icon-button menu-button" id="menu-button" aria-expanded="false" aria-controls="sidebar">
+      <span class="icon-burger" aria-hidden="true"></span>
+      <span class="visually-hidden">Содержание курса</span>
+    </button>
+    <a class="brand" href="#/">
+      <span class="brand-mark" aria-hidden="true">K</span>
+      <span class="brand-text">Kotlin и веб на живом проекте</span>
+    </a>
+    <p class="topbar-progress" id="topbar-progress" aria-live="polite"></p>
+    <button type="button" class="icon-button theme-button" id="theme-button" title="Сменить тему" aria-label="Сменить тему">
+      <span class="icon-theme" aria-hidden="true"></span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <nav class="sidebar" id="sidebar" aria-label="Содержание курса"></nav>
+    <div class="scrim" id="scrim" hidden></div>
+    <main class="content" id="content" tabindex="-1">
+      <p class="loading">Загружаю курс…</p>
+      <noscript><p>Курс интерактивный и работает только с включённым JavaScript.</p></noscript>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script>
+  <script src="assets/markdown.js" defer></script>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>
