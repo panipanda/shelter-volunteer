@@ -42,6 +42,27 @@ class DisplayHelpersTest {
     }
 
     @Test
+    fun `displayCatAge says under a month, not zero months, for a cat born this month`() {
+        assertEquals("Under 1 month old", displayCatAge(2026, 9, AppLocale.EN, today))
+        assertEquals("Младше месяца", displayCatAge(2026, 9, AppLocale.RU, today))
+        assertEquals("Mlađa od mesec dana", displayCatAge(2026, 9, AppLocale.SR, today))
+    }
+
+    @Test
+    fun `displayCatAge says the age is unknown for a birth date in the future`() {
+        assertEquals("Age unknown", displayCatAge(2026, 10, AppLocale.EN, today))
+        assertEquals("Age unknown", displayCatAge(2027, 1, AppLocale.EN, today))
+        assertEquals("Age unknown", displayCatAge(2027, null, AppLocale.EN, today))
+        assertEquals("Возраст неизвестен", displayCatAge(2027, null, AppLocale.RU, today))
+    }
+
+    @Test
+    fun `displayCatAge keeps counting a month and a year exactly at their boundaries`() {
+        assertEquals("11 months old", displayCatAge(2025, 10, AppLocale.EN, today))
+        assertEquals("1 year old", displayCatAge(2025, 9, AppLocale.EN, today))
+    }
+
+    @Test
     fun `displayCatAge with year and month handles exactly one month`() {
         assertEquals("1 month old", displayCatAge(2026, 8, AppLocale.EN, today))
     }

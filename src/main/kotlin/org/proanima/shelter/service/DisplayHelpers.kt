@@ -50,13 +50,22 @@ fun displayCatAge(birthYear: Int?, birthMonth: Int?, locale: AppLocale, today: L
     if (birthMonth == null) {
         val years = today.year - birthYear
         // Born this year with no month known: there is no way to count months, so say "under a year".
-        return when (years) {
-            0 -> messages.t("cat.age.underYear")
-            1 -> messages.t("cat.age.oneYear")
+        return when {
+            // A birth date in the future is a mistake in the data: an unknown age is better than a negative one.
+            years < 0 -> messages.t("cat.age.unknown")
+            years == 0 -> messages.t("cat.age.underYear")
+            years == 1 -> messages.t("cat.age.oneYear")
             else -> messages.t("cat.age.years", years)
         }
     }
     val totalMonths = (today.year - birthYear) * 12 + (today.monthValue - birthMonth)
+    if (totalMonths < 0) {
+        return messages.t("cat.age.unknown")
+    }
+    // Born this month: "0 months old" reads as a mistake.
+    if (totalMonths == 0) {
+        return messages.t("cat.age.underMonth")
+    }
     val years = totalMonths / 12
     val months = totalMonths % 12
     return if (years == 1) {
